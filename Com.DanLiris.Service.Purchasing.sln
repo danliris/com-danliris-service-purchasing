@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Com.DanLiris.Service.Purchasing.WebApi", "Com.DanLiris.Service.Purchasing\Com.DanLiris.Service.Purchasing.WebApi.csproj", "{42BBC3AC-EBC2-494F-AFA3-561D2EF5384C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Com.DanLiris.Service.Purchasing.WebApi", "Com.DanLiris.Service.Purchasing.WebApi\Com.DanLiris.Service.Purchasing.WebApi.csproj", "{42BBC3AC-EBC2-494F-AFA3-561D2EF5384C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Com.DanLiris.Service.Purchasing.Lib", "Com.DanLiris.Service.Purchasing.Lib\Com.DanLiris.Service.Purchasing.Lib.csproj", "{E0AA4AB3-284B-4ED2-AB21-B2911D4BDE4C}"
 EndProject
