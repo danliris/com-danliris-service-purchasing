@@ -162,5 +162,50 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.InternalPurchaseOrder
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
+        //[Fact]
+        //public async Task Should_Succes_Split_Data()
+        //{
+        //    InternalPurchaseOrder model = await DataUtil.GetTestData("dev2");
+
+        //    var responseGetById = await this.Client.GetAsync($"{URI}/spliting/{model.Id}");
+        //    var json = responseGetById.Content.ReadAsStringAsync().Result;
+
+        //    Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json.ToString());
+        //    Assert.True(result.ContainsKey("apiVersion"));
+        //    Assert.True(result.ContainsKey("message"));
+        //    Assert.True(result.ContainsKey("data"));
+        //    Assert.True(result["data"].GetType().Name.Equals("JObject"));
+
+        //    InternalPurchaseOrderViewModel viewModel = JsonConvert.DeserializeObject<InternalPurchaseOrderViewModel>(result.GetValueOrDefault("data").ToString());
+        //    viewModel._id = 1;
+        //    viewModel.prNo = null;
+        //    viewModel.prDate = DateTimeOffset.MinValue;
+        //    viewModel.budget = null;
+        //    viewModel.unit = null;
+        //    viewModel.category = null;
+        //    viewModel.items = new List<InternalPurchaseOrderItemViewModel> { };
+
+        //    var response = await this.Client.PutAsync($"{URI}/spliting/{model.Id}", new StringContent(JsonConvert.SerializeObject(viewModel).ToString(), Encoding.UTF8, MediaType));
+        //    Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        //}
+
+            
+        [Fact]
+        public async Task Should_Error_Split_Data()
+        {
+            InternalPurchaseOrder model = await DataUtil.GetTestData("dev2");
+            InternalPurchaseOrderViewModel viewModel = DataUtil.GetNewDataViewModel();
+            viewModel._id = model.Id;
+            List<InternalPurchaseOrderViewModel> viewModelList = new List<InternalPurchaseOrderViewModel> { viewModel };
+            var response = await this.Client.PostAsync($"{URI}/spliting/{model.Id}", new StringContent(JsonConvert.SerializeObject(viewModelList).ToString(), Encoding.UTF8, MediaType));
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        //[Fact]
+        //public async Task Should_Error_Split_Data()
+        //{
+        //    var response = await this.Client.PutAsync($"{URI}/spliting/0", new StringContent(JsonConvert.SerializeObject(new InternalPurchaseOrderViewModel()).ToString(), Encoding.UTF8, MediaType));
+        //    Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
+        //}
     }
 }
