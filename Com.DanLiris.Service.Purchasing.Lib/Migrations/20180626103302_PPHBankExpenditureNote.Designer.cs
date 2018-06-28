@@ -12,9 +12,10 @@ using System;
 namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 {
     [DbContext(typeof(PurchasingDbContext))]
-    partial class PurchasingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180626103302_PPHBankExpenditureNote")]
+    partial class PPHBankExpenditureNote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,12 +159,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                     b.Property<string>("ProductRemark");
 
                     b.Property<double>("ReceiptQuantity");
-
-                    b.Property<string>("UnitCode")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("UnitId")
-                        .HasMaxLength(255);
 
                     b.Property<string>("UomId")
                         .HasMaxLength(255);
@@ -1372,6 +1367,27 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                     b.HasOne("Com.DanLiris.Service.Purchasing.Lib.Models.DeliveryOrderModel.DeliveryOrder", "DeliveryOrder")
                         .WithMany("Items")
                         .HasForeignKey("DOId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Com.DanLiris.Service.Purchasing.Lib.Models.Expedition.PPHBankExpenditureNoteItem", b =>
+                {
+                    b.HasOne("Com.DanLiris.Service.Purchasing.Lib.Models.Expedition.PPHBankExpenditureNote", "PPHBankExpenditureNote")
+                        .WithMany("Items")
+                        .HasForeignKey("PPHBankExpenditureNoteId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Com.DanLiris.Service.Purchasing.Lib.Models.Expedition.PurchasingDocumentExpedition", "PurchasingDocumentExpedition")
+                        .WithMany()
+                        .HasForeignKey("PurchasingDocumentExpeditionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Com.DanLiris.Service.Purchasing.Lib.Models.Expedition.PurchasingDocumentExpeditionItem", b =>
+                {
+                    b.HasOne("Com.DanLiris.Service.Purchasing.Lib.Models.Expedition.PurchasingDocumentExpedition", "PurchasingDocumentExpedition")
+                        .WithMany("Items")
+                        .HasForeignKey("PurchasingDocumentExpeditionId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
