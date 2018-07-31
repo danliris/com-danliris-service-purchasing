@@ -170,41 +170,43 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitPaymentCorrectionNoteF
 
             string no = $"{Year}-{Month}-{supplier_imp}-{division_name}-";
             int Padding = 3;
+            var upcno = "";
 
             var lastNo = await this.dbSet.Where(w => w.UPCNo.StartsWith(no) && !w.IsDeleted).OrderByDescending(o => o.UPCNo).FirstOrDefaultAsync();
 
             if (lastNo == null)
             {
-                return no + "1".PadLeft(Padding, '0');
+                 upcno = no + "1".PadLeft(Padding, '0');
             }
             else
             {
                 int lastNoNumber = Int32.Parse(lastNo.UPCNo.Replace(no, "")) + 1;
-                return no + lastNoNumber.ToString().PadLeft(Padding, '0');
+                upcno = no + lastNoNumber.ToString().PadLeft(Padding, '0');
             }
+            return upcno;
         }
 
         async Task<string> GeneratePONo(UnitPaymentCorrectionNote model, int clientTimeZoneOffset)
         {
             string Year = model.CorrectionDate.ToOffset(new TimeSpan(clientTimeZoneOffset, 0, 0)).ToString("yy");
             string Month = model.CorrectionDate.ToOffset(new TimeSpan(clientTimeZoneOffset, 0, 0)).ToString("MM");
-           
-
 
             string no = $"{Year}-{Month}-NR-";
             int Padding = 3;
+            var pono = "";
 
             var lastNo = await this.dbSet.Where(w => w.ReturNoteNo.StartsWith(no) && !w.IsDeleted).OrderByDescending(o => o.ReturNoteNo).FirstOrDefaultAsync();
 
             if (lastNo == null)
             {
-                return no + "1".PadLeft(Padding, '0');
+                pono = no + "1".PadLeft(Padding, '0');
             }
             else
             {
                 int lastNoNumber = Int32.Parse(lastNo.ReturNoteNo.Replace(no, "")) + 1;
-                return no + lastNoNumber.ToString().PadLeft(Padding, '0');
+                pono = no + lastNoNumber.ToString().PadLeft(Padding, '0');
             }
+            return pono;
         }
 
         public SupplierViewModel GetSupplier(string supplierId)
@@ -225,97 +227,5 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitPaymentCorrectionNoteF
             }
             
         }
-
-        //public async Task<int> Update(int id, UnitPaymentCorrectionNote unitPaymentCorrectionNote, string user)
-        //{
-        //    int Updated = 0;
-
-        //    using (var transaction = this.dbContext.Database.BeginTransaction())
-        //    {
-        //        try
-        //        {
-        //            var m = this.dbSet.AsNoTracking()
-        //                .Include(d => d.Items)
-        //                .Single(pr => pr.Id == id && !pr.IsDeleted);
-
-        //            if (m != null && id == unitPaymentCorrectionNote.Id)
-        //            {
-
-        //                EntityExtension.FlagForUpdate(unitPaymentCorrectionNote, user, USER_AGENT);
-
-        //                foreach (var item in unitPaymentCorrectionNote.Items)
-        //                {
-        //                    if (item.Id == 0)
-        //                    {
-        //                        EntityExtension.FlagForCreate(item, user, USER_AGENT);
-        //                    }
-        //                    else
-        //                    {
-        //                        EntityExtension.FlagForUpdate(item, user, USER_AGENT);
-        //                    }
-        //                }
-
-        //                this.dbContext.Update(unitPaymentCorrectionNote);
-
-        //                foreach (var item in m.Items)
-        //                {
-        //                    UnitPaymentCorrectionNoteItem unitPaymentCorrectionNoteItem = unitPaymentCorrectionNote.Items.FirstOrDefault(i => i.Id.Equals(item.Id));
-        //                    if (unitPaymentCorrectionNoteItem == null)
-        //                    {
-        //                        EntityExtension.FlagForDelete(item, user, USER_AGENT);
-        //                        this.dbContext.UnitPaymentCorrectionNoteItems.Update(item);
-        //                    }
-        //                }
-
-        //                Updated = await dbContext.SaveChangesAsync();
-        //                transaction.Commit();
-        //            }
-        //            else
-        //            {
-        //                throw new Exception("Invalid Id");
-        //            }
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            transaction.Rollback();
-        //            throw new Exception(e.Message);
-        //        }
-        //    }
-
-        //    return Updated;
-        //}
-
-        //public int Delete(int id, string user)
-        //{
-        //    int Deleted = 0;
-
-        //    using (var transaction = this.dbContext.Database.BeginTransaction())
-        //    {
-        //        try
-        //        {
-        //            var m = this.dbSet
-        //                .Include(d => d.Items)
-        //                .SingleOrDefault(pr => pr.Id == id && !pr.IsDeleted);
-
-        //            EntityExtension.FlagForDelete(m, user, USER_AGENT);
-
-        //            foreach (var item in m.Items)
-        //            {
-        //                EntityExtension.FlagForDelete(item, user, USER_AGENT);
-        //            }
-
-        //            Deleted = dbContext.SaveChanges();
-        //            transaction.Commit();
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            transaction.Rollback();
-        //            throw new Exception(e.Message);
-        //        }
-        //    }
-
-        //    return Deleted;
-        //}
-
     }
 }
