@@ -36,8 +36,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.PurchaseRequestTests
             get { return (PurchaseRequestFacade)ServiceProvider.GetService(typeof(PurchaseRequestFacade)); }
         }
 
-        
 
+        [Fact]
         public async void Should_Success_Get_Report_Data()
         {
             PurchaseRequest model = await DataUtil.GetTestData("Unit test");
@@ -68,8 +68,9 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.PurchaseRequestTests
             var Response = Facade.GenerateExcel("", "", "", "", "", "", null, null, 7, "Unit Test");
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
         }
-		//Duration PR
-		public async void Should_Success_Get_Report_PRDuration_Data()
+        //Duration PR
+        [Fact]
+        public async void Should_Success_Get_Report_PRDuration_Data()
 		{
 			var model = await IPODataUtil.GetTestData2("Unit test");
 			var Response = Facade.GetPRDurationReport( model.UnitId, "8-14 hari", null, null, 1, 25, "{}", 7);
@@ -99,5 +100,38 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.PurchaseRequestTests
 			var Response = Facade.GenerateExcelPRDuration("", "15-30 hari", null, null, 7);
 			Assert.IsType(typeof(System.IO.MemoryStream), Response);
 		}
-	}
+
+        //Duration PR-PO Ex
+        [Fact]
+        public async void Should_Success_Get_Report_PRPOExDuration_Data()
+        {
+            var model = await IPODataUtil.GetTestData2("Unit test");
+            var Response = Facade.GetPREPODurationReport(model.UnitId, "8-14 hari", null, null, 1, 25, "{}", 7);
+            Assert.NotEqual(Response.Item2, 0);
+        }
+
+        [Fact]
+        public async void Should_Success_Get_Report_PRPOExDuration_Data_2()
+        {
+            var model = await IPODataUtil.GetTestData3("Unit test");
+            var Response = Facade.GetPREPODurationReport(model.UnitId, "15-30 hari", null, null, 1, 25, "{}", 7);
+            Assert.NotEqual(Response.Item2, 0);
+        }
+
+        [Fact]
+        public async void Should_Success_Get_Report_PRPOEDuration_Excel()
+        {
+            var model = await IPODataUtil.GetTestData2("Unit test");
+            var Response = Facade.GenerateExcelPREPODuration("7", "8-14 hari", null, null, 7);
+            Assert.IsType(typeof(System.IO.MemoryStream), Response);
+        }
+
+        [Fact]
+        public async void Should_Success_Get_Report_PRPOEDuration_Excel_Null_Parameter()
+        {
+            var model = await IPODataUtil.GetTestData3("Unit test");
+            var Response = Facade.GenerateExcelPRDuration("", "15-30 hari", null, null, 7);
+            Assert.IsType(typeof(System.IO.MemoryStream), Response);
+        }
+    }
 }
