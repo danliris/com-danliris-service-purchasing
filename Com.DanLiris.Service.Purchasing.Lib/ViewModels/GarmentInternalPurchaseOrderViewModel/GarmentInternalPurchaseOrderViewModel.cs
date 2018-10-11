@@ -12,6 +12,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentInternalPurchase
         public string PONo { get; set; }
         public DateTimeOffset? PRDate { get; set; }
         public string PRNo { get; set; }
+        public string PRId { get; set; }
         public string RONo { get; set; }
 
         public BuyerViewModel Buyer { get; set; }

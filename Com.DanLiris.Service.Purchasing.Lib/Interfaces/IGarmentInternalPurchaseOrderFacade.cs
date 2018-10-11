@@ -10,5 +10,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Interfaces
         Tuple<List<GarmentInternalPurchaseOrder>, int, Dictionary<string, string>> Read(int Page = 1, int Size = 25, string Order = "{}", string Keyword = null, string Filter = "{}");
         GarmentInternalPurchaseOrder ReadById(int id);
         Task<int> CreateMultiple(List<GarmentInternalPurchaseOrder> ListModel, string user, int clientTimeZoneOffset = 7);
+        List<GarmentInternalPurchaseOrder> ReadByTags(string category, string tags, DateTimeOffset shipmentDateFrom, DateTimeOffset shipmentDateTo);
     }
 }
