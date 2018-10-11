@@ -9,7 +9,11 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Interfaces
     {
         Tuple<List<GarmentInternalPurchaseOrder>, int, Dictionary<string, string>> Read(int Page = 1, int Size = 25, string Order = "{}", string Keyword = null, string Filter = "{}");
         GarmentInternalPurchaseOrder ReadById(int id);
-        Task<int> CreateMultiple(List<GarmentInternalPurchaseOrder> ListModel, string user, int clientTimeZoneOffset = 7);
+        bool CheckDuplicate(GarmentInternalPurchaseOrder model);
+        Task<int> CreateMultiple(List<GarmentInternalPurchaseOrder> listModel, string user, int clientTimeZoneOffset = 7);
+        Task<int> Split(int id, GarmentInternalPurchaseOrder model, string user, int clientTimeZoneOffset = 7);
+        Task<int> Delete(int id, string username);
+
         List<GarmentInternalPurchaseOrder> ReadByTags(string category, string tags, DateTimeOffset shipmentDateFrom, DateTimeOffset shipmentDateTo);
     }
 }
