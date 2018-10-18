@@ -12,9 +12,10 @@ using System;
 namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 {
     [DbContext(typeof(PurchasingDbContext))]
-    partial class PurchasingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181013020215_Update_Garment_EPO")]
+    partial class Update_Garment_EPO
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1318,11 +1319,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<bool>("IsCanceled");
 
-                    b.Property<bool>("IsClosed");
-
                     b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsIncomeTax");
 
                     b.Property<bool>("IsOverBudget");
 
@@ -1345,9 +1342,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<DateTimeOffset>("OrderDate");
 
-                    b.Property<int>("PaymentDueDays");
-
-                    b.Property<string>("PaymentMethod");
+                    b.Property<string>("PaymentDueDays");
 
                     b.Property<string>("PaymentType");
 
@@ -1394,9 +1389,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<bool>("Active");
-
-                    b.Property<string>("Article")
-                        .HasMaxLength(1000);
 
                     b.Property<double>("BudgetPrice");
 
@@ -1463,6 +1455,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                     b.Property<string>("PRNo")
                         .HasMaxLength(255);
 
+                    b.Property<double>("PriceBeforeTax");
+
                     b.Property<double>("PricePerDealUnit");
 
                     b.Property<string>("ProductCode")
@@ -1478,16 +1472,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<string>("Remark");
 
-                    b.Property<double>("SmallQuantity");
-
-                    b.Property<int>("SmallUomId");
-
-                    b.Property<string>("SmallUomUnit");
-
                     b.Property<string>("UId")
                         .HasMaxLength(255);
-
-                    b.Property<double>("UsedBudget");
 
                     b.HasKey("Id");
 
