@@ -2,6 +2,7 @@
 using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentExternalPurchaseOrderFacades;
 using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentInternalPurchaseOrderFacades;
 using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFacades;
+using Com.DanLiris.Service.Purchasing.Lib.Models.GarmentExternalPurchaseOrderModel;
 using Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentExternalPurchaseOrderViewModel;
 using Com.DanLiris.Service.Purchasing.Test.DataUtils.GarmentExternalPurchaseOrderDataUtils;
 using Com.DanLiris.Service.Purchasing.Test.DataUtils.GarmentInternalPurchaseOrderDataUtils;
@@ -57,32 +58,38 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentExternalPurchaseOr
         }
 
         [Fact]
-        public async void Should_Success_Create_Multiple_Data()
+        public async void Should_Success_Create_Data_Fabric()
         {
             var facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider,_dbContext(GetCurrentMethod()));
-            var data = dataUtil(facade, GetCurrentMethod()).GetNewData();
+            var data = dataUtil(facade, GetCurrentMethod()).GetNewDataFabric();
             var Response = await facade.Create(data, USERNAME);
             Assert.NotEqual(Response, 0);
         }
 
-        //[Fact]
-        //public async void Should_Error_Create_Multiple_Data()
-        //{
-        //    var facade = new GarmentExternalPurchaseOrderFacade(_dbContext(GetCurrentMethod()));
-        //    var data = dataUtil(facade, GetCurrentMethod()).GetNewData();
-        //    foreach (var data in listData)
-        //    {
-        //        data.Items = null;
-        //    }
-        //    Exception e = await Assert.ThrowsAsync<Exception>(async () => await facade.CreateMultiple(listData, USERNAME));
-        //    Assert.NotNull(e.Message);
-        //}
+        [Fact]
+        public async void Should_Success_Create_Data_Acc()
+        {
+            var facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
+            var data = dataUtil(facade, GetCurrentMethod()).GetNewDataACC();
+            var Response = await facade.Create(data, USERNAME);
+            Assert.NotEqual(Response, 0);
+        }
 
         [Fact]
-        public async void Should_Success_Get_All_Data()
+        public async void Should_Error_Create_Data()
+        {
+            GarmentExternalPurchaseOrderFacade facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider,_dbContext(GetCurrentMethod()));
+            var model = dataUtil(facade, GetCurrentMethod()).GetNewDataACC();
+            model.Items = null;
+            Exception e = await Assert.ThrowsAsync<Exception>(async () => await facade.Create(model, USERNAME));
+            Assert.NotNull(e.Message);
+        }
+
+        [Fact]
+        public void Should_Success_Get_All_Data()
         {
             var facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider,_dbContext(GetCurrentMethod()));
-            var data = dataUtil(facade, GetCurrentMethod()).GetNewData();
+            var data = dataUtil(facade, GetCurrentMethod()).GetTestDataAcc();
             var Response = facade.Read();
             Assert.NotEqual(Response.Item1.Count, 0);
         }
@@ -90,20 +97,54 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentExternalPurchaseOr
         [Fact]
         public async void Should_Success_Get_Data_By_Id()
         {
-            var facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider,_dbContext(GetCurrentMethod()));
-            var data = dataUtil(facade, GetCurrentMethod()).GetNewData();
+            var facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
+            var data = dataUtil(facade, GetCurrentMethod()).GetNewDataACC();
+            var Responses = await facade.Create(data, USERNAME);
             var Response = facade.ReadById((int)data.Id);
             Assert.NotNull(Response);
         }
 
+        [Fact]
+        public async void Should_Error_Update_Data()
+        {
+            GarmentExternalPurchaseOrderFacade facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider,_dbContext(GetCurrentMethod()));
+            var model = await dataUtil(facade, GetCurrentMethod()).GetTestDataAcc();
+
+            Exception errorInvalidId = await Assert.ThrowsAsync<Exception>(async () => await facade.Update(0, model, USERNAME));
+            Assert.NotNull(errorInvalidId.Message);
+
+            model.Items = null;
+            Exception errorNullItems = await Assert.ThrowsAsync<Exception>(async () => await facade.Update((int)model.Id, model, USERNAME));
+            Assert.NotNull(errorNullItems.Message);
+        }
+
+        [Fact]
+        public async void Should_Success_EPOPost()
+        {
+            GarmentExternalPurchaseOrderFacade facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
+            List<GarmentExternalPurchaseOrder> modelList = new List<GarmentExternalPurchaseOrder>();
+            GarmentExternalPurchaseOrder model = await dataUtil(facade, GetCurrentMethod()).GetTestDataAcc();
+            modelList.Add(model);
+            var Response = facade.EPOPost(modelList, "Unit Test");
+            Assert.NotEqual(Response, 0);
+        }
+
+        [Fact]
+        public async void Should_Success_EPOUnpost()
+        {
+            GarmentExternalPurchaseOrderFacade facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
+            GarmentExternalPurchaseOrder model = await dataUtil(facade, GetCurrentMethod()).GetTestDataAcc();
+            var Response = facade.EPOUnpost((int)model.Id, "Unit Test");
+            Assert.NotEqual(Response, 0);
+        }
+
         //[Fact]
-        //public void Should_Success_Validate_Data()
+        //public async void Should_Error_Get_Data_Supplier()
         //{
-        //    var viewModel = new GarmentExternalPurchaseOrderViewModel
-        //    {
-        //        Items = null
-        //    };
-        //    Assert.True(viewModel.Validate(null).Count() > 0);
+        //    GarmentExternalPurchaseOrderFacade facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
+        //    GarmentExternalPurchaseOrder model = await dataUtil(facade, GetCurrentMethod()).GetTestDataAcc();
+        //    var Response = facade.GetSupplier(model.SupplierId);
+        //    Assert.Null(Response);
         //}
     }
 }

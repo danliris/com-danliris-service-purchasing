@@ -34,7 +34,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.DataUtils.GarmentInternalPurchase
         public async Task<List<GarmentInternalPurchaseOrder>> GetTestDataByTags()
         {
             var testData = await GetTestData();
-            return facade.ReadByTags(null,null, DateTimeOffset.MinValue, DateTimeOffset.MinValue);
+            return facade.ReadByTags("accessories",null, DateTimeOffset.MinValue, DateTimeOffset.MinValue);
         }
 
     }
