@@ -160,6 +160,15 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentInternalPurchaseOrd
                     stringKeywords[n] = Keywords[n].Trim().ToLower();
                 }
             }
+            string filterCategory = "";
+            if (category.ToLower() == "fabric")
+            {
+                filterCategory = category.ToLower();
+            }
+            else
+            {
+                filterCategory = stringKeywords[2];
+            }
 
             Models = Models
                 .Where(m =>
@@ -187,8 +196,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentInternalPurchaseOrd
 
                     Items = m.Items
                         .Where(i =>
-                            //i.IsPosted == false &&
-                            (string.IsNullOrWhiteSpace(stringKeywords[2]) || i.CategoryName.ToLower().Contains(stringKeywords[2]))
+                                category.ToLower()=="fabric" ? i.CategoryName.ToLower().Contains("fabric") : ((string.IsNullOrWhiteSpace(stringKeywords[2]) || i.CategoryName.ToLower().Contains(stringKeywords[2])) && i.CategoryName.ToLower()!="fabric")
+                            //(string.IsNullOrWhiteSpace(filterCategory) || i.CategoryName.ToLower().Contains(filterCategory) 
+                            //|| string.IsNullOrWhiteSpace(stringKeywords[2]) || i.CategoryName.ToLower().Contains(stringKeywords[2])) 
                             )
                         .ToList()
                 })
