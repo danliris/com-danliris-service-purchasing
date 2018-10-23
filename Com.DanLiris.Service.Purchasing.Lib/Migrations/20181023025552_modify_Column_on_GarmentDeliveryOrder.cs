@@ -23,22 +23,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_GarmentDeliveryOrderDetails_GarmentDeliveryOrderItems_GarmentDOItemId",
-                table: "GarmentDeliveryOrderDetails");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_GarmentDeliveryOrderItems_GarmentDeliveryOrders_GarmentDOId",
-                table: "GarmentDeliveryOrderItems");
-
-            migrationBuilder.DropIndex(
-                name: "IX_GarmentDeliveryOrderItems_GarmentDOId",
-                table: "GarmentDeliveryOrderItems");
-
-            migrationBuilder.DropIndex(
-                name: "IX_GarmentDeliveryOrderDetails_GarmentDOItemId",
-                table: "GarmentDeliveryOrderDetails");
-
             migrationBuilder.AlterColumn<string>(
                 name: "SupplierId",
                 table: "GarmentDeliveryOrders",
@@ -48,41 +32,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                 oldType: "bigint",
                 oldMaxLength: 255);
 
-            migrationBuilder.AddColumn<long>(
-                name: "DOId",
-                table: "GarmentDeliveryOrderItems",
-                nullable: true);
-
-            migrationBuilder.AddColumn<long>(
-                name: "DOItemId",
-                table: "GarmentDeliveryOrderDetails",
-                nullable: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GarmentDeliveryOrderItems_DOId",
-                table: "GarmentDeliveryOrderItems",
-                column: "DOId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GarmentDeliveryOrderDetails_DOItemId",
-                table: "GarmentDeliveryOrderDetails",
-                column: "DOItemId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_GarmentDeliveryOrderDetails_GarmentDeliveryOrderItems_DOItemId",
-                table: "GarmentDeliveryOrderDetails",
-                column: "DOItemId",
-                principalTable: "GarmentDeliveryOrderItems",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_GarmentDeliveryOrderItems_GarmentDeliveryOrders_DOId",
-                table: "GarmentDeliveryOrderItems",
-                column: "DOId",
-                principalTable: "GarmentDeliveryOrders",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
         }
     }
 }
