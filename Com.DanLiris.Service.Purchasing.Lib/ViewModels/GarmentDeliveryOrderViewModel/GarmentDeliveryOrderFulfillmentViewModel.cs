@@ -1,11 +1,11 @@
 ﻿using Com.DanLiris.Service.Purchasing.Lib.Utilities;
-using Com.DanLiris.Service.Purchasing.Lib.ViewModels.IntegrationViewModel;
+using Com.DanLiris.Service.Purchasing.Lib.ViewModels.NewIntegrationViewModel;
 
 namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentDeliveryOrderViewModel
 {
     public class GarmentDeliveryOrderFulfillmentViewModel : BaseViewModel
     {
-        public long ePODetailId { get; set; }
+        public long ePOItemId { get; set; }
         public long pOItemId { get; set; }
         public PurchaseOrder purchaseOrder { get; set; }
         public long pRItemId { get; set; }
@@ -29,6 +29,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentDeliveryOrderVie
 
         public CurrencyViewModel currency { get; set; }
         public string remark { get; set; }
+
+        public string rONo { get; set; }
     }
 
     public class PurchaseOrder

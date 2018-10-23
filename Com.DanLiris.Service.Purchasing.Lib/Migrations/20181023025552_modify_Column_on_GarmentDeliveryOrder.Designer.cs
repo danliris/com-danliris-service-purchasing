@@ -12,9 +12,10 @@ using System;
 namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 {
     [DbContext(typeof(PurchasingDbContext))]
-    partial class PurchasingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181023025552_modify_Column_on_GarmentDeliveryOrder")]
+    partial class modify_Column_on_GarmentDeliveryOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1381,7 +1382,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<DateTime>("DeletedUtc");
 
-                    b.Property<long>("EPOItemId");
+                    b.Property<long>("EPODetailId");
 
                     b.Property<long>("GarmentDOItemId");
 
@@ -1424,8 +1425,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                         .HasMaxLength(1000);
 
                     b.Property<string>("ProductRemark");
-
-                    b.Property<string>("RONo");
 
                     b.Property<double>("SmallQuantity");
 
@@ -1497,17 +1496,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                         .HasMaxLength(255);
 
                     b.Property<DateTime>("LastModifiedUtc");
-
-                    b.Property<int>("POId");
-
-                    b.Property<string>("PONo")
-                        .HasMaxLength(255);
-
-                    b.Property<int>("PaymentDueDays");
-
-                    b.Property<string>("PaymentMethod");
-
-                    b.Property<string>("PaymentType");
 
                     b.HasKey("Id");
 

@@ -12,9 +12,10 @@ using System;
 namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 {
     [DbContext(typeof(PurchasingDbContext))]
-    partial class PurchasingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181023034356_modify_Column_EPOItemId_on_GarmentDeliveryOrder")]
+    partial class modify_Column_EPOItemId_on_GarmentDeliveryOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1425,8 +1426,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<string>("ProductRemark");
 
-                    b.Property<string>("RONo");
-
                     b.Property<double>("SmallQuantity");
 
                     b.Property<string>("SmallUomId");
@@ -1497,17 +1496,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                         .HasMaxLength(255);
 
                     b.Property<DateTime>("LastModifiedUtc");
-
-                    b.Property<int>("POId");
-
-                    b.Property<string>("PONo")
-                        .HasMaxLength(255);
-
-                    b.Property<int>("PaymentDueDays");
-
-                    b.Property<string>("PaymentMethod");
-
-                    b.Property<string>("PaymentType");
 
                     b.HasKey("Id");
 

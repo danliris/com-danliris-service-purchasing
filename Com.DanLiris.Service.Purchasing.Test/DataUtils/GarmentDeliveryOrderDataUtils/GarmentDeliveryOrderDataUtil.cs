@@ -27,7 +27,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.DataUtils.GarmentDeliveryOrderDat
             {
                 DONo = $"{nowTicksA}",
 
-                SupplierId = $"{nowTicksA}",
+                SupplierId = nowTicks,
                 SupplierCode = $"BuyerCode{nowTicksA}",
                 SupplierName = $"BuyerName{nowTicksA}",
 

@@ -9,7 +9,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Models.GarmentDeliveryOrderModel
 {
     public class GarmentDeliveryOrderDetail : StandardEntity<long>
     {
-        public long EPODetailId { get; set; }
+        public long EPOItemId { get; set; }
         public long POItemId { get; set; }
         public long PRId { get; set; }
         [MaxLength(255)]
@@ -55,6 +55,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Models.GarmentDeliveryOrderModel
 
         //public double ReceiptQuantity { get; set; }
         public bool IsClosed { get; set; }
+
+        public string RONo { get; set; }
 
         public virtual long GarmentDOItemId { get; set; }
         [ForeignKey("GarmentDOItemId")]

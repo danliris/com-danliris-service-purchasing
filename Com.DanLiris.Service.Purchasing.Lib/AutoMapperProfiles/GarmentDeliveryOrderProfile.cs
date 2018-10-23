@@ -41,7 +41,15 @@ namespace Com.DanLiris.Service.Purchasing.Lib.AutoMapperProfiles
                 .ForMember(d => d._id, opt => opt.MapFrom(s => s.Id))
                 .ForPath(d => d.purchaseOrderExternal.Id, opt => opt.MapFrom(s => s.EPOId))
                 .ForPath(d => d.purchaseOrderExternal.no, opt => opt.MapFrom(s => s.EPONo))
+
+                .ForPath(d => d.pOId, opt => opt.MapFrom(s => s.POId))
+                .ForPath(d => d.pONo, opt => opt.MapFrom(s => s.PONo))
+                .ForPath(d => d.paymentMethod, opt => opt.MapFrom(s => s.PaymentMethod))
+                .ForPath(d => d.paymentType, opt => opt.MapFrom(s => s.PaymentType))
+                .ForPath(d => d.paymentDueDays, opt => opt.MapFrom(s => s.PaymentDueDays))
+
                 .ForMember(d => d.fulfillments, opt => opt.MapFrom(s => s.Details))
+                
                 .ReverseMap();
 
             CreateMap<GarmentDeliveryOrderDetail, GarmentDeliveryOrderFulfillmentViewModel>()
@@ -50,35 +58,37 @@ namespace Com.DanLiris.Service.Purchasing.Lib.AutoMapperProfiles
                 .ForPath(d => d.purchaseOrder.purchaseRequest.no, opt => opt.MapFrom(s => s.PRNo))
 
                 /*Unit*/
-                .ForPath(d => d.purchaseOrder.purchaseRequest.unit._id, opt => opt.MapFrom(s => s.UnitId))
-                .ForPath(d => d.purchaseOrder.purchaseRequest.unit.code, opt => opt.MapFrom(s => s.UnitCode))
+                .ForPath(d => d.purchaseOrder.purchaseRequest.unit.Id, opt => opt.MapFrom(s => s.UnitId))
+                .ForPath(d => d.purchaseOrder.purchaseRequest.unit.Code, opt => opt.MapFrom(s => s.UnitCode))
 
                 /*Product*/
-                .ForPath(d => d.product._id, opt => opt.MapFrom(s => s.ProductId))
-                .ForPath(d => d.product.code, opt => opt.MapFrom(s => s.ProductCode))
-                .ForPath(d => d.product.name, opt => opt.MapFrom(s => s.ProductName))
+                .ForPath(d => d.product.Id, opt => opt.MapFrom(s => s.ProductId))
+                .ForPath(d => d.product.Code, opt => opt.MapFrom(s => s.ProductCode))
+                .ForPath(d => d.product.Name, opt => opt.MapFrom(s => s.ProductName))
                 .ForPath(d => d.remark, opt => opt.MapFrom(s => s.ProductRemark))
                 .ForPath(d => d.doQuantity, opt => opt.MapFrom(s => s.DOQuantity))
                 .ForPath(d => d.dealQuantity, opt => opt.MapFrom(s => s.DealQuantity))
 
                 /*UOM*/
-                .ForPath(d => d.purchaseOrderUom._id, opt => opt.MapFrom(s => s.UomId))
-                .ForPath(d => d.purchaseOrderUom.unit, opt => opt.MapFrom(s => s.UomUnit))
+                .ForPath(d => d.purchaseOrderUom.Id, opt => opt.MapFrom(s => s.UomId))
+                .ForPath(d => d.purchaseOrderUom.Unit, opt => opt.MapFrom(s => s.UomUnit))
 
                 .ForPath(d => d.smallQuantity, opt => opt.MapFrom(s => s.SmallQuantity))
 
                 /*SmallUOM*/
-                .ForPath(d => d.smallUom._id, opt => opt.MapFrom(s => s.SmallUomId))
-                .ForPath(d => d.smallUom.unit, opt => opt.MapFrom(s => s.SmallUomUnit))
+                .ForPath(d => d.smallUom.Id, opt => opt.MapFrom(s => s.SmallUomId))
+                .ForPath(d => d.smallUom.Unit, opt => opt.MapFrom(s => s.SmallUomUnit))
 
                 /*Currency*/
-                .ForPath(d => d.currency._id, opt => opt.MapFrom(s => s.CurrencyId))
-                .ForPath(d => d.currency.code, opt => opt.MapFrom(s => s.CurrencyCode))
+                .ForPath(d => d.currency.Id, opt => opt.MapFrom(s => s.CurrencyId))
+                .ForPath(d => d.currency.Code, opt => opt.MapFrom(s => s.CurrencyCode))
 
                 .ForPath(d => d.isClosed, opt => opt.MapFrom(s => s.IsClosed))
 
                 .ForPath(d => d.PricePerDealUnit, opt => opt.MapFrom(s => s.PricePerDealUnit))
                 .ForPath(d => d.PriceTotal, opt => opt.MapFrom(s => s.PriceTotal))
+
+                .ForPath(d => d.rONo, opt => opt.MapFrom(s => s.RONo))
                 .ReverseMap();
         }
     }
