@@ -11,7 +11,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentDeliveryOrderVie
 
     public class PurchaseOrderExternal
     {
-        public long _id { get; set; }
+        public long Id { get; set; }
         public string no { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Models.GarmentDeliveryOrderModel
         public virtual ICollection<GarmentDeliveryOrderDetail> Details { get; set; }
 
         public virtual long GarmentDOId { get; set; }
-        [ForeignKey("DOId")]
+        [ForeignKey("GarmentDOId")]
         public virtual GarmentDeliveryOrder GarmentDeliveryOrder { get; set; }
     }
 }

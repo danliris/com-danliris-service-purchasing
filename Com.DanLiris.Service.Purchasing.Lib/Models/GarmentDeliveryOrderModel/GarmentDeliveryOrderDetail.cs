@@ -57,7 +57,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Models.GarmentDeliveryOrderModel
         public bool IsClosed { get; set; }
 
         public virtual long GarmentDOItemId { get; set; }
-        [ForeignKey("DOItemId")]
+        [ForeignKey("GarmentDOItemId")]
         public virtual GarmentDeliveryOrderItem GarmentDeliveryOrderItem { get; set; }
     }
 }

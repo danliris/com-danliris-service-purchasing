@@ -15,9 +15,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.AutoMapperProfiles
                 .ForMember(d => d.arrivalDate, opt => opt.MapFrom(s => s.ArrivalDate))
 
                 /*Supplier*/
-                .ForPath(d => d.supplier._id, opt => opt.MapFrom(s => s.SupplierId))
-                .ForPath(d => d.supplier.code, opt => opt.MapFrom(s => s.SupplierCode))
-                .ForPath(d => d.supplier.name, opt => opt.MapFrom(s => s.SupplierName))
+                .ForPath(d => d.supplier.Id, opt => opt.MapFrom(s => s.SupplierId))
+                .ForPath(d => d.supplier.Code, opt => opt.MapFrom(s => s.SupplierCode))
+                .ForPath(d => d.supplier.Name, opt => opt.MapFrom(s => s.SupplierName))
 
                 .ForPath(d => d.shipmentNo, opt => opt.MapFrom(s => s.ShipmentNo))
                 .ForPath(d => d.shipmentType, opt => opt.MapFrom(s => s.ShipmentType))
@@ -39,14 +39,14 @@ namespace Com.DanLiris.Service.Purchasing.Lib.AutoMapperProfiles
 
             CreateMap<GarmentDeliveryOrderItem, GarmentDeliveryOrderItemViewModel>()
                 .ForMember(d => d._id, opt => opt.MapFrom(s => s.Id))
-                .ForPath(d => d.purchaseOrderExternal._id, opt => opt.MapFrom(s => s.EPOId))
+                .ForPath(d => d.purchaseOrderExternal.Id, opt => opt.MapFrom(s => s.EPOId))
                 .ForPath(d => d.purchaseOrderExternal.no, opt => opt.MapFrom(s => s.EPONo))
                 .ForMember(d => d.fulfillments, opt => opt.MapFrom(s => s.Details))
                 .ReverseMap();
 
             CreateMap<GarmentDeliveryOrderDetail, GarmentDeliveryOrderFulfillmentViewModel>()
                 .ForMember(d => d._id, opt => opt.MapFrom(s => s.Id))
-                .ForPath(d => d.purchaseOrder.purchaseRequest._id, opt => opt.MapFrom(s => s.PRId))
+                .ForPath(d => d.purchaseOrder.purchaseRequest.Id, opt => opt.MapFrom(s => s.PRId))
                 .ForPath(d => d.purchaseOrder.purchaseRequest.no, opt => opt.MapFrom(s => s.PRNo))
 
                 /*Unit*/

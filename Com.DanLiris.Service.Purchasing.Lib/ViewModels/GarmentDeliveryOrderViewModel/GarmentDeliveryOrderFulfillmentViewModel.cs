@@ -38,7 +38,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentDeliveryOrderVie
 
     public class PurchaseRequest
     {
-        public long _id { get; set; }
+        public long Id { get; set; }
         public string no { get; set; }
         public UnitViewModel unit { get; set; }
     }
