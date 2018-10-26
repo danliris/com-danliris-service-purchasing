@@ -885,5 +885,27 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentExternalPurcha
             var response = controller.EPOUnpost(It.IsAny<int>());
             Assert.Equal((int)HttpStatusCode.NoContent, GetStatusCode(response));
         }
+
+        [Fact]
+        public void Should_Success_Get_Data_By_Supplier()
+        {
+            var validateMock = new Mock<IValidateService>();
+            validateMock.Setup(s => s.Validate(It.IsAny<GarmentExternalPurchaseOrderViewModel>())).Verifiable();
+
+            var mockFacade = new Mock<IGarmentExternalPurchaseOrderFacade>();
+
+            mockFacade.Setup(x => x.ReadBySupplier(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new List<GarmentExternalPurchaseOrder>());
+
+            var mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(x => x.Map<GarmentExternalPurchaseOrderViewModel>(It.IsAny<GarmentExternalPurchaseOrder>()))
+                .Returns(ViewModel);
+
+            var IPOmockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
+
+            GarmentExternalPurchaseOrderController controller = GetController(mockFacade, validateMock, mockMapper, IPOmockFacade);
+            var response = controller.Get(It.IsAny<int>());
+            Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
+        }
     }
 }

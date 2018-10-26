@@ -25,7 +25,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentDeliveryOrderVie
         public long customsId { get; set; }
         public string billNo { get; set; }
         public string paymentBill { get; set; }
-        public double totalQuantity { get; set; }
         public double totalAmount { get; set; }
         public List<GarmentDeliveryOrderItemViewModel> items { get; set; }
 

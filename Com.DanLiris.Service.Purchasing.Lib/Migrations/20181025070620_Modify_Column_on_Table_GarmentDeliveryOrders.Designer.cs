@@ -12,9 +12,10 @@ using System;
 namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 {
     [DbContext(typeof(PurchasingDbContext))]
-    partial class PurchasingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181025070620_Modify_Column_on_Table_GarmentDeliveryOrders")]
+    partial class Modify_Column_on_Table_GarmentDeliveryOrders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1412,7 +1413,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                     b.Property<string>("ProductCode")
                         .HasMaxLength(255);
 
-                    b.Property<long>("ProductId")
+                    b.Property<string>("ProductId")
                         .HasMaxLength(255);
 
                     b.Property<string>("ProductName")
@@ -1468,7 +1469,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<string>("CurrencyCode");
 
-                    b.Property<long>("CurrencyId");
+                    b.Property<int>("CurrencyId");
 
                     b.Property<string>("DeletedAgent")
                         .IsRequired()
@@ -1487,13 +1488,13 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<long>("GarmentDOId");
 
-                    b.Property<int>("IncomeTaxId")
+                    b.Property<string>("IncomeTaxId")
                         .HasMaxLength(255);
 
                     b.Property<string>("IncomeTaxName")
                         .HasMaxLength(255);
 
-                    b.Property<double>("IncomeTaxRate")
+                    b.Property<string>("IncomeTaxRate")
                         .HasMaxLength(1000);
 
                     b.Property<bool>("IsDeleted");
@@ -1507,8 +1508,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                         .HasMaxLength(255);
 
                     b.Property<DateTime>("LastModifiedUtc");
-
-                    b.Property<int>("PaymentDueDays");
 
                     b.Property<string>("PaymentMethod");
 

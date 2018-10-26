@@ -4,9 +4,11 @@ using Com.DanLiris.Service.Purchasing.Lib.ViewModels.IntegrationViewModel;
 using Com.DanLiris.Service.Purchasing.Lib.ViewModels.PurchaseOrder;
 using Com.DanLiris.Service.Purchasing.Lib.ViewModels.UnitReceiptNote;
 using Com.DanLiris.Service.Purchasing.Lib.ViewModels.UnitReceiptNoteViewModel;
+using Com.Moonlay.NetCore.Lib;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -37,7 +39,82 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.Report
 			this.dbSet = dbContext.Set<UnitReceiptNote>();
 		}
 
-		public Tuple<List<ImportPurchasingBookViewModel>, int> GetReport(string no, string unit, string category, DateTime? dateFrom, DateTime? dateTo)
+        //public Tuple<List<ImportPurchasingBookViewModel>, int> GetReport(string no, string unit, string category, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
+        //{
+        //    var Query = GetReportQuery(no, unit, category, dateFrom, dateTo, offset);
+
+        //    Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
+        //    if (OrderDictionary.Count.Equals(0))
+        //    {
+        //        Query = Query.OrderByDescending(b => b.supplierDoDate).ThenByDescending(b => b.CreatedUtc);
+        //    }
+
+
+        //    Pageable<ImportPurchasingBookViewModel> pageable = new Pageable<ImportPurchasingBookViewModel>(Query, page - 1, size);
+        //    List<ImportPurchasingBookViewModel> Data = pageable.Data.ToList<ImportPurchasingBookViewModel>();
+        //    int TotalData = pageable.TotalCount;
+
+        //    return Tuple.Create(Data, TotalData);
+        //}
+
+        //public IQueryable<ImportPurchasingBookViewModel> GetReportQuery(string no, string supplierId, string category, DateTime? dateFrom, DateTime? dateTo, int offset)
+        //{
+        //    DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+        //    DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+
+        //    var Query = (from a in dbContext.DeliveryOrders
+        //                 join i in dbContext.DeliveryOrderItems on a.Id equals i.DOId
+        //                 join j in dbContext.DeliveryOrderDetails on i.Id equals j.DOItemId
+        //                 join l in dbContext.ExternalPurchaseOrderDetails on j.EPODetailId equals l.Id
+        //                 where a.IsDeleted == false
+        //                     && i.IsDeleted == false
+        //                     && j.IsDeleted == false
+        //                     && l.IsDeleted == false
+        //                     && a.DONo == (string.IsNullOrWhiteSpace(no) ? a.DONo : no)
+        //                     && a.SupplierId == (string.IsNullOrWhiteSpace(supplierId) ? a.SupplierId : supplierId)
+        //                     && a.DODate.AddHours(offset).Date >= DateFrom.Date
+        //                     && a.DODate.AddHours(offset).Date <= DateTo.Date
+        //                 select new DeliveryOrderReportViewModel
+        //                 {
+        //                     no = a.DONo,
+        //                     supplierDoDate = a.DODate == null ? new DateTime(1970, 1, 1) : a.DODate,
+        //                     date = a.ArrivalDate,
+        //                     supplierName = a.SupplierName,
+        //                     supplierCode = a.SupplierCode,
+        //                     ePONo = i.EPONo,
+        //                     productCode = j.ProductCode,
+        //                     productName = j.ProductName,
+        //                     productRemark = j.ProductRemark,
+        //                     dealQuantity = l.DealQuantity,
+        //                     dOQuantity = j.DOQuantity,
+        //                     remainingQuantity = l.DealQuantity,
+        //                     uomUnit = j.UomUnit,
+        //                     LastModifiedUtc = j.LastModifiedUtc,
+        //                     CreatedUtc = j.CreatedUtc,
+        //                     ePODetailId = j.EPODetailId
+        //                 });
+        //    Dictionary<string, double> q = new Dictionary<string, double>();
+        //    List<DeliveryOrderReportViewModel> urn = new List<DeliveryOrderReportViewModel>();
+        //    foreach (DeliveryOrderReportViewModel data in Query.ToList())
+        //    {
+        //        double value;
+        //        if (q.TryGetValue(data.productCode + data.ePONo + data.ePODetailId, out value))
+        //        {
+        //            q[data.productCode + data.ePONo + data.ePODetailId] -= data.dOQuantity;
+        //            data.remainingQuantity = q[data.productCode + data.ePONo + data.ePODetailId];
+        //            urn.Add(data);
+        //        }
+        //        else
+        //        {
+        //            q[data.productCode + data.ePONo + data.ePODetailId] = data.remainingQuantity - data.dOQuantity;
+        //            data.remainingQuantity = q[data.productCode + data.ePONo + data.ePODetailId];
+        //            urn.Add(data);
+        //        }
+        //    }
+        //    return Query = urn.AsQueryable();
+        //}
+
+        public Tuple<List<ImportPurchasingBookViewModel>, int> GetReport(string no, string unit, string category, DateTime? dateFrom, DateTime? dateTo)
         {
 			DateTime d1 = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
 			DateTime d2 = dateTo == null ? DateTime.Now : (DateTime)dateTo;
