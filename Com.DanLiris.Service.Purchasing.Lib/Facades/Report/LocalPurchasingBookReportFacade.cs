@@ -37,7 +37,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.Report
             this.dbSet = dbContext.Set<UnitReceiptNote>();
         }
 
-        public Tuple<List<LocalPurchasingBookReportViewModel>, int> GetReport(string no, string unit, string category, DateTime? dateFrom, DateTime? dateTo)
+        public IQueryable<LocalPurchasingBookReportViewModel> GetReportQuery(string no, string unit, string category, DateTime? dateFrom, DateTime? dateTo)
         {
             DateTime d1 = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime d2 = dateTo == null ? DateTime.Now : (DateTime)dateTo;
@@ -105,6 +105,14 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.Report
                 }
                 conn.Close();
             }
+            return reportData.AsQueryable();
+        }
+
+        public Tuple<List<LocalPurchasingBookReportViewModel>, int> GetReport(string no, string unit, string category, DateTime? dateFrom, DateTime? dateTo)
+        {
+            List<LocalPurchasingBookReportViewModel> reportData = GetReportQuery( no,  unit,  category,  dateFrom,  dateTo).ToList();
+
+
             return Tuple.Create(reportData, reportData.Count);
         }
 
