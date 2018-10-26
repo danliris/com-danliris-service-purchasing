@@ -12,9 +12,10 @@ using System;
 namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 {
     [DbContext(typeof(PurchasingDbContext))]
-    partial class PurchasingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181024094713_updateColumn-invoice")]
+    partial class updateColumninvoice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1334,6 +1335,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<double>("TotalAmount");
 
+                    b.Property<double>("TotalQuantity");
+
                     b.Property<string>("UId")
                         .HasMaxLength(255);
 
@@ -1361,6 +1364,10 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<DateTime>("CreatedUtc");
 
+                    b.Property<string>("CurrencyCode");
+
+                    b.Property<string>("CurrencyId");
+
                     b.Property<double>("DOQuantity");
 
                     b.Property<double>("DealQuantity");
@@ -1379,6 +1386,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<long>("GarmentDOItemId");
 
+                    b.Property<bool>("IsClosed");
+
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("LastModifiedAgent")
@@ -1391,10 +1400,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<DateTime>("LastModifiedUtc");
 
-                    b.Property<int>("POId")
-                        .HasMaxLength(255);
-
-                    b.Property<int>("POItemId");
+                    b.Property<long>("POItemId");
 
                     b.Property<string>("POSerialNumber");
 
@@ -1412,7 +1418,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                     b.Property<string>("ProductCode")
                         .HasMaxLength(255);
 
-                    b.Property<long>("ProductId")
+                    b.Property<string>("ProductId")
                         .HasMaxLength(255);
 
                     b.Property<string>("ProductName")
@@ -1421,8 +1427,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
                     b.Property<string>("ProductRemark");
 
                     b.Property<string>("RONo");
-
-                    b.Property<double>("ReceiptQuantity");
 
                     b.Property<double>("SmallQuantity");
 
@@ -1466,10 +1470,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<DateTime>("CreatedUtc");
 
-                    b.Property<string>("CurrencyCode");
-
-                    b.Property<long>("CurrencyId");
-
                     b.Property<string>("DeletedAgent")
                         .IsRequired()
                         .HasMaxLength(255);
@@ -1487,15 +1487,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<long>("GarmentDOId");
 
-                    b.Property<int>("IncomeTaxId")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("IncomeTaxName")
-                        .HasMaxLength(255);
-
-                    b.Property<double>("IncomeTaxRate")
-                        .HasMaxLength(1000);
-
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("LastModifiedAgent")
@@ -1508,15 +1499,16 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Migrations
 
                     b.Property<DateTime>("LastModifiedUtc");
 
+                    b.Property<int>("POId");
+
+                    b.Property<string>("PONo")
+                        .HasMaxLength(255);
+
                     b.Property<int>("PaymentDueDays");
 
                     b.Property<string>("PaymentMethod");
 
                     b.Property<string>("PaymentType");
-
-                    b.Property<bool>("UseIncomeTax");
-
-                    b.Property<bool>("UseVat");
 
                     b.HasKey("Id");
 

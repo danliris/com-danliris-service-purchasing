@@ -16,6 +16,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentDeliveryOrderVie
         public UnitViewModel unit { get; set; }
 
         public GarmentProductViewModel product { get; set; }
+
         public double doQuantity { get; set; }
         public double dealQuantity { get; set; }
         public double conversion { get; set; }
