@@ -46,11 +46,11 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentExternalPurcha
                 {
                     Category = "FABRIC",
                     FreightCostBy = "penjual",
-                    IncomeTax= new IncomeTaxViewModel
+                    IncomeTax = new IncomeTaxViewModel
                     {
-                        Id= It.IsAny<int>(),
-                        Name="tax",
-                        Rate=1
+                        Id = It.IsAny<int>(),
+                        Name = "tax",
+                        Rate = 1
                     },
                     Supplier = new SupplierViewModel
                     {
@@ -61,13 +61,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentExternalPurcha
                         Code = "SupplierImport",
                         Name = "SupplierImport"
                     },
-                    Currency= new CurrencyViewModel
+                    Currency = new CurrencyViewModel
                     {
-                        Id= It.IsAny<int>(),
-                        Code ="TEST",
-                        Rate=1,
-                        Symbol="tst",
-                        Description="CurrencyTest"
+                        Id = It.IsAny<int>(),
+                        Code = "TEST",
+                        Rate = 1,
+                        Symbol = "tst",
+                        Description = "CurrencyTest"
                     },
                     Items = new List<GarmentExternalPurchaseOrderItemViewModel>
                     {
@@ -97,7 +97,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentExternalPurcha
                                 Id=It.IsAny<string>(),
                                 Unit="TEST",
                             }
-                            
+
                         }
                     }
                 };
@@ -558,13 +558,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentExternalPurcha
             mockFacade.Setup(x => x.ReadById(It.IsAny<int>()))
                 .Returns(new GarmentExternalPurchaseOrder());
 
-            
+
 
             var mockMapper = new Mock<IMapper>();
             mockMapper.Setup(x => x.Map<GarmentExternalPurchaseOrderViewModel>(It.IsAny<GarmentExternalPurchaseOrder>()))
                 .Returns(ViewModelFabric);
 
-            
+
 
             var IPOmockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
 
@@ -779,7 +779,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentExternalPurcha
                 .Returns(1);
 
             var IPOmockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
-            
+
 
             var controller = GetController(mockFacade, validateMock, mockMapper, IPOmockFacade);
 
@@ -889,11 +889,53 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentExternalPurcha
         }
 
         [Fact]
-        public void Should_Success_Get_Data_By_Supplier()
+        public void Should_Success_Cancel_Data()
         {
             var validateMock = new Mock<IValidateService>();
             validateMock.Setup(s => s.Validate(It.IsAny<GarmentExternalPurchaseOrderViewModel>())).Verifiable();
 
+            var mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(x => x.Map<GarmentExternalPurchaseOrder>(It.IsAny<GarmentExternalPurchaseOrderViewModel>()))
+                .Returns(Model);
+
+            var mockFacade = new Mock<IGarmentExternalPurchaseOrderFacade>();
+            mockFacade.Setup(x => x.Update(It.IsAny<int>(), It.IsAny<GarmentExternalPurchaseOrder>(), "unittestusername", 7))
+               .ReturnsAsync(1);
+
+            var IPOmockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
+
+            var controller = GetController(mockFacade, validateMock, mockMapper, IPOmockFacade);
+
+            var response = controller.EPOCancel(It.IsAny<int>());
+            Assert.Equal((int)HttpStatusCode.NoContent, GetStatusCode(response));
+        }
+
+        [Fact]
+        public void Should_Success_Close_Data()
+        {
+            var validateMock = new Mock<IValidateService>();
+            validateMock.Setup(s => s.Validate(It.IsAny<GarmentExternalPurchaseOrderViewModel>())).Verifiable();
+
+            var mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(x => x.Map<GarmentExternalPurchaseOrder>(It.IsAny<GarmentExternalPurchaseOrderViewModel>()))
+                .Returns(Model);
+
+            var mockFacade = new Mock<IGarmentExternalPurchaseOrderFacade>();
+            mockFacade.Setup(x => x.Update(It.IsAny<int>(), It.IsAny<GarmentExternalPurchaseOrder>(), "unittestusername", 7))
+               .ReturnsAsync(1);
+
+            var IPOmockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
+
+            var controller = GetController(mockFacade, validateMock, mockMapper, IPOmockFacade);
+
+            var response = controller.EPOClose(It.IsAny<int>());
+            Assert.Equal((int)HttpStatusCode.NoContent, GetStatusCode(response));
+        }
+        [Fact]
+        public void Should_Success_Get_Data_By_Supplier()
+        {
+            var validateMock = new Mock<IValidateService>();
+            validateMock.Setup(s => s.Validate(It.IsAny<GarmentExternalPurchaseOrderViewModel>())).Verifiable();
             var mockFacade = new Mock<IGarmentExternalPurchaseOrderFacade>();
 
             mockFacade.Setup(x => x.ReadBySupplier(It.IsAny<string>(), It.IsAny<string>()))

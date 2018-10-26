@@ -39,153 +39,86 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.Report
 			this.dbSet = dbContext.Set<UnitReceiptNote>();
 		}
 
-        //public Tuple<List<ImportPurchasingBookViewModel>, int> GetReport(string no, string unit, string category, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
-        //{
-        //    var Query = GetReportQuery(no, unit, category, dateFrom, dateTo, offset);
+        public IQueryable<ImportPurchasingBookViewModel> GetReportQuery(string no, string unit, string category, DateTime? dateFrom, DateTime? dateTo)
+        {
+            DateTime d1 = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            DateTime d2 = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+            string DateFrom = d1.ToString("yyyy-MM-dd");
+            string DateTo = d2.ToString("yyyy-MM-dd");
+            string _cat, _no, _unit, _date = "";
+            if (d1 != new DateTime(1970, 1, 1))
+                _date = " and receiptdate between '" + DateFrom + "' and  '" + DateTo + "' ";
+            else
+                _date = "";
+            if (category != null)
+                _cat = " and a.categorycode= '" + category + "'";
+            else
+                _cat = "";
+            if (unit != null)
+                _unit = " and g.unitcode= '" + unit + "'";
+            else
+                _unit = "";
+            if (no != null)
+                _no = " and URNNo= '" + no + "'";
+            else
+                _no = "";
+            List<ImportPurchasingBookViewModel> reportData = new List<ImportPurchasingBookViewModel>();
+            string connectionString = APIEndpoint.ConnectionString;
+            using (SqlConnection conn =
+                new SqlConnection(connectionString))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand(
 
-        //    Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
-        //    if (OrderDictionary.Count.Equals(0))
-        //    {
-        //        Query = Query.OrderByDescending(b => b.supplierDoDate).ThenByDescending(b => b.CreatedUtc);
-        //    }
+                    "select URNNo,ReceiptDate,ProductName,UnitName,CategoryName,CurrencyRate,PIBNo,sum(amount)Amount,sum(amountIDR) AmountIDR  from(select   distinct g.Id,g.URNNo,g.ReceiptDate,h.productname,g.unitname,a.CategoryName, " +
+                    " case when ispaid = 0 then '-' else (select top(1)PIBNO from UnitPaymentOrders o join unitpaymentorderItems uo on o.id = uo.UPOId where uo.urnid = g.Id) end as PIBNo, " +
+                    " h.priceperdealunit* h.receiptquantity as amount,h.priceperdealunit * h.receiptquantity* c.CurrencyRate as amountIDR,c.currencyrate " +
+                    " from " +
+                    " internalpurchaseorders a " +
+                    " join ExternalPurchaseOrderItems b on a.id = b.POId " +
+                    " join ExternalPurchaseOrders c on c.Id = b.EPOId " +
+                    " join Externalpurchaseorderdetails d on  b.id = d.epoitemid " +
+                    " join deliveryorderitems e on c.id = e.epoid " +
+                    " join deliveryorders f on f.id = e.DOId " +
+                    " join UnitReceiptNotes g on  f.id = g.DOId " +
+                    " join UnitReceiptNoteItems h on g.id = h.urnid and h.EPODetailId=d.Id " +
+                    " where g.IsDeleted = 0 and URNNo like '%BPI%' " + _date + _cat + _no + _cat + _unit +
+                    " ) as data " +
 
+                    " group by URNNo, ReceiptDate, ProductName, UnitName, CategoryName, PIBNo, CurrencyRate", conn))
+                {
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
+                    DataSet dSet = new DataSet();
+                    dataAdapter.Fill(dSet);
+                    foreach (DataRow data in dSet.Tables[0].Rows)
+                    {
 
-        //    Pageable<ImportPurchasingBookViewModel> pageable = new Pageable<ImportPurchasingBookViewModel>(Query, page - 1, size);
-        //    List<ImportPurchasingBookViewModel> Data = pageable.Data.ToList<ImportPurchasingBookViewModel>();
-        //    int TotalData = pageable.TotalCount;
-
-        //    return Tuple.Create(Data, TotalData);
-        //}
-
-        //public IQueryable<ImportPurchasingBookViewModel> GetReportQuery(string no, string supplierId, string category, DateTime? dateFrom, DateTime? dateTo, int offset)
-        //{
-        //    DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
-        //    DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
-
-        //    var Query = (from a in dbContext.DeliveryOrders
-        //                 join i in dbContext.DeliveryOrderItems on a.Id equals i.DOId
-        //                 join j in dbContext.DeliveryOrderDetails on i.Id equals j.DOItemId
-        //                 join l in dbContext.ExternalPurchaseOrderDetails on j.EPODetailId equals l.Id
-        //                 where a.IsDeleted == false
-        //                     && i.IsDeleted == false
-        //                     && j.IsDeleted == false
-        //                     && l.IsDeleted == false
-        //                     && a.DONo == (string.IsNullOrWhiteSpace(no) ? a.DONo : no)
-        //                     && a.SupplierId == (string.IsNullOrWhiteSpace(supplierId) ? a.SupplierId : supplierId)
-        //                     && a.DODate.AddHours(offset).Date >= DateFrom.Date
-        //                     && a.DODate.AddHours(offset).Date <= DateTo.Date
-        //                 select new DeliveryOrderReportViewModel
-        //                 {
-        //                     no = a.DONo,
-        //                     supplierDoDate = a.DODate == null ? new DateTime(1970, 1, 1) : a.DODate,
-        //                     date = a.ArrivalDate,
-        //                     supplierName = a.SupplierName,
-        //                     supplierCode = a.SupplierCode,
-        //                     ePONo = i.EPONo,
-        //                     productCode = j.ProductCode,
-        //                     productName = j.ProductName,
-        //                     productRemark = j.ProductRemark,
-        //                     dealQuantity = l.DealQuantity,
-        //                     dOQuantity = j.DOQuantity,
-        //                     remainingQuantity = l.DealQuantity,
-        //                     uomUnit = j.UomUnit,
-        //                     LastModifiedUtc = j.LastModifiedUtc,
-        //                     CreatedUtc = j.CreatedUtc,
-        //                     ePODetailId = j.EPODetailId
-        //                 });
-        //    Dictionary<string, double> q = new Dictionary<string, double>();
-        //    List<DeliveryOrderReportViewModel> urn = new List<DeliveryOrderReportViewModel>();
-        //    foreach (DeliveryOrderReportViewModel data in Query.ToList())
-        //    {
-        //        double value;
-        //        if (q.TryGetValue(data.productCode + data.ePONo + data.ePODetailId, out value))
-        //        {
-        //            q[data.productCode + data.ePONo + data.ePODetailId] -= data.dOQuantity;
-        //            data.remainingQuantity = q[data.productCode + data.ePONo + data.ePODetailId];
-        //            urn.Add(data);
-        //        }
-        //        else
-        //        {
-        //            q[data.productCode + data.ePONo + data.ePODetailId] = data.remainingQuantity - data.dOQuantity;
-        //            data.remainingQuantity = q[data.productCode + data.ePONo + data.ePODetailId];
-        //            urn.Add(data);
-        //        }
-        //    }
-        //    return Query = urn.AsQueryable();
-        //}
+                        ImportPurchasingBookViewModel view = new ImportPurchasingBookViewModel
+                        {
+                            urnNo = data["URNNo"].ToString(),
+                            receiptDate = Convert.ToDateTime(data["ReceiptDate"].ToString()),
+                            productName = data["ProductName"].ToString(),
+                            unitName = data["UnitName"].ToString(),
+                            categoryName = data["CategoryName"].ToString(),
+                            PIBNo = data["PIBNo"].ToString(),
+                            amount = Convert.ToDecimal(data["Amount"].ToString()),
+                            amountIDR = Convert.ToDecimal(data["AmountIDR"].ToString()),
+                            rate = Convert.ToDecimal(data["CurrencyRate"].ToString()),
+                        };
+                        reportData.Add(view);
+                    }
+                }
+                conn.Close();
+            }
+            return reportData.AsQueryable();
+        }
 
         public Tuple<List<ImportPurchasingBookViewModel>, int> GetReport(string no, string unit, string category, DateTime? dateFrom, DateTime? dateTo)
         {
-			DateTime d1 = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
-			DateTime d2 = dateTo == null ? DateTime.Now : (DateTime)dateTo;
-			string DateFrom = d1.ToString("yyyy-MM-dd");
-			string DateTo = d2.ToString("yyyy-MM-dd");
-			string _cat,_no,_unit,_date = "";
-			if (d1 != new DateTime(1970, 1, 1))
-				_date = " and receiptdate between '" + DateFrom + "' and  '" + DateTo + "' ";
-			else
-				_date = "";
-			if (category != null )
-				_cat = " and a.categorycode= '" + category + "'";
-			else
-				_cat = "";
-			if (unit != null )
-				_unit = " and g.unitcode= '" + unit + "'";
-			else
-				_unit = "";
-			if (no != null )
-				_no = " and URNNo= '" + no + "'";
-			else
-				_no = "";
-			List<ImportPurchasingBookViewModel> reportData = new List<ImportPurchasingBookViewModel>();
-			string connectionString = APIEndpoint.ConnectionString;
-			using (SqlConnection conn =
-				new SqlConnection(connectionString))
-			{
-				conn.Open();
-				using (SqlCommand cmd = new SqlCommand(
-				
-					"select URNNo,ReceiptDate,ProductName,UnitName,CategoryName,CurrencyRate,PIBNo,sum(amount)Amount,sum(amountIDR) AmountIDR  from(select   distinct g.Id,g.URNNo,g.ReceiptDate,h.productname,g.unitname,a.CategoryName, " +
-					" case when ispaid = 0 then '-' else (select top(1)PIBNO from UnitPaymentOrders o join unitpaymentorderItems uo on o.id = uo.UPOId where uo.urnid = g.Id) end as PIBNo, " +
-					" h.priceperdealunit* h.receiptquantity as amount,h.priceperdealunit * h.receiptquantity* c.CurrencyRate as amountIDR,c.currencyrate " +
-					" from " +
-					" internalpurchaseorders a " +
-					" join ExternalPurchaseOrderItems b on a.id = b.POId " +
-					" join ExternalPurchaseOrders c on c.Id = b.EPOId " +
-					" join Externalpurchaseorderdetails d on  b.id = d.epoitemid " +
-					" join deliveryorderitems e on c.id = e.epoid " +
-					" join deliveryorders f on f.id = e.DOId " +
-					" join UnitReceiptNotes g on  f.id = g.DOId " +
-					" join UnitReceiptNoteItems h on g.id = h.urnid and h.EPODetailId=d.Id " +
-					" where g.IsDeleted = 0 and URNNo like '%BPI%' " +_date+ _cat + _no +_cat +_unit+
-					" ) as data " +
 
-					" group by URNNo, ReceiptDate, ProductName, UnitName, CategoryName, PIBNo, CurrencyRate", conn))
-				{ 
-					SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
-					DataSet dSet = new DataSet();
-					dataAdapter.Fill(dSet);
-					foreach (DataRow data in dSet.Tables[0].Rows)
-					{
+             List < ImportPurchasingBookViewModel > reportData = GetReportQuery( no,  unit,  category,  dateFrom,  dateTo).ToList();
 
-						ImportPurchasingBookViewModel view = new ImportPurchasingBookViewModel
-						{
-							urnNo = data["URNNo"].ToString(),
-							receiptDate = Convert.ToDateTime( data["ReceiptDate"].ToString()),
-							productName = data["ProductName"].ToString(),
-							unitName = data["UnitName"].ToString(),
-							categoryName = data["CategoryName"].ToString(),
-							PIBNo = data["PIBNo"].ToString(),
-							amount = Convert.ToDecimal(data["Amount"].ToString()),
-							amountIDR = Convert.ToDecimal(data["AmountIDR"].ToString()),
-							rate = Convert.ToDecimal(data["CurrencyRate"].ToString()),
-						};
-						reportData.Add(view);
-					}
-				}
-				conn.Close();
-			}
-			return Tuple.Create(reportData, reportData.Count);
+            return Tuple.Create(reportData, reportData.Count);
 		}
 
 
