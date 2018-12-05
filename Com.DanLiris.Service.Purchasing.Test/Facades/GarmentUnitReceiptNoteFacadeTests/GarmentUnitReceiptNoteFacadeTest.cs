@@ -155,6 +155,92 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             Assert.NotNull(e.Message);
         }
 
+        private GarmentUnitReceiptNote CopyModel (GarmentUnitReceiptNote data)
+        {
+            var copiedData = new GarmentUnitReceiptNote
+            {
+                Active = data.Active,
+                CreatedAgent = data.CreatedAgent,
+                CreatedBy = data.CreatedBy,
+                CreatedUtc = data.CreatedUtc,
+                DOId = data.DOId,
+                DONo = data.DONo,
+                DeletedAgent = data.DeletedAgent,
+                DeletedBy = data.DeletedBy,
+                DeletedUtc = data.DeletedUtc,
+                Id = data.Id,
+                IsCorrection = data.IsCorrection,
+                IsDeleted = data.IsDeleted,
+                IsStorage = data.IsStorage,
+                IsUnitDO = data.IsUnitDO,
+                LastModifiedAgent = data.LastModifiedAgent,
+                LastModifiedBy = data.LastModifiedBy,
+                LastModifiedUtc = data.LastModifiedUtc,
+                ReceiptDate = data.ReceiptDate,
+                Remark = data.Remark,
+                StorageCode = data.StorageCode,
+                StorageId = data.StorageId,
+                StorageName = data.StorageName,
+                SupplierCode = data.SupplierCode,
+                SupplierId = data.SupplierId,
+                SupplierName = data.SupplierName,
+                UId = data.UId,
+                URNNo = data.URNNo,
+                UnitCode = data.UnitCode,
+                UnitId = data.UnitId,
+                UnitName = data.UnitName,
+                Items = data.Items.Select(i => CopyModelItem(i)).ToList()
+            };
+
+            return copiedData;
+        }
+
+        private GarmentUnitReceiptNoteItem CopyModelItem(GarmentUnitReceiptNoteItem i)
+        {
+            var copiedItem = new GarmentUnitReceiptNoteItem
+            {
+                Active = i.Active,
+                Conversion = i.Conversion,
+                CreatedAgent = i.CreatedAgent,
+                CreatedBy = i.CreatedBy,
+                CreatedUtc = i.CreatedUtc,
+                DODetailId = i.DODetailId,
+                DeletedAgent = i.DeletedAgent,
+                DeletedBy = i.DeletedBy,
+                DeletedUtc = i.DeletedUtc,
+                DesignColor = i.DesignColor,
+                EPOItemId = i.EPOItemId,
+                GarmentUnitReceiptNote = i.GarmentUnitReceiptNote,
+                Id = i.Id,
+                IsCorrection = i.IsCorrection,
+                IsDeleted = i.IsDeleted,
+                LastModifiedAgent = i.LastModifiedAgent,
+                LastModifiedBy = i.LastModifiedBy,
+                LastModifiedUtc = i.LastModifiedUtc,
+                POId = i.POId,
+                POItemId = i.POItemId,
+                POSerialNumber = i.POSerialNumber,
+                PRId = i.PRId,
+                PRItemId = i.PRItemId,
+                PRNo = i.PRNo,
+                PricePerDealUnit = i.PricePerDealUnit,
+                ProductCode = i.ProductCode,
+                ProductId = i.ProductId,
+                ProductName = i.ProductName,
+                ProductRemark = i.ProductRemark,
+                RONo = i.RONo,
+                ReceiptQuantity = i.ReceiptQuantity,
+                SmallQuantity = i.SmallQuantity,
+                SmallUomId = i.SmallUomId,
+                SmallUomUnit = i.SmallUomUnit,
+                URNId = i.URNId,
+                UomId = i.UomId,
+                UomUnit = i.UomUnit
+            };
+
+            return copiedItem;
+        }
+
         [Fact]
         public async void Should_Success_Update_Data()
         {
@@ -162,14 +248,20 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), dbContext);
 
             var data = await dataUtil(facade, GetCurrentMethod()).GetTestDataWithStorage();
-            dbContext.Entry(data).State = EntityState.Detached;
-            foreach (var item in data.Items)
-            {
-                dbContext.Entry(item).State = EntityState.Detached;
-            }
 
-            var Response = await facade.Update((int)data.Id, data);
-            Assert.NotEqual(Response, 0);
+            var ResponseUpdate = await facade.Update((int)data.Id, data);
+            Assert.NotEqual(ResponseUpdate, 0);
+
+            ////var itemAdded = CopyModelItem(data.Items.First());
+            ////itemAdded.Id = 0;
+            //data.Items.Clear();
+            ////data.Items.Add(itemAdded);
+            //var ResponseUpdateAddItem = await facade.Update((int)data.Id, data);
+            //Assert.NotEqual(ResponseUpdateAddItem, 0);
+
+            //data.Items.Remove(itemAdded);
+            //var ResponseUpdateRemoveItem = await facade.Update((int)data.Id, data);
+            //Assert.NotEqual(ResponseUpdateRemoveItem, 0);
         }
 
         [Fact]
