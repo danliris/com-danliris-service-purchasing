@@ -85,7 +85,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
         public void Should_Success_Get_Xls()
         {
             var mockFacade = new Mock<IUnitPaymentOrderFacade>();
-            mockFacade.Setup(x => x.GenerateExcel(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>()))
+            mockFacade.Setup(x => x.GenerateDataExcel(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>()))
                 .Returns(new MemoryStream());
 
             var mockMapper = new Mock<IMapper>();
