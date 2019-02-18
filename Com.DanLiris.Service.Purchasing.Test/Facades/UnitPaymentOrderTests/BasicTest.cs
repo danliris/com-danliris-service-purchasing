@@ -100,6 +100,17 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.UnitPaymentOrderTests
         }
 
         [Fact]
+        public async void Should_Success_Get_Report_Data_Excel()
+        {
+            UnitPaymentOrderFacade facade = new UnitPaymentOrderFacade(_dbContext(GetCurrentMethod()));
+            var model = await _dataUtil(facade, GetCurrentMethod()).GetTestData();
+
+            var Response = facade.GenerateDataExcel(null, null, 7);
+
+            Assert.IsType(typeof(System.IO.MemoryStream), Response);
+        }
+
+        [Fact]
         public async void Should_Success_Get_Data_By_Id()
         {
             UnitPaymentOrderFacade facade = new UnitPaymentOrderFacade(_dbContext(GetCurrentMethod()));
