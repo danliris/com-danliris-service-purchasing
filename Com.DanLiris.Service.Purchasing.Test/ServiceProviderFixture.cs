@@ -39,6 +39,7 @@ using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentInvoiceFacades;
 using Com.DanLiris.Service.Purchasing.Test.DataUtils.GarmentInvoiceDataUtils;
 using Com.DanLiris.Service.Purchasing.Test.DataUtils.GarmentInternNoteDataUtils;
 using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentInternNoteFacades;
+using Com.DanLiris.Service.Purchasing.Lib.Facades.PurchaseRequestFacades;
 
 namespace Com.DanLiris.Service.Purchasing.Test
 {
@@ -114,6 +115,10 @@ namespace Com.DanLiris.Service.Purchasing.Test
                 .AddTransient<InternalPurchaseOrderFacade>()
                 .AddTransient<InternalPurchaseOrderDataUtil>()
                 .AddTransient<InternalPurchaseOrderItemDataUtil>()
+
+                .AddTransient<PurchaseRequestGenerateDataFacade>()
+                .AddTransient<ExternalPurchaseOrderGenerateDataFacade>()
+                .AddTransient<UnitReceiptNoteGenerateDataFacade>()
 
                 .AddTransient<ExternalPurchaseOrderFacade>()
                 .AddTransient<ExternalPurchaseOrderDataUtil>()
