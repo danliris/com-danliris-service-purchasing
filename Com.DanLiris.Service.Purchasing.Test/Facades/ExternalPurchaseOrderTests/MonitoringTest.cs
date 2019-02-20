@@ -149,5 +149,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.ExternalPurchaseOrderTest
             var Response = FacadeGenerateData.GenerateExcel(null, null, 7);
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
         }
+
+        [Fact]
+        public async void Should_Success_Get_Report_Generate_Data_Excel_Not_Found()
+        {
+            ExternalPurchaseOrder modelEPO = await EPODataUtil.GetTestData("Unit test");
+            var Response = FacadeGenerateData.GenerateExcel(DateTime.MinValue, DateTime.MinValue, 7);
+            Assert.IsType(typeof(System.IO.MemoryStream), Response);
+        }
     }
 }
