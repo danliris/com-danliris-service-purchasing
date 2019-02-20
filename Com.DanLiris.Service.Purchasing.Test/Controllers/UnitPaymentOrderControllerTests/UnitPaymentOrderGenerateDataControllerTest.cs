@@ -110,5 +110,20 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
             Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.GetType().GetProperty("ContentType").GetValue(response, null));
 
         }
+
+        [Fact]
+        public void Should_Error_Get_Xls()
+        {
+            var mockFacade = new Mock<IUnitPaymentOrderFacade>();
+            mockFacade.Setup(x => x.GenerateDataExcel(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>()))
+                //.Returns(new MemoryStream());
+                .Throws(new Exception());
+            var mockMapper = new Mock<IMapper>();
+
+            UnitPaymentOrderGenerateDataController controller = GetController(mockFacade, null, mockMapper);
+            var response = controller.GetXls(It.IsAny<DateTime>(), It.IsAny<DateTime>());
+            Assert.Equal((int)HttpStatusCode.InternalServerError,(int)response.GetType().GetProperty("StatusCode").GetValue(response, null));
+
+        }
     }
 }
