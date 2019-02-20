@@ -42,12 +42,5 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.ExternalPurchaseOrder
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
       
         }
-
-        //[Fact]
-        //public async Task Should_Error_Get_Report_Excel()
-        //{
-        //    var response = await this.Client.GetAsync(URI + "/display");
-        //    Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        //}
     }
 }
