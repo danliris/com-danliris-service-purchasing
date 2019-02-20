@@ -40,6 +40,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.ExternalPurchaseOrder
         {
             var response = await this.Client.GetAsync(URI + "/download");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+      
         }
 
         [Fact]
