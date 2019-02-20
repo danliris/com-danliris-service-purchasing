@@ -64,7 +64,7 @@ namespace Com.Danliris.Service.Sales.WebApi.Controllers
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
-            try
+           // try
             {
                 byte[] xlsInBytes;
                 DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
@@ -79,13 +79,13 @@ namespace Com.Danliris.Service.Sales.WebApi.Controllers
                 return file;
 
             }
-            catch (Exception e)
-            {
-                Dictionary<string, object> Result =
-                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
-                    .Fail();
-                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
-            }
+            //catch (Exception e)
+            //{
+            //    Dictionary<string, object> Result =
+            //        new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+            //        .Fail();
+            //    return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            //}
         }
     }
 }

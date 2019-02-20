@@ -10,7 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-namespace Com.DanLiris.Service.Purchasing.Test.Controllers.ExternalPurchaseOrderTests
+namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitReceiptNoteTests
 {
     [Collection("TestServerFixture Collection")]
     public class UnitReceiptNoteGenerateDataControllerTest
@@ -41,5 +41,6 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.ExternalPurchaseOrder
             var response = await this.Client.GetAsync(URI + "/download");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
+
     }
 }
