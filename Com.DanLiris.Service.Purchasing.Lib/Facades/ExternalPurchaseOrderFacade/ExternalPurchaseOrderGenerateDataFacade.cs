@@ -72,36 +72,36 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.ExternalPurchaseOrderFacad
             return Query;
         }
 
-        //public Tuple<List<ExternalPurchaseOrderGenerateDataViewModel>, int> GetDisplayReport(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
+        public Tuple<List<ExternalPurchaseOrderGenerateDataViewModel>, int> GetDisplayReport(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
 
-        //{
-        //    var Query = GetReportQuery(dateFrom, dateTo, offset);
+        {
+            var Query = GetReportQuery(dateFrom, dateTo, offset);
 
-        //    Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
-        //    if (OrderDictionary.Count.Equals(0))
-        //    {
-        //        Query = Query.OrderBy(b => b.UnitName).ThenBy(b => b.PRNo); 
-        //    }
-        //    else
-        //    {
-        //        string Key = OrderDictionary.Keys.First();
-        //        string OrderType = OrderDictionary[Key];
-        //    }
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
+            if (OrderDictionary.Count.Equals(0))
+            {
+                Query = Query.OrderBy(b => b.EPONo);
+            }
+            else
+            {
+                string Key = OrderDictionary.Keys.First();
+                string OrderType = OrderDictionary[Key];
+            }
 
-        //    var q = Query.ToList();
-        //    var index = 0;
-        //    foreach (ExternalPurchaseOrderGenerateDataViewModel a in q)
-        //    {
-        //        index++;
-        //    }
+            var q = Query.ToList();
+            var index = 0;
+            foreach (ExternalPurchaseOrderGenerateDataViewModel a in q)
+            {
+                index++;
+            }
 
-        //    Pageable<ExternalPurchaseOrderGenerateDataViewModel> pageable = new Pageable<ExternalPurchaseOrderGenerateDataViewModel>(Query, page - 1, size);
-        //    List<ExternalPurchaseOrderGenerateDataViewModel> Data = pageable.Data.ToList<ExternalPurchaseOrderGenerateDataViewModel>();
-        //    int TotalData = pageable.TotalCount;
+            Pageable<ExternalPurchaseOrderGenerateDataViewModel> pageable = new Pageable<ExternalPurchaseOrderGenerateDataViewModel>(Query, page - 1, size);
+            List<ExternalPurchaseOrderGenerateDataViewModel> Data = pageable.Data.ToList<ExternalPurchaseOrderGenerateDataViewModel>();
+            int TotalData = pageable.TotalCount;
 
-        //    return Tuple.Create(Data, TotalData);
-        //}
-        
+            return Tuple.Create(Data, TotalData);
+        }
+
         public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
             var Query = GetReportQuery(dateFrom, dateTo, offset);
