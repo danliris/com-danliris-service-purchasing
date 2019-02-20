@@ -252,5 +252,17 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.UnitPaymentOrderTests
 
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
         }
+
+        [Fact]
+        public async void Should_Success_Get_Generate_Data_Excel1_Not_Found()
+        {
+            var serviceProvider = new Mock<IServiceProvider>();
+            UnitPaymentOrderFacade facade = new UnitPaymentOrderFacade(_dbContext(GetCurrentMethod()));
+            var model = await _dataUtil(facade, GetCurrentMethod()).GetTestData();
+
+            var Response = facade.GenerateDataExcel(DateTime.MinValue, DateTime.MinValue, 7);
+
+            Assert.IsType(typeof(System.IO.MemoryStream), Response);
+        }
     }
 }
