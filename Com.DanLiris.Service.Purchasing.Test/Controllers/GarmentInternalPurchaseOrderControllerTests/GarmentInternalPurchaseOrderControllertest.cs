@@ -375,7 +375,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentInternalPurcha
 		}
         #region Report Purchase Order Internal
         [Fact]
-        public void Should_Success_Get_Report_DO()
+        public void Should_Success_Get_Report_PO()
         {
             var mockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
 
@@ -392,15 +392,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentInternalPurcha
         }
 
         [Fact]
-        public void Should_Success_Get_Xls_DO()
+        public void Should_Success_Get_Xls_PO()
         {
             var mockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
             mockFacade.Setup(x => x.GenerateExcelPO(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<string>()))
                 .Returns(new MemoryStream());
 
             var mockMapper = new Mock<IMapper>();
-            //mockMapper.Setup(x => x.Map<List<GarmentDeliveryOrderReportViewModel>>(It.IsAny<List<GarmentDeliveryOrder>>()))
-            //    .Returns(new List<GarmentDeliveryOrderReportViewModel> { ViewModel });
 
             var user = new Mock<ClaimsPrincipal>();
             var claims = new Claim[]
@@ -424,7 +422,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentInternalPurcha
         }
 
         [Fact]
-        public void Should_Error_Get_Report_DO()
+        public void Should_Error_Get_Report_PO()
         {
             var mockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
 
@@ -437,7 +435,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentInternalPurcha
         }
 
         [Fact]
-        public void Should_Error_Get_Xls_DO()
+        public void Should_Error_Get_Xls_PO()
         {
             var mockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
 
