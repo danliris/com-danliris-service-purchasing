@@ -108,6 +108,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.InternalPO
                              uom = epoDetail != null  ? epoDetail.DealUomUnit : "-" ,
                              pricePerDealUnit = epoDetail != null ? epo.IsPosted==true? epoDetail.PricePerDealUnit : 0 : 0,
                              priceTotal = epoDetail != null ? epo.IsPosted == true ? epoDetail.DealQuantity * epoDetail.PricePerDealUnit : 0 :0,
+                             currencyCode = epo != null ? epo.IsPosted == true ? epo.CurrencyCode : "-" : "-",
                              supplierCode = epo!=null ? epo.IsPosted == true?epo.SupplierCode : "-" : "-",
                              supplierName = epo != null ? epo.IsPosted == true ? epo.SupplierName : "-" : "-",
                              receivedDatePO = a.CreatedUtc,
@@ -251,6 +252,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.InternalPO
 
             result.Columns.Add(new DataColumn() { ColumnName = "Harga Barang", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Harga Total", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Mata Uang", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Supplier", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Supplier", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Terima PO Internal", DataType = typeof(String) });
@@ -320,7 +322,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.InternalPO
                     string correctionDate = item.correctionDate == new DateTime(1970, 1, 1) ? "-" : item.correctionDate.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
 
                     result.Rows.Add(index, prDate, prCreatedDate, item.prNo, item.category, item.budget, item.productName,item.productCode, item.quantity,item.uom, 
-                        item.pricePerDealUnit, item.priceTotal, item.supplierCode, item.supplierName, receiptDatePO, epoDate, epoCreatedDate, epoExpectedDeliveryDate, epoDeliveryDate,item.epoNo, doDate, 
+                        item.pricePerDealUnit, item.priceTotal, item.currencyCode, item.supplierCode, item.supplierName, receiptDatePO, epoDate, epoCreatedDate, epoExpectedDeliveryDate, epoDeliveryDate,item.epoNo, doDate, 
                         doDeliveryDate,item.doNo, urnDate, item.urnNo, item.urnQuantity, item.urnUom, item.paymentDueDays, invoiceDate, item.invoiceNo, upoDate, 
                         item.upoNo, item.upoPriceTotal, dueDate , vatDate , item.vatNo, item.vatValue , incomeTaxDate,item.incomeTaxNo , item.incomeTaxValue, item.correctionDates, 
                         item.correctionNo, item.correctionQtys, item.correctionType, item.remark, item.status,item.staff);

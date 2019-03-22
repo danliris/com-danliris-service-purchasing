@@ -302,5 +302,48 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInternalPurchaseOr
 			var Response = facade.ReadName(data.CreatedBy);
 			Assert.NotNull(Response);
 		}
-	}
+        #region Report Purchase Order Internal
+        [Fact]
+        public async void Should_Success_Get_Report_Data()
+        {
+             //GarmentInternalPurchaseOrderFacade facade = new GarmentInternalPurchaseOrderFacade(ServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            GarmentInternalPurchaseOrderFacade Facade = new GarmentInternalPurchaseOrderFacade(_dbContext(GetCurrentMethod()));
+            var model = await dataUtil(Facade, GetCurrentMethod()).GetTestData();
+            var Response = Facade.GetReportPO(DateTime.MinValue, DateTime.MaxValue, 1, 25, "{}", 7, "");
+            Assert.NotEqual(Response.Item1.Count, 0);
+
+        }
+
+        
+
+
+        [Fact]
+        public async void Should_Success_Get_Report_Data_Null_Parameter()
+        {
+            GarmentInternalPurchaseOrderFacade Facade = new GarmentInternalPurchaseOrderFacade(_dbContext(GetCurrentMethod()));
+            var model = await dataUtil(Facade, GetCurrentMethod()).GetTestData();
+            var Response = Facade.GetReportPO(null, null, 1, 25, "{}", 7, "");
+            Assert.NotEqual(Response.Item1.Count, 0);
+        }
+        [Fact]
+        public async void Should_Success_Get_Report_Data_Excel()
+        {
+            // GarmentInternalPurchaseOrderFacade facade = new GarmentInternalPurchaseOrderFacade(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            GarmentInternalPurchaseOrderFacade Facade = new GarmentInternalPurchaseOrderFacade(_dbContext(GetCurrentMethod()));
+            var model = await dataUtil(Facade, GetCurrentMethod()).GetTestData();
+            var Response = Facade.GenerateExcelPO(DateTime.MinValue, DateTime.MaxValue, 7, "");
+            Assert.IsType(typeof(System.IO.MemoryStream), Response);
+
+         
+        }
+        [Fact]
+        public async void Should_Success_Get_Report_Data_Excel_Null_parameter()
+        {
+            GarmentInternalPurchaseOrderFacade Facade = new GarmentInternalPurchaseOrderFacade(_dbContext(GetCurrentMethod()));
+            var model = await dataUtil(Facade, GetCurrentMethod()).GetTestData();
+            var Response = Facade.GenerateExcelPO(null, null, 7, "");
+            Assert.IsType(typeof(System.IO.MemoryStream), Response);
+        }
+        #endregion
+    }
 }

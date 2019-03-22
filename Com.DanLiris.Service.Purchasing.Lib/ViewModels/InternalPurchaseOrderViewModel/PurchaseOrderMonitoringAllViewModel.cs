@@ -28,6 +28,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.InternalPurchaseOrderVi
         public DateTimeOffset epoExpectedDeliveryDate { get; set; }
         public DateTimeOffset epoDeliveryDate { get; set; }
         public string epoNo { get; set; }
+        public string currencyCode { get; set; }
 
         //DO
         public DateTimeOffset doDate { get; set; }
@@ -51,6 +52,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.InternalPurchaseOrderVi
         public string upoNo { get; set; }
         public double upoPriceTotal { get; set; }
         public DateTimeOffset dueDate { get; set; }
+      
 
         //vat
         public DateTimeOffset vatDate { get; set; }
