@@ -383,9 +383,6 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentInternalPurcha
                 .Returns(Tuple.Create(new List<GarmentInternalPurchaseOrderReportViewModel>(), 5));
 
             var mockMapper = new Mock<IMapper>();
-           // mockMapper.Setup(x => x.Map<List<GarmentInternalPurchaseOrderReportViewModel>>(It.IsAny<List<GarmentInternalPurchaseOrderReportViewModel>>()))
-                //.Returns(new List<GarmentInternalPurchaseOrderReportViewModel> { ViewModel });
-
             GarmentInternalPurchaseOrderController controller = GetController(mockFacade, null, mockMapper);
             var response = controller.GetReportPO(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
             Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));

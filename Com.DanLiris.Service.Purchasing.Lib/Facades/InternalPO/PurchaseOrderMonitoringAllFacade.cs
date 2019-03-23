@@ -267,7 +267,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.InternalPO
             result.Columns.Add(new DataColumn() { ColumnName = "No Surat Jalan", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Bon Terima Unit", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No Bon Terima Unit", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Diminta", DataType = typeof(double) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Diminta", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Diminta", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan Diminta", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tempo Pembayaran", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Invoice", DataType = typeof(String) });
@@ -275,14 +276,17 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.InternalPO
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Nota Intern", DataType = typeof(String) });
 
             result.Columns.Add(new DataColumn() { ColumnName = "No Nota Intern", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Nota Intern", DataType = typeof(double) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Nilai Nota Intern", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nilai Nota Intern", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Jatuh Tempo", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal PPN", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No PPN", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Nilai PPN", DataType = typeof(double) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Nilai PPN", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nilai PPN", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal PPH", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No PPH", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Nilai PPH", DataType = typeof(double) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Nilai PPH", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nilai PPH", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Koreksi", DataType = typeof(String) });
 
             result.Columns.Add(new DataColumn() { ColumnName = "No Koreksi", DataType = typeof(String) });
