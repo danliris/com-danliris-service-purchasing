@@ -84,7 +84,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.DataUtils.UnitPaymentOrderDataUti
                 CurrencyCode = "CurrencyCode",
                 CurrencyRate = 5,
 
-                PaymentMethod = "CASH",
+                PaymentMethod = "KREDIT",
 
                 InvoiceNo = "INV000111",
                 InvoiceDate = new DateTimeOffset(),
