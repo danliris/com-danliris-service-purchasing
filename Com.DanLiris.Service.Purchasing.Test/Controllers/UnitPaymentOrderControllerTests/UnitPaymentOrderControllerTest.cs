@@ -29,6 +29,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
     {
         private UnitPaymentOrderViewModel ViewModel
         {
+
             get
             {
                 List<UnitPaymentOrderItemViewModel> items = new List<UnitPaymentOrderItemViewModel>();
@@ -38,25 +39,27 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
                 items.Add(
                     new UnitPaymentOrderItemViewModel
                     {
-                        unitReceiptNote= new UnitReceiptNote
+                        unitReceiptNote = new UnitReceiptNote
                         {
-                            items=details
+                            items = details
                         }
                     });
 
                 details.Add(
-                    new UnitPaymentOrderDetailViewModel {
-                        pricePerDealUnit=1000,
-                        PricePerDealUnitCorrection=10000,
-                        QuantityCorrection=10,
-                        deliveredQuantity=10,
-                        PriceTotal=10000,
-                        PriceTotalCorrection=10000,
-                        
+                    new UnitPaymentOrderDetailViewModel
+                    {
+                        pricePerDealUnit = 1000,
+                        PricePerDealUnitCorrection = 10000,
+                        QuantityCorrection = 10,
+                        deliveredQuantity = 10,
+                        PriceTotal = 10000,
+                        PriceTotalCorrection = 10000,
+
                     });
 
                 return new UnitPaymentOrderViewModel
                 {
+
                     supplier = new SupplierViewModel
                     {
                         import = false
@@ -186,7 +189,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
             var mockFacade = new Mock<IUnitPaymentOrderFacade>();
 
             mockFacade.Setup(x => x.Read(1, 25, "{}", null, "{}"))
-                .Returns(Tuple.Create(new List<UnitPaymentOrder>(), 0, new  Dictionary<string, string>()));
+                .Returns(Tuple.Create(new List<UnitPaymentOrder>(), 0, new Dictionary<string, string>()));
 
             var mockMapper = new Mock<IMapper>();
             mockMapper.Setup(x => x.Map<List<UnitPaymentOrderViewModel>>(It.IsAny<List<UnitPaymentOrder>>()))
@@ -322,6 +325,12 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
                 }
             };
 
+        public void Should_Success_Get_PDF_incomeTaxBy_Supplier()
+        {
+            var Model = this.Model;
+            Model.IncomeTaxBy = "Supplier";
+            Model.UseVat = true;
+
             var mockFacade = new Mock<IUnitPaymentOrderFacade>();
             mockFacade.Setup(x => x.ReadById(It.IsAny<int>()))
                 .Returns(Model);
@@ -331,6 +340,18 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
                 .Returns(new ExternalPurchaseOrder { PaymentDueDays = "0" });
 
             var mockMapper = new Mock<IMapper>();
+
+            //var mockMapper = new Mock<IMapper>();
+
+            var ViewModelSupp = this.ViewModel;
+            ViewModelSupp.incomeTaxBy = "Supplier";
+            ViewModelSupp.useIncomeTax = true;
+
+            var mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(x => x.Map<UnitPaymentOrderViewModel>(It.IsAny<UnitPaymentOrder>()))
+                .Returns(ViewModelSupp);
+
+
 
             var user = new Mock<ClaimsPrincipal>();
             var claims = new Claim[]
@@ -347,13 +368,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
                     User = user.Object
                 }
             };
+
             controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/pdf";
             controller.ControllerContext.HttpContext.Request.Headers["x-timezone-offset"] = "0";
 
             var response = controller.Get(It.IsAny<int>());
             Assert.NotEqual(null, response.GetType().GetProperty("FileStream"));
         }
-
 
         [Fact]
         public async Task Should_Success_Create_Data()
