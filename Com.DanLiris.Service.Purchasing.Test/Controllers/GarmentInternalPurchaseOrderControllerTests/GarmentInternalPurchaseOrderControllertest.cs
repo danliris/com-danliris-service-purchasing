@@ -373,5 +373,78 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentInternalPurcha
 			var response = controller.ByName(null, null);
 			Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
 		}
-	}
+
+        #region Report Purchase Order Internal
+        [Fact]
+        public void Should_Success_Get_Report_PO()
+        {
+            var mockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
+
+            mockFacade.Setup(x => x.GetReportPO(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(Tuple.Create(new List<GarmentInternalPurchaseOrderReportViewModel>(), 5));
+
+            var mockMapper = new Mock<IMapper>();
+            GarmentInternalPurchaseOrderController controller = GetController(mockFacade, null, mockMapper);
+            var response = controller.GetReportPO(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
+            Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
+        }
+
+        [Fact]
+        public void Should_Success_Get_Xls_PO()
+        {
+            var mockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
+            mockFacade.Setup(x => x.GenerateExcelPO(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(new System.IO.MemoryStream());
+            var mockMapper = new Mock<IMapper>();
+
+            var user = new Mock<ClaimsPrincipal>();
+            var claims = new Claim[]
+            {
+                new Claim("username", "unittestusername")
+            };
+            user.Setup(u => u.Claims).Returns(claims);
+            GarmentInternalPurchaseOrderController controller = new GarmentInternalPurchaseOrderController(GetServiceProvider().Object, mockMapper.Object, mockFacade.Object);
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext()
+                {
+                    User = user.Object
+                }
+            };
+
+            controller.ControllerContext.HttpContext.Request.Headers["x-timezone-offset"] = "0";
+            var response = controller.GetXlsPO(It.IsAny<DateTime>(), It.IsAny<DateTime>());
+            Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.GetType().GetProperty("ContentType").GetValue(response, null));
+
+        }
+
+        [Fact]
+        public void Should_Error_Get_Report_PO()
+        {
+            var mockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
+
+            var mockMapper = new Mock<IMapper>();
+
+
+            GarmentInternalPurchaseOrderController controller = GetController(mockFacade, null, mockMapper);
+            var response = controller.GetReportPO(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
+            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
+        }
+
+        [Fact]
+        public void Should_Error_Get_Xls_PO()
+        {
+            var mockFacade = new Mock<IGarmentInternalPurchaseOrderFacade>();
+
+            var mockMapper = new Mock<IMapper>();
+
+            GarmentInternalPurchaseOrderController controller = new GarmentInternalPurchaseOrderController(GetServiceProvider().Object, mockMapper.Object, mockFacade.Object);
+
+            var response = controller.GetXlsPO(It.IsAny<DateTime>(), It.IsAny<DateTime>());
+            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
+
+        }
+        #endregion
+
+    }
 }
