@@ -529,7 +529,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentInternalPurchaseOrd
                          where a.IsDeleted == false
                              && i.IsDeleted == false
 
-                            //&& i.CategoryId == (string.IsNullOrWhiteSpace(category) ? i.CategoryId : category)
                             && a.CreatedUtc.AddHours(offset).Date >= DateFrom.Date
                              && a.CreatedUtc.AddHours(offset).Date <= DateTo.Date
                              && a.CreatedBy == (string.IsNullOrWhiteSpace(user) ? a.CreatedBy : user)
@@ -606,7 +605,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentInternalPurchaseOrd
 
 
             if (Query.ToArray().Count() == 0)
-                // result.Rows.Add("", "", "", "", "", "", "", "", "", "", 0, 0, 0, ""); // to allow column name to be generated properly for empty data as template
                 result.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "", 0, "");
             else
             {
@@ -614,10 +612,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentInternalPurchaseOrd
                 foreach (var item in Query)
                 {
                     index++;
-                    //string date = item.date == null ? "-" : item.date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     string createdUtc = item.createdUtc == new DateTime(1970, 1, 1) ? "-" : item.createdUtc.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     string shipmentDate = item.shipmentDate == new DateTime(1970, 1, 1) ? "-" : item.shipmentDate.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    //result.Rows.Add(index, item.prNo, createdUtc, item.shipmentDate, item.roNo, item.buyerCode, item.buyerName, item.article, item.unitName, item.po_SerialNumber, item.categoryName, item.productCode, item.productName, item.productRemark, item.quantity, item.uomUnit, item.budgetPrice, item.createdBy);
                     result.Rows.Add(index, item.prNo, createdUtc, shipmentDate, item.roNo, item.buyerCode, item.buyerName, item.article, item.unitName, item.po_SerialNumber, item.categoryName, item.productCode, item.productName, item.productRemark, item.quantity, item.uomUnit, item.budgetPrice, item.createdBy);
                 }
             }
