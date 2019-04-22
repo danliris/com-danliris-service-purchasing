@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +6,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Utilities
 {
     public abstract class BaseViewModel
     {
+        public string UId { get; set; }
         public long _id { get; set; }
         public long Id { get; set; }
         public bool Active { get; set; }
