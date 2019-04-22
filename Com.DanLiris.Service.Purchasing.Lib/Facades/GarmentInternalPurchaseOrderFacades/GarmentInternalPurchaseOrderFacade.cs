@@ -515,5 +515,114 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentInternalPurchaseOrd
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
         #endregion
+        #region Purchase Order Internal Report
+        public IQueryable<GarmentInternalPurchaseOrderReportViewModel> GetReportQueryPO(DateTime? dateFrom, DateTime? dateTo, int offset, string user)
+
+        {
+            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+
+            var Query = (from a in dbContext.GarmentInternalPurchaseOrders
+                         join i in dbContext.GarmentInternalPurchaseOrderItems on a.Id equals i.GPOId
+
+                         where a.IsDeleted == false
+                             && i.IsDeleted == false
+
+                            //&& i.CategoryId == (string.IsNullOrWhiteSpace(category) ? i.CategoryId : category)
+                            && a.CreatedUtc.AddHours(offset).Date >= DateFrom.Date
+                             && a.CreatedUtc.AddHours(offset).Date <= DateTo.Date
+                             && a.CreatedBy == (string.IsNullOrWhiteSpace(user) ? a.CreatedBy : user)
+
+                         select new GarmentInternalPurchaseOrderReportViewModel
+                         {
+                             prNo = a.PRNo,
+                             createdUtc = a.CreatedUtc == null ? new DateTime(1970, 1, 1) : a.CreatedUtc,
+                             shipmentDate = a.ShipmentDate == null ? new DateTime(1970, 1, 1) : a.ShipmentDate,
+                             roNo = a.RONo,
+                             buyerCode = a.BuyerCode,
+                             buyerName = a.BuyerName,
+                             article = a.Article,
+                             unitName = a.UnitName,
+                             po_SerialNumber = i.PO_SerialNumber,
+                             categoryName = i.CategoryName,
+                             productCode = i.ProductCode,
+                             productName = i.ProductName,
+                             productRemark = i.ProductRemark,
+                             quantity = i.Quantity,
+                             uomUnit = i.UomUnit,
+                             budgetPrice = i.BudgetPrice,
+                             createdBy = a.CreatedBy,
+
+
+                         });
+            //Dictionary<string, double> q = new Dictionary<string, double>();
+            //List<GarmentInternalPurchaseOrderReportViewModel> urn = new List<GarmentInternalPurchaseOrderReportViewModel>();
+            //foreach (GarmentInternalPurchaseOrderReportViewModel data in Query.ToList()) ;
+            return Query.AsQueryable();
+        }
+        public Tuple<List<GarmentInternalPurchaseOrderReportViewModel>, int> GetReportPO(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset, string user)
+
+        {
+            var Query = GetReportQueryPO(dateFrom, dateTo, offset, user);
+
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
+            if (OrderDictionary.Count.Equals(0))
+            {
+                Query = Query.OrderByDescending(b => b.roNo).ThenByDescending(b => b.createdUtc);
+            }
+
+
+            Pageable<GarmentInternalPurchaseOrderReportViewModel> pageable = new Pageable<GarmentInternalPurchaseOrderReportViewModel>(Query, page - 1, size);
+            List<GarmentInternalPurchaseOrderReportViewModel> Data = pageable.Data.ToList<GarmentInternalPurchaseOrderReportViewModel>();
+            int TotalData = pageable.TotalCount;
+
+            return Tuple.Create(Data, TotalData);
+        }
+        public MemoryStream GenerateExcelPO(DateTime? dateFrom, DateTime? dateTo, int offset, string user)
+        {
+            var Query = GetReportQueryPO(dateFrom, dateTo, offset, user);
+            Query = Query.OrderByDescending(b => b.roNo).ThenByDescending(b => b.createdUtc);
+            DataTable result = new DataTable();
+            result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nomor PR", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tanggal PO Int", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Shipment", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nomor RO", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Buyer", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nama Buyer", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Artikel", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Unit", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Ref PR", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kategori", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Keterangan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(Double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Harga Budget", DataType = typeof(Double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Staff", DataType = typeof(String) });
+
+
+            if (Query.ToArray().Count() == 0)
+                // result.Rows.Add("", "", "", "", "", "", "", "", "", "", 0, 0, 0, ""); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, "", 0, "");
+            else
+            {
+                int index = 0;
+                foreach (var item in Query)
+                {
+                    index++;
+                    //string date = item.date == null ? "-" : item.date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    string createdUtc = item.createdUtc == new DateTime(1970, 1, 1) ? "-" : item.createdUtc.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    string shipmentDate = item.shipmentDate == new DateTime(1970, 1, 1) ? "-" : item.shipmentDate.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    result.Rows.Add(index, item.prNo, createdUtc, shipmentDate, item.roNo, item.buyerCode, item.buyerName, item.article, item.unitName, item.po_SerialNumber, item.categoryName, item.productCode, item.productName, item.productRemark, item.quantity, item.uomUnit, item.budgetPrice, item.createdBy);
+                }
+            }
+
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
+        }
+        #endregion
+
     }
 }

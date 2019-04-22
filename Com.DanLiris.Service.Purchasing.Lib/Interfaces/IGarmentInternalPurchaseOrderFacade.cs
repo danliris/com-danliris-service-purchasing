@@ -22,5 +22,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Interfaces
         Tuple<List<GarmentInternalPurchaseOrderExternalPurchaseOrderDurationReportViewModel>, int> GetIPOEPODurationReport(string unit, string duration, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset);
 
         MemoryStream GenerateExcelIPOEPODuration(string unit, string duration, DateTime? dateFrom, DateTime? dateTo, int offset);
+        Tuple<List<GarmentInternalPurchaseOrderReportViewModel>, int> GetReportPO(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset, string user);
+        MemoryStream GenerateExcelPO(DateTime? dateFrom, DateTime? dateTo, int offset, string user);
+
     }
 }
