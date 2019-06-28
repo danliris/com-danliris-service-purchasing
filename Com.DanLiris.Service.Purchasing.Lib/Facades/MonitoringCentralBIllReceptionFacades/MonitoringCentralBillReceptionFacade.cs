@@ -30,29 +30,29 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCentralBillRecep
         }
 
         #region MonitoringCentralBillReceptionAll
-        public List<GarmentDeliveryOrder> ReadName(string Keyword = null, string Filter = "{}")
-        {
-            IQueryable<GarmentDeliveryOrder> Query = this.dbSet;
+        //public List<GarmentDeliveryOrder> ReadName(string Keyword = null, string Filter = "{}")
+        //{
+        //    IQueryable<GarmentDeliveryOrder> Query = this.dbSet;
 
-            List<string> searchAttributes = new List<string>()
-            {
-                "CreatedBy",
-            };
+        //    List<string> searchAttributes = new List<string>()
+        //    {
+        //        "CreatedBy",
+        //    };
 
-            Query = QueryHelper<GarmentDeliveryOrder>.ConfigureSearch(Query, searchAttributes, Keyword); // kalo search setelah Select dengan .Where setelahnya maka case sensitive, kalo tanpa .Where tidak masalah
+        //    Query = QueryHelper<GarmentDeliveryOrder>.ConfigureSearch(Query, searchAttributes, Keyword); // kalo search setelah Select dengan .Where setelahnya maka case sensitive, kalo tanpa .Where tidak masalah
 
-            Query = Query
-                .Where(m => m.IsDeleted == false && m.CreatedBy.Contains(Keyword))
-                .Select(s => new GarmentDeliveryOrder
-                {
-                    CreatedBy = s.CreatedBy
-                }).Distinct();
+        //    Query = Query
+        //        .Where(m => m.IsDeleted == false && m.CreatedBy.Contains(Keyword))
+        //        .Select(s => new GarmentDeliveryOrder
+        //        {
+        //            CreatedBy = s.CreatedBy
+        //        }).Distinct();
 
-            Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
-            Query = QueryHelper<GarmentDeliveryOrder>.ConfigureFilter(Query, FilterDictionary);
+        //    Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
+        //    Query = QueryHelper<GarmentDeliveryOrder>.ConfigureFilter(Query, FilterDictionary);
 
-            return Query.ToList();
-        }
+        //    return Query.ToList();
+        //}
 
         public Tuple<List<MonitoringCentralBillReceptionViewModel>, int> GetMonitoringTerimaBonPusatReport(DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
         {

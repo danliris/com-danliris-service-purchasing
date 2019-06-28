@@ -466,8 +466,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var dataBon = await datautilBon.GetTestData();
             var dataBC = await datautilBC.GetTestData(USERNAME);
 
-            DateTime d1 = new DateTime(1970, 1, 1);
-            DateTime d2 = new DateTime(1970, 1, 1);
+            DateTime d1 = new DateTime(0001, 1, 1);
+            DateTime d2 = new DateTime(0001, 1, 1);
           
             var Response = TerimaBP.GetMonitoringTerimaBonPusatReport(d1, d2, 1, 25, "{}", 7);
             Assert.NotNull(Response.Item1);
@@ -516,8 +516,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var dataDO = await datautilDO.GetTestData();
             var dataBon = await datautilBon.GetTestData();
             var dataBC = await datautilBC.GetTestData(USERNAME);
-            DateTime d1 = new DateTime(1970, 1, 1);
-            DateTime d2 = new DateTime(1970, 1, 1);
+            DateTime d1 = new DateTime(0001, 1, 1);
+            DateTime d2 = new DateTime(0001, 1, 1);
 
             var Response = TerimaBP.GetMonitoringTerimaBonPusatByUserReport(d1, d2, 1, 25, "{}", 7);
             Assert.NotNull(Response.Item1);
@@ -567,8 +567,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var dataDO = await datautilDO.GetTestData();
             var dataBon = await datautilBon.GetTestData();
             var dataBC = await datautilBC.GetTestData(USERNAME);
-            DateTime d1 = new DateTime(1970, 1, 1);
-            DateTime d2 = new DateTime(1970, 1, 1);
+            DateTime d1 = new DateTime(0001, 1, 1);
+            DateTime d2 = new DateTime(0001, 1, 1);
 
             var Response = TerimaBP.GenerateExcelMonitoringTerimaBonPusat(d1, d2, 1, 25, "{}", 7);
 
@@ -619,8 +619,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var dataDO = await datautilDO.GetTestData();
             var dataBon = await datautilBon.GetTestData();
             var dataBC = await datautilBC.GetTestData(USERNAME);
-            DateTime d1 = new DateTime(1970, 1, 1);
-            DateTime d2 = new DateTime(1970, 1, 1);
+            DateTime d1 = new DateTime(0001, 1, 1);
+            DateTime d2 = new DateTime(0001, 1, 1);
 
             var Response = TerimaBP.GenerateExcelMonitoringTerimaBonPusatByUser(d1, d2, 1, 25, "{}", 7);
 
