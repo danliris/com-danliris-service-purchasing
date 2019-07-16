@@ -55,23 +55,23 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades
                 SupplierId = s.SupplierId,
                 SupplierCode = s.SupplierCode,
                 SupplierName = s.SupplierName,
-                CategoryCode=s.CategoryCode,
-                CategoryId=s.CategoryId,
-                CategoryName=s.CategoryName,
+                CategoryCode = s.CategoryCode,
+                CategoryId = s.CategoryId,
+                CategoryName = s.CategoryName,
                 Date = s.Date,
                 UPONo = s.UPONo,
-                DueDate=s.DueDate,
-                UseIncomeTax=s.UseIncomeTax,
-                UseVat=s.UseVat,
-                CurrencyCode=s.CurrencyCode,
-                CurrencyDescription=s.CurrencyDescription,
-                CurrencyId=s.CurrencyId,
-                CurrencyRate=s.CurrencyRate,
+                DueDate = s.DueDate,
+                UseIncomeTax = s.UseIncomeTax,
+                UseVat = s.UseVat,
+                CurrencyCode = s.CurrencyCode,
+                CurrencyDescription = s.CurrencyDescription,
+                CurrencyId = s.CurrencyId,
+                CurrencyRate = s.CurrencyRate,
                 Items = s.Items.Select(i => new UnitPaymentOrderItem
                 {
                     URNNo = i.URNNo,
                     DONo = i.DONo,
-                    Details=i.Details.ToList()
+                    Details = i.Details.ToList()
                 }).ToList(),
                 CreatedBy = s.CreatedBy,
                 LastModifiedUtc = s.LastModifiedUtc,
@@ -300,7 +300,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades
             {
                 TG = "G-";
             }
-            else if(model.DivisionName.ToUpper().Equals("UMUM") || 
+            else if (model.DivisionName.ToUpper().Equals("UMUM") ||
                 model.DivisionName.ToUpper().Equals("SPINNING") ||
                 model.DivisionName.ToUpper().Equals("DYEING & PRINTING") ||
                 model.DivisionName.ToUpper().Equals("UTILITY") ||
@@ -312,8 +312,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades
             string no = $"{Year}-{Month}-{TG}{Supplier}-";
             int Padding = isImport ? 3 : 4;
 
-            var lastNo = await dbSet.Where(w => w.UPONo.StartsWith(no) && !w.UPONo.EndsWith("L") && !w.IsDeleted).OrderByDescending(o => o.UPONo).FirstOrDefaultAsync();
-
+            var lastNo = await dbSet.Where(w => !string.IsNullOrWhiteSpace(w.UPONo) && w.UPONo.StartsWith(no) && !w.UPONo.EndsWith("L") && !w.IsDeleted).OrderByDescending(o => o.UPONo).FirstOrDefaultAsync();
             if (lastNo == null)
             {
                 return no + "1".PadLeft(Padding, '0');
@@ -335,12 +334,12 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades
 
         private void SetPaid(UnitPaymentOrderItem item, bool isPaid, string username)
         {
-            UnitReceiptNote unitReceiptNote = dbContext.UnitReceiptNotes.Include(a=>a.Items).Single(m => m.Id == item.URNId);
-            
+            UnitReceiptNote unitReceiptNote = dbContext.UnitReceiptNotes.Include(a => a.Items).Single(m => m.Id == item.URNId);
+
             foreach (var itemURN in unitReceiptNote.Items)
             {
                 var detail = item.Details.FirstOrDefault(a => a.URNItemId == itemURN.Id);
-                if (detail!=null)
+                if (detail != null)
                 {
                     itemURN.IsPaid = isPaid;
                 }
@@ -348,7 +347,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades
             bool flagIsPaid = true;
             foreach (var itemURNPaid in unitReceiptNote.Items)
             {
-                if (itemURNPaid.IsPaid==false)
+                if (itemURNPaid.IsPaid == false)
                 {
                     flagIsPaid = false;
                 }
@@ -587,7 +586,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades
             });
 
             Dictionary<string, List<int>> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, List<int>>>(Filter);
-            if(FilterDictionary.Keys.FirstOrDefault() == "position")
+            if (FilterDictionary.Keys.FirstOrDefault() == "position")
             {
                 List<int> filteredPosition = FilterDictionary.GetValueOrDefault("position");
                 Query = Query.Where(x => filteredPosition.Contains(x.Position));
