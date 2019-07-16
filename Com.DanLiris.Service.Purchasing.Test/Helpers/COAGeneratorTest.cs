@@ -192,6 +192,20 @@ namespace Com.DanLiris.Service.Purchasing.Test.Helpers
         }
 
         [Fact]
+        public void Should_Success_GetCOAByCategoryCodeAndDivisionUnit_Q()
+        {
+            var result = COAGenerator.GetCOAByCategoryCodeAndDivisionUnit("Q", "SPINNING", "S1");
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Should_Success_GetCOAByCategoryCodeAndDivisionUnit_U()
+        {
+            var result = COAGenerator.GetCOAByCategoryCodeAndDivisionUnit("U", "SPINNING", "S1");
+            Assert.NotNull(result);
+        }
+
+        [Fact]
         public void Set_Purchase_Order_Delivery_Order_Duration_Report_ViewModel()
         {
             var result = new GarmentExternalPurchaseOrderDeliveryOrderDurationReportViewModel()
