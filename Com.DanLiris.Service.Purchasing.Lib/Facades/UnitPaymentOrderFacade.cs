@@ -104,12 +104,11 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades
         {
             int Created = 0;
 
-            using(var transaction = dbContext.Database.BeginTransaction())
+            using (var transaction = dbContext.Database.BeginTransaction())
             {
                 try
                 {
                     EntityExtension.FlagForCreate(model, user, USER_AGENT);
-                    model.UPONo = await GenerateNo(model, isImport, clientTimeZoneOffset);
                     foreach (var item in model.Items)
                     {
                         EntityExtension.FlagForCreate(item, user, USER_AGENT);
@@ -146,6 +145,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades
                     throw new Exception(e.Message);
                 }
             }
+
+            model.UPONo = await GenerateNo(model, isImport, clientTimeZoneOffset);
+            await dbContext.SaveChangesAsync();
 
             return Created;
         }
