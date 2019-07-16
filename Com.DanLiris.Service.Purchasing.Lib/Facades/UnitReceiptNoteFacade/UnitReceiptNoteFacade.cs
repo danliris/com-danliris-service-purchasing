@@ -234,7 +234,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
             var purchaseRequests = dbContext.PurchaseRequests.Where(w => purchaseRequestIds.Contains(w.Id)).Select(s => new { s.Id, s.CategoryCode }).ToList();
 
             var externalPurchaseOrderIds = model.Items.Select(s => s.EPOId).ToList();
-            var externalPurchaseOrders = dbContext.ExternalPurchaseOrders.Where(w => externalPurchaseOrderIds.Contains(w.Id)).Select(s => new { s.Id, s.UseIncomeTax, s.IncomeTaxName, s.IncomeTaxRate }).ToList();
+            var externalPurchaseOrders = dbContext.ExternalPurchaseOrders.Where(w => externalPurchaseOrderIds.Contains(w.Id)).Select(s => new { s.Id, s.UseIncomeTax, s.IncomeTaxName, s.IncomeTaxRate, s.CurrencyRate }).ToList();
 
             var externalPurchaseOrderDetailIds = model.Items.Select(s => s.EPODetailId).ToList();
             var externalPurchaseOrderDetails = dbContext.ExternalPurchaseOrderDetails.Where(w => externalPurchaseOrderDetailIds.Contains(w.Id)).Select(s => new { s.Id, s.ProductId, TotalPrice = s.PricePerDealUnit * s.DealQuantity, s.DealQuantity }).ToList();
@@ -258,27 +258,27 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
 
                             if (externalPOPriceTotal > 100000000)
                             {
-                                journalTransactionsToPost.Add(CreateIsSparePartJournalTransaction(item, model, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName, true));
+                                journalTransactionsToPost.Add(CreateIsSparePartJournalTransaction(item, model, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName, true, externalPurchaseOrder.CurrencyRate));
                             }
                             else
                             {
-                                journalTransactionsToPost.Add(CreateIsSparePartJournalTransaction(item, model, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName, false));
+                                journalTransactionsToPost.Add(CreateIsSparePartJournalTransaction(item, model, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName, false, externalPurchaseOrder.CurrencyRate));
                             }
 
                         }
                         else
                         {
-                            journalTransactionsToPost.Add(CreateNormalJournalTransaction(item, model, purchaseRequest.CategoryCode, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName));
+                            journalTransactionsToPost.Add(CreateNormalJournalTransaction(item, model, purchaseRequest.CategoryCode, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName, externalPurchaseOrder.CurrencyRate));
                         }
                     }
                     else
                     {
-                        journalTransactionsToPost.Add(CreateNormalJournalTransaction(item, model, purchaseRequest.CategoryCode, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName));
+                        journalTransactionsToPost.Add(CreateNormalJournalTransaction(item, model, purchaseRequest.CategoryCode, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName, externalPurchaseOrder.CurrencyRate));
                     }
                 }
                 else
                 {
-                    journalTransactionsToPost.Add(CreateJournalTransactionNotHavingStock(item, model, purchaseRequest.CategoryCode, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName));
+                    journalTransactionsToPost.Add(CreateJournalTransactionNotHavingStock(item, model, purchaseRequest.CategoryCode, externalPurchaseOrder.UseIncomeTax, double.TryParse(externalPurchaseOrder.IncomeTaxRate, out double incomeTax) ? double.Parse(externalPurchaseOrder.IncomeTaxRate) : 0, externalPurchaseOrder.IncomeTaxName, externalPurchaseOrder.CurrencyRate));
                 }
             }
 
@@ -297,7 +297,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
             response.EnsureSuccessStatusCode();
         }
 
-        private JournalTransaction CreateIsSparePartJournalTransaction(UnitReceiptNoteItem item, UnitReceiptNote model, bool useIncomeTax, double incomeTaxRate, string incomeTaxName, bool isMoreThanOneHundredMillion)
+        private JournalTransaction CreateIsSparePartJournalTransaction(UnitReceiptNoteItem item, UnitReceiptNote model, bool useIncomeTax, double incomeTaxRate, string incomeTaxName, bool isMoreThanOneHundredMillion, double currencyRate)
         {
             var items = new List<JournalTransactionItem>()
             {
@@ -307,7 +307,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
                     {
                         Code = isMoreThanOneHundredMillion ? $"2303.00.{COAGenerator.GetDivisionAndUnitCOACode(model.DivisionName, model.UnitCode)}" : $"5903.00.{COAGenerator.GetDivisionAndUnitCOACode(model.DivisionName, model.UnitCode)}"
                     },
-                    Debit = item.PricePerDealUnit * item.ReceiptQuantity,
+                    Debit = item.PricePerDealUnit * item.ReceiptQuantity * currencyRate,
                     Remark = item.ProductName
                 },
                 new JournalTransactionItem()
@@ -316,13 +316,13 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
                     {
                         Code = COAGenerator.GetDebtCOA(model.SupplierIsImport, model.DivisionName, model.UnitCode)
                     },
-                    Credit = item.PricePerDealUnit * item.ReceiptQuantity
+                    Credit = item.PricePerDealUnit * item.ReceiptQuantity * currencyRate
                 }
             };
 
             if (useIncomeTax && incomeTaxRate > 0)
             {
-                AddIncomeTax(items, item, model, incomeTaxRate, incomeTaxName);
+                AddIncomeTax(items, item, model, incomeTaxRate, incomeTaxName, currencyRate);
             }
 
             var result = new JournalTransaction()
@@ -335,7 +335,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
             return result;
         }
 
-        private JournalTransaction CreateJournalTransactionNotHavingStock(UnitReceiptNoteItem item, UnitReceiptNote model, string categoryCode, bool useIncomeTax, double incomeTaxRate, string incomeTaxName)
+        private JournalTransaction CreateJournalTransactionNotHavingStock(UnitReceiptNoteItem item, UnitReceiptNote model, string categoryCode, bool useIncomeTax, double incomeTaxRate, string incomeTaxName, double currencyRate)
         {
             var items = new List<JournalTransactionItem>()
             {
@@ -345,7 +345,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
                     {
                         Code = COAGenerator.GetCOAByCategoryCodeAndDivisionUnit(categoryCode, model.DivisionName, model.UnitCode)
                     },
-                    Debit = item.PricePerDealUnit * item.ReceiptQuantity,
+                    Debit = item.PricePerDealUnit * item.ReceiptQuantity * currencyRate,
                     Remark = item.ProductName
                 },
                 new JournalTransactionItem()
@@ -354,13 +354,13 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
                     {
                         Code = COAGenerator.GetDebtCOA(model.SupplierIsImport, model.DivisionName, model.UnitCode)
                     },
-                    Credit = item.PricePerDealUnit * item.ReceiptQuantity
+                    Credit = item.PricePerDealUnit * item.ReceiptQuantity * currencyRate
                 }
             };
 
             if (useIncomeTax && incomeTaxRate > 0)
             {
-                AddIncomeTax(items, item, model, incomeTaxRate, incomeTaxName);
+                AddIncomeTax(items, item, model, incomeTaxRate, incomeTaxName, currencyRate);
             }
 
             var result = new JournalTransaction()
@@ -373,7 +373,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
             return result;
         }
 
-        private JournalTransaction CreateNormalJournalTransaction(UnitReceiptNoteItem item, UnitReceiptNote model, string categoryCode, bool useIncomeTax, double incomeTaxRate, string incomeTaxName)
+        private JournalTransaction CreateNormalJournalTransaction(UnitReceiptNoteItem item, UnitReceiptNote model, string categoryCode, bool useIncomeTax, double incomeTaxRate, string incomeTaxName, double currencyRate)
         {
             var items = new List<JournalTransactionItem>()
             {
@@ -383,7 +383,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
                     {
                         Code = COAGenerator.GetCOAByCategoryCodeAndDivisionUnit(categoryCode, model.DivisionName, model.UnitCode)
                     },
-                    Debit = item.PricePerDealUnit * item.ReceiptQuantity
+                    Debit = item.PricePerDealUnit * item.ReceiptQuantity * currencyRate
                 },
                 new JournalTransactionItem()
                 {
@@ -391,7 +391,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
                     {
                         Code = COAGenerator.GetStockCOA(model.DivisionName, model.UnitCode, categoryCode)
                     },
-                    Debit = item.PricePerDealUnit * item.ReceiptQuantity,
+                    Debit = item.PricePerDealUnit * item.ReceiptQuantity * currencyRate,
                     Remark = item.ProductName
                 },
                 new JournalTransactionItem()
@@ -414,7 +414,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
 
             if (useIncomeTax && incomeTaxRate > 0)
             {
-                AddIncomeTax(items, item, model, incomeTaxRate, incomeTaxName);
+                AddIncomeTax(items, item, model, incomeTaxRate, incomeTaxName, currencyRate);
             }
 
             var result = new JournalTransaction()
@@ -427,7 +427,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
             return result;
         }
 
-        private void AddIncomeTax(List<JournalTransactionItem> items, UnitReceiptNoteItem item, UnitReceiptNote model, double incomeTaxRate, string incomeTaxName)
+        private void AddIncomeTax(List<JournalTransactionItem> items, UnitReceiptNoteItem item, UnitReceiptNote model, double incomeTaxRate, string incomeTaxName, double currencyRate)
         {
             items.AddRange(new List<JournalTransactionItem>()
             {
@@ -436,7 +436,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
                     COA = new COA() {
                         Code = COAGenerator.GetDebtCOA(model.SupplierIsImport, model.DivisionName, model.UnitCode)
                     },
-                    Debit = item.PricePerDealUnit * item.ReceiptQuantity * incomeTaxRate / 100
+                    Debit = item.PricePerDealUnit * item.ReceiptQuantity * currencyRate * (incomeTaxRate / 100)
                 },
                 new JournalTransactionItem()
                 {
@@ -444,7 +444,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
                     {
                         Code = COAGenerator.GetIncomeTaxCOA(incomeTaxName, model.DivisionName, model.UnitCode)
                     },
-                    Credit = item.PricePerDealUnit * item.ReceiptQuantity * incomeTaxRate / 100
+                    Credit = item.PricePerDealUnit * item.ReceiptQuantity * currencyRate * (incomeTaxRate / 100)
                 }
             });
         }

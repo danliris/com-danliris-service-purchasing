@@ -311,6 +311,10 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Enums
             {
                 return $"2302.00.{GetDivisionAndUnitCOACode(divisionName, unitCode)}";
             }
+            else if (new List<string>() { "SP", "R", "S", "E", "PL", "MM" }.Contains(categoryCode))
+            {
+                return $"5903.00.{GetDivisionAndUnitCOACode(divisionName, unitCode)}";
+            }
             else
             {
                 return $"9999.00.{GetDivisionAndUnitCOACode(divisionName, unitCode)}";
