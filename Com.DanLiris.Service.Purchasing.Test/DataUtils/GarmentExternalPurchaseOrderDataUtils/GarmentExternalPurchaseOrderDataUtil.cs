@@ -456,7 +456,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.DataUtils.GarmentExternalPurchase
 
         public async Task<(GarmentExternalPurchaseOrder garmentExternalPurchaseOrder, GarmentInternalPurchaseOrder garmentInternalPurchaseOrder)> GetNewTotalData()
         {
-            var data = Task.Run(() => garmentPurchaseOrderDataUtil.GetTestData()).Result.First();
+            var testData = await garmentPurchaseOrderDataUtil.GetTestData();
+            var data = testData.FirstOrDefault();
             var GarmentExternalPurchaseOrder = new GarmentExternalPurchaseOrder
             {
                 SupplierId = 1,

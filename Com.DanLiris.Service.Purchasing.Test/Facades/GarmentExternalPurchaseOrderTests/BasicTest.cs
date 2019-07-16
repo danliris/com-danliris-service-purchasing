@@ -320,7 +320,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentExternalPurchaseOr
             GarmentExternalPurchaseOrderFacade facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
             var model = await dataUtil(facade, GetCurrentMethod()).GetTestDataAcc();
 
-            Exception errorInvalidId = await Assert.ThrowsAsync<Exception>(async () => facade.EPOUnpost(0, USERNAME));
+            Exception errorInvalidId = Assert.Throws<Exception>(() => facade.EPOUnpost(0, USERNAME));
             Assert.NotNull(errorInvalidId.Message);
         }
 
@@ -330,7 +330,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentExternalPurchaseOr
             GarmentExternalPurchaseOrderFacade facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
             var model = await dataUtil(facade, GetCurrentMethod()).GetTestDataAcc();
 
-            Exception errorInvalidId = await Assert.ThrowsAsync<Exception>(async () => facade.EPOCancel(0, USERNAME));
+            Exception errorInvalidId = Assert.Throws<Exception>(() => facade.EPOCancel(0, USERNAME));
             Assert.NotNull(errorInvalidId.Message);
         }
 
@@ -340,7 +340,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentExternalPurchaseOr
             GarmentExternalPurchaseOrderFacade facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
             var model = await dataUtil(facade, GetCurrentMethod()).GetTestDataAcc();
 
-            Exception errorInvalidId = await Assert.ThrowsAsync<Exception>(async () => facade.EPOClose(0, USERNAME));
+            Exception errorInvalidId = Assert.Throws<Exception>(() => facade.EPOClose(0, USERNAME));
             Assert.NotNull(errorInvalidId.Message);
         }
 
@@ -354,11 +354,11 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentExternalPurchaseOr
         }
 
         [Fact]
-        public async Task Should_Error_Delete_Data()
+        public void Should_Error_Delete_Data()
         {
             GarmentExternalPurchaseOrderFacade facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
 
-            Exception e = await Assert.ThrowsAsync<Exception>(async () => facade.Delete(0, USERNAME));
+            Exception e = Assert.Throws<Exception>(() => facade.Delete(0, USERNAME));
             Assert.NotNull(e.Message);
         }
         [Fact]

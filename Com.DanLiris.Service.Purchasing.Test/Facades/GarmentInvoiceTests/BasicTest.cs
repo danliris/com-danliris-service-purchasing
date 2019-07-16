@@ -288,10 +288,10 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInvoiceTests
 		}
 
 		[Fact]
-		public async Task Should_Error_Delete_Data()
+		public void Should_Error_Delete_Data()
 		{
 			var facade = new GarmentInvoiceFacade(_dbContext(GetCurrentMethod()), ServiceProvider);
-			Exception e = await Assert.ThrowsAsync<Exception>(async () => facade.Delete(0, USERNAME));
+			Exception e = Assert.Throws<Exception>(() => facade.Delete(0, USERNAME));
 			Assert.NotNull(e.Message);
 		}
 		[Fact]

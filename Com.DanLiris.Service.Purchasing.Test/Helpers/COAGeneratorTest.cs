@@ -206,6 +206,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Helpers
         }
 
         [Fact]
+        public void Should_Success_GetCOAByCategoryCodeAndDivisionUnit_F()
+        {
+            var result = COAGenerator.GetCOAByCategoryCodeAndDivisionUnit("F", "SPINNING", "S1");
+            Assert.NotNull(result);
+        }
+
+        [Fact]
         public void Set_Purchase_Order_Delivery_Order_Duration_Report_ViewModel()
         {
             var result = new GarmentExternalPurchaseOrderDeliveryOrderDurationReportViewModel()

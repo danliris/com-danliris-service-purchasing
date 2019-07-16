@@ -539,7 +539,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentPurchaseRequestTes
 		{
 			GarmentCorrectionNoteQuantityFacade facade = new GarmentCorrectionNoteQuantityFacade(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
 		 
-			var datas = dataUtil(facade, GetCurrentMethod()).GetNewDoubleCorrectionData(USERNAME);
+			var datas = await dataUtil(facade, GetCurrentMethod()).GetNewDoubleCorrectionData(USERNAME);
 		
 			var Facade = new GarmentPurchaseRequestFacade(_dbContext(GetCurrentMethod()));
 			var Response = Facade.GetMonitoringPurchaseByUserReport(null, null, null, null, null, null, null, null, null, null, null, null, 1, 25, "{}", 7);
