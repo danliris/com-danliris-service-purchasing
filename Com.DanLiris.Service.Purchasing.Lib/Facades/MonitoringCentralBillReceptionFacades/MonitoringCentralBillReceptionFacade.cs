@@ -153,12 +153,14 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCentralBillRecep
                          //External PO
                          join e in dbContext.GarmentExternalPurchaseOrders on b.EPOId equals e.Id
                          //Internal PO
-                         join f in dbContext.GarmentInternalPurchaseOrderItems on c.POId equals f.Id
-                         join g in dbContext.GarmentInternalPurchaseOrders on f.GPOId equals g.Id 
+                         join f in dbContext.GarmentInternalPurchaseOrderItems on c.POItemId equals f.Id
+                         join g in dbContext.GarmentInternalPurchaseOrders on f.GPOId equals g.Id
                          //Invoice
+                         join p in dbContext.GarmentInvoiceDetails on c.Id equals p.DODetailId into nn
+                         from DInv in nn.DefaultIfEmpty()
                          join h in dbContext.GarmentInvoiceItems on a.Id equals h.DeliveryOrderId into hh
-                         from Inv in hh.DefaultIfEmpty()
-                         join j in dbContext.GarmentInvoices on Inv.InvoiceId equals j.Id into jj
+                         from IInv in hh.DefaultIfEmpty()
+                         join j in dbContext.GarmentInvoices on IInv.InvoiceId equals j.Id into jj
                          from HInv in jj.DefaultIfEmpty()
                          //Intern Note
                          join k in dbContext.GarmentInternNotes on a.InternNo equals k.INNo into kk
@@ -170,11 +172,11 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCentralBillRecep
                          from URN in ll.DefaultIfEmpty()
                          where
                          a.IsDeleted == false && b.IsDeleted == false && c.IsDeleted == false && d.IsDeleted == false && e.IsDeleted == false
-                         && f.IsDeleted == false && g.IsDeleted == false && Inv.IsDeleted == false && HInv.IsDeleted == false 
+                         && f.IsDeleted == false && g.IsDeleted == false && IInv.IsDeleted == false && HInv.IsDeleted == false 
                          && NI.IsDeleted == false && URN.IsDeleted == false && IURN.IsDeleted == false
-
+                         && URN.URNType == "PEMBELIAN" && d.BeacukaiNo.Substring(0, 4) != "BCDL"
                          && ((d1 != new DateTime(1970, 1, 1)) ? (d.BeacukaiDate >= d1 && d.BeacukaiDate <= d2) : true)
-                         
+                         //
                          select new SelectedId
                          {
                              BillDate = d.BeacukaiDate,
@@ -188,7 +190,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCentralBillRecep
                              POItemId = f.Id,
                              INNo = a.InternNo, 
                              INVId = HInv  == null ? 0 : HInv.Id,
-                             INVItemId = Inv == null ? 0 : Inv.Id,                            
+                             INVItemId = IInv == null ? 0 : IInv.Id,                            
                              URNId = URN == null ? 0 : URN.Id,
                              URNItemId = IURN == null ? 0 : IURN.Id,
                          });
