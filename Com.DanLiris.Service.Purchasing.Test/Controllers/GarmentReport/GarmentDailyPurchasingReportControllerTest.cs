@@ -25,7 +25,20 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentReports
             {
                 return new GarmentDailyPurchasingReportViewModel
                 {
-
+                    SupplierName = "",
+                    UnitName = "",
+                    BillNo = "",
+                    PaymentBill = "",
+                    DONo = "",
+                    InternNo = "",
+                    ProductName = "",
+                    CodeRequirement = "",
+                    UOMUnit = "",
+                    Quantity = 0,
+                    Amount = 0,
+                    Amount1 = 0,
+                    Amount2 = 0,
+                    Amount3 = 0,
                 };
             }
         }

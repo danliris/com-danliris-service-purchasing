@@ -420,7 +420,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
             DateTime d1 = dataBC.BeacukaiDate.DateTime;
             DateTime d2 = dataBC.BeacukaiDate.DateTime;
 
-            var Response = DataSJ.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, d1, d2, 7);
+            var Response = DataSJ.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
             Assert.NotNull(Response.Item1);
         }
 
@@ -442,7 +442,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
             DateTime d1 = dataBC.BeacukaiDate.DateTime.AddDays(30);
             DateTime d2 = dataBC.BeacukaiDate.DateTime.AddDays(30);
 
-            var Response = DataSJ.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, d1, d2, 7);
+            var Response = DataSJ.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
             Assert.NotNull(Response.Item1);
         }
 

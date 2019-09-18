@@ -437,7 +437,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInvoiceTests
             DateTime d1 = data.InvoiceDate.DateTime;
             DateTime d2 = data.InvoiceDate.DateTime;
 
-            var Response = DataInv.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, d1, d2, 7);
+            var Response = DataInv.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
             Assert.NotNull(Response.Item1);
         }
 
@@ -467,7 +467,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInvoiceTests
             DateTime d1 = data.InvoiceDate.DateTime;
             DateTime d2 = data.InvoiceDate.DateTime;
 
-            var Response = DataInv.GenerateExcelGDailyPurchasingReport(null, It.IsAny<bool>(), null, d1, d2, 7);
+            var Response = DataInv.GenerateExcelGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
         }
 
