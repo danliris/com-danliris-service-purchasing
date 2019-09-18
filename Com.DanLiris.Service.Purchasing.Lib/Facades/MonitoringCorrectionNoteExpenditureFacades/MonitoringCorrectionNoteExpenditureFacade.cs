@@ -176,8 +176,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCorrectionNoteEx
                          join p in dbContext.GarmentInvoiceDetails on c.Id equals p.DODetailId into nn
                          from DInv in nn.DefaultIfEmpty()
                          join h in dbContext.GarmentInvoiceItems on a.Id equals h.DeliveryOrderId into hh
-                         from IInv in hh.DefaultIfEmpty()
-                         join j in dbContext.GarmentInvoices on IInv.InvoiceId equals j.Id into jj
+                         from Inv in hh.DefaultIfEmpty()
+                         join j in dbContext.GarmentInvoices on Inv.InvoiceId equals j.Id into jj
                          from HInv in jj.DefaultIfEmpty()
                          //Intern Note
                          join k in dbContext.GarmentInternNotes on a.InternNo equals k.INNo into kk
@@ -206,7 +206,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCorrectionNoteEx
                              POItemId = f.Id,
                              INNo = a.InternNo, 
                              INVId = HInv  == null ? 0 : HInv.Id,
-                             INVItemId = IInv == null ? 0 : IInv.Id,                            
+                             INVItemId = Inv == null ? 0 : Inv.Id,                            
                              URNId = URN == null ? 0 : URN.Id,
                              URNItemId = IURN == null ? 0 : IURN.Id,
                          });
