@@ -1365,7 +1365,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             DateTime d1 = dataNK.CorrectionDate.DateTime;
             DateTime d2 = dataNK.CorrectionDate.DateTime;
 
-            var Response = DataNK.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, d1, d2, 7);
+            var Response = DataNK.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
             Assert.NotNull(Response.Item1);
         }
 
@@ -1409,7 +1409,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             DateTime d1 = dataNK.CorrectionDate.DateTime.AddDays(30);
             DateTime d2 = dataNK.CorrectionDate.DateTime.AddDays(30);
 
-            var Response = DataNK.GenerateExcelGDailyPurchasingReport(null, It.IsAny<bool>(), null, d1, d2, 7);
+            var Response = DataNK.GenerateExcelGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
         }
 
