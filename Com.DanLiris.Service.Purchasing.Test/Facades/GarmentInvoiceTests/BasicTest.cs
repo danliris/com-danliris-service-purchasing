@@ -437,8 +437,9 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInvoiceTests
             DateTime d1 = data.InvoiceDate.DateTime;
             DateTime d2 = data.InvoiceDate.DateTime;
 
-            var Response = DataInv.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
+            var Response = DataInv.GetGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.NotNull(Response.Item1);
+            Assert.NotEqual(0, Response.Item2);
         }
 
         [Fact]
@@ -452,8 +453,9 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInvoiceTests
             DateTime d1 = data.InvoiceDate.DateTime.AddDays(30);
             DateTime d2 = data.InvoiceDate.DateTime.AddDays(30);
 
-            var Response = DataInv.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
+            var Response = DataInv.GetGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.NotNull(Response.Item1);
+            Assert.NotEqual(0, Response.Item2);
         }
 
         [Fact]
@@ -467,7 +469,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInvoiceTests
             DateTime d1 = data.InvoiceDate.DateTime;
             DateTime d2 = data.InvoiceDate.DateTime;
 
-            var Response = DataInv.GenerateExcelGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
+            var Response = DataInv.GenerateExcelGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
         }
 
@@ -482,7 +484,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInvoiceTests
             DateTime d1 = data.InvoiceDate.DateTime.AddDays(30);
             DateTime d2 = data.InvoiceDate.DateTime.AddDays(30);
 
-            var Response = DataInv.GenerateExcelGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
+            var Response = DataInv.GenerateExcelGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
         }
     }

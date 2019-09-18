@@ -39,13 +39,13 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDailyPurchasingRepo
                                                                join d in dbContext.GarmentBeacukais on a.CustomsId equals d.Id
                                                                join e in dbContext.GarmentExternalPurchaseOrders on b.EPOId equals e.Id
                                                                join f in dbContext.GarmentInternalPurchaseOrders on c.POId equals f.Id
-                                                               where c.DOQuantity != 0
-                                                               && c.UnitId == (string.IsNullOrWhiteSpace(unitName) ? c.UnitId : unitName)
-                                                               && e.SupplierImport == supplierType
-                                                               && (string.IsNullOrWhiteSpace(supplierName) ? true : (supplierName == "DAN LIRIS" ? a.SupplierCode.Substring(0, 2) == "DL" : a.SupplierCode.Substring(0, 2) != "DL"))
-                                                               && d.BeacukaiDate.AddHours(offset).Date >= DateFrom.Date && d.BeacukaiDate.AddHours(offset).Date <= DateTo.Date
+                                                                 where c.DOQuantity != 0
+                                                                 && c.UnitId == (string.IsNullOrWhiteSpace(unitName) ? c.UnitId : unitName)
+                                                                 && e.SupplierImport == supplierType
+                                                                 && (string.IsNullOrWhiteSpace(supplierName) ? true : (supplierName == "DAN LIRIS" ? a.SupplierCode.Substring(0, 2) == "DL" : a.SupplierCode.Substring(0, 2) != "DL"))
+                                                                 && d.BeacukaiDate.AddHours(offset).Date >= DateFrom.Date && d.BeacukaiDate.AddHours(offset).Date <= DateTo.Date
 
-                                                               select new GarmentDailyPurchasingTempViewModel
+                                                                 select new GarmentDailyPurchasingTempViewModel
                                                                {
                                                                    SuplName = a.SupplierName,
                                                                    UnitName = f.UnitName,

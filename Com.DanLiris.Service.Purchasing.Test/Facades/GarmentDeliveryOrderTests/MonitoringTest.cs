@@ -415,13 +415,14 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
             GarmentDailyPurchasingReportFacade DataSJ = new GarmentDailyPurchasingReportFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
 
             var dataDO = await datautilDO.GetTestData();
-            var dataBC = await datautilBC.GetTestData(USERNAME, garmentDeliveryOrder);
+            var dataBC = await datautilBC.GetTestData(USERNAME, dataDO);
 
             DateTime d1 = dataBC.BeacukaiDate.DateTime;
             DateTime d2 = dataBC.BeacukaiDate.DateTime;
 
-            var Response = DataSJ.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
+            var Response = DataSJ.GetGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.NotNull(Response.Item1);
+            Assert.NotEqual(0, Response.Item2);
         }
 
         [Fact]
@@ -437,13 +438,14 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
             GarmentDailyPurchasingReportFacade DataSJ = new GarmentDailyPurchasingReportFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
 
             var dataDO = await datautilDO.GetTestData();
-            var dataBC = await datautilBC.GetTestData(USERNAME, garmentDeliveryOrder);
+            var dataBC = await datautilBC.GetTestData(USERNAME, dataDO);
 
             DateTime d1 = dataBC.BeacukaiDate.DateTime.AddDays(30);
             DateTime d2 = dataBC.BeacukaiDate.DateTime.AddDays(30);
 
-            var Response = DataSJ.GetGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
+            var Response = DataSJ.GetGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.NotNull(Response.Item1);
+            Assert.NotEqual(0, Response.Item2);
         }
 
         [Fact]
@@ -459,11 +461,12 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
             GarmentDailyPurchasingReportFacade DataSJ = new GarmentDailyPurchasingReportFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
 
             var dataDO = await datautilDO.GetTestData();
-            var dataBC = await datautilBC.GetTestData(USERNAME, garmentDeliveryOrder);
+            var dataBC = await datautilBC.GetTestData(USERNAME, dataDO);
+
             DateTime d1 = dataBC.BeacukaiDate.DateTime;
             DateTime d2 = dataBC.BeacukaiDate.DateTime;
 
-            var Response = DataSJ.GenerateExcelGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
+            var Response = DataSJ.GenerateExcelGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
         }
 
@@ -480,12 +483,12 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
             GarmentDailyPurchasingReportFacade DataSJ = new GarmentDailyPurchasingReportFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
 
             var dataDO = await datautilDO.GetTestData();
-            var dataBC = await datautilBC.GetTestData(USERNAME, garmentDeliveryOrder);
+            var dataBC = await datautilBC.GetTestData(USERNAME, dataDO);
 
             DateTime d1 = dataBC.BeacukaiDate.DateTime.AddDays(30);
             DateTime d2 = dataBC.BeacukaiDate.DateTime.AddDays(30);
 
-            var Response = DataSJ.GenerateExcelGDailyPurchasingReport(null, It.IsAny<bool>(), null, null, null, 7);
+            var Response = DataSJ.GenerateExcelGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
 
         }
