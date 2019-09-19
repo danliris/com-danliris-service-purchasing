@@ -153,22 +153,23 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDailyPurchasingRepo
                                                                };
 
             IQueryable<GarmentDailyPurchasingTempViewModel> d5 = from inv in dbContext.GarmentInvoices
-                                                               join invi in dbContext.GarmentInvoiceItems on inv.Id equals invi.InvoiceId
-                                                               join invd in dbContext.GarmentInvoiceDetails on invi.Id equals invd.InvoiceItemId
-                                                               join gdo in dbContext.GarmentDeliveryOrders on invi.DeliveryOrderId equals gdo.Id
-                                                               join gdd in dbContext.GarmentDeliveryOrderDetails on invd.DODetailId equals gdd.Id
-                                                               join epo in dbContext.GarmentExternalPurchaseOrders on invd.EPOId equals epo.Id
-                                                               join ipo in dbContext.GarmentInternalPurchaseOrders on invd.IPOId equals ipo.Id
-                                                               where invd.DOQuantity != 0
-                                                               && ipo.UnitId == (string.IsNullOrWhiteSpace(unitName) ? ipo.UnitId : unitName)
-                                                               && epo.SupplierImport == supplierType
-                                                               && inv.IsPayTax == true
-                                                               && inv.UseVat == true
-                                                               && inv.NPN != null
-                                                               && (string.IsNullOrWhiteSpace(supplierName) ? true : (supplierName == "DAN LIRIS" ? inv.SupplierCode.Substring(0, 2) == "DL" : inv.SupplierCode.Substring(0, 2) != "DL"))
-                                                               && inv.InvoiceDate.AddHours(offset).Date >= DateFrom.Date && inv.InvoiceDate.AddHours(offset).Date <= DateTo.Date
+                                                                 join invi in dbContext.GarmentInvoiceItems on inv.Id equals invi.InvoiceId
+                                                                 join invd in dbContext.GarmentInvoiceDetails on invi.Id equals invd.InvoiceItemId
+                                                                 join gdd in dbContext.GarmentDeliveryOrderDetails on invd.DODetailId equals gdd.Id
+                                                                 join gdi in dbContext.GarmentDeliveryOrderItems on gdd.GarmentDOItemId equals gdi.Id
+                                                                 join gdo in dbContext.GarmentDeliveryOrders on  gdi.GarmentDOId equals gdo.Id
+                                                                 join epo in dbContext.GarmentExternalPurchaseOrders on invd.EPOId equals epo.Id
+                                                                 join ipo in dbContext.GarmentInternalPurchaseOrders on invd.IPOId equals ipo.Id
+                                                                 where invd.DOQuantity != 0
+                                                                 && ipo.UnitId == (string.IsNullOrWhiteSpace(unitName) ? ipo.UnitId : unitName)
+                                                                 && epo.SupplierImport == supplierType
+                                                                 && inv.IsPayTax == true
+                                                                 && inv.UseVat == true
+                                                                 && inv.NPN != null
+                                                                 && (string.IsNullOrWhiteSpace(supplierName) ? true : (supplierName == "DAN LIRIS" ? inv.SupplierCode.Substring(0, 2) == "DL" : inv.SupplierCode.Substring(0, 2) != "DL"))
+                                                                 && inv.InvoiceDate.AddHours(offset).Date >= DateFrom.Date && inv.InvoiceDate.AddHours(offset).Date <= DateTo.Date
 
-                                                               select new GarmentDailyPurchasingTempViewModel
+                                                                 select new GarmentDailyPurchasingTempViewModel
                                                                {
                                                                    SuplName = inv.SupplierName,
                                                                    UnitName = ipo.UnitName,
@@ -186,8 +187,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDailyPurchasingRepo
             IQueryable<GarmentDailyPurchasingTempViewModel> d6 = from inv in dbContext.GarmentInvoices
                                                                join invi in dbContext.GarmentInvoiceItems on inv.Id equals invi.InvoiceId
                                                                join invd in dbContext.GarmentInvoiceDetails on invi.Id equals invd.InvoiceItemId
-                                                               join gdo in dbContext.GarmentDeliveryOrders on invi.DeliveryOrderId equals gdo.Id
                                                                join gdd in dbContext.GarmentDeliveryOrderDetails on invd.DODetailId equals gdd.Id
+                                                               join gdi in dbContext.GarmentDeliveryOrderItems on gdd.GarmentDOItemId equals gdi.Id
+                                                               join gdo in dbContext.GarmentDeliveryOrders on gdi.GarmentDOId equals gdo.Id
                                                                join epo in dbContext.GarmentExternalPurchaseOrders on invd.EPOId equals epo.Id
                                                                join ipo in dbContext.GarmentInternalPurchaseOrders on invd.IPOId equals ipo.Id
                                                                where invd.DOQuantity != 0

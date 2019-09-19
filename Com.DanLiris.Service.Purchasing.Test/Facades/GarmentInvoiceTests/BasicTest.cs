@@ -439,8 +439,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInvoiceTests
 
             var Response = DataInv.GetGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.NotNull(Response.Item1);
-            Assert.NotEqual(0, Response.Item2);
-        }
+       }
 
         [Fact]
         public async Task Should_Success_Get_Buku_Sub_Beli_Null_Parameter()
@@ -455,7 +454,6 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentInvoiceTests
 
             var Response = DataInv.GetGDailyPurchasingReport(null, true, null, null, null, 7);
             Assert.NotNull(Response.Item1);
-            Assert.NotEqual(0, Response.Item2);
         }
 
         [Fact]
