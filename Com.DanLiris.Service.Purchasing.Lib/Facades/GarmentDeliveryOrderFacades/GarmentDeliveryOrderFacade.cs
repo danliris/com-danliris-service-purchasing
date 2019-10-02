@@ -2033,6 +2033,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderFacade
                              && j.IsDeleted == false
                              && m.IsDeleted == false
                              && URN.IsDeleted == false
+                             && URN.URNType == "PEMBELIAN"
                              && a.DONo == (string.IsNullOrWhiteSpace(no) ? a.DONo : no)
                              && a.SupplierId == (supplierId == 0 ? a.SupplierId : supplierId)
                              && a.DODate.AddHours(offset).Date >= DateFrom.Date
@@ -2046,13 +2047,16 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderFacade
                              URNNo = URN.URNNo ?? "-",
                              URNDate = URN == null ? new DateTime(1970, 1, 1) : URN.ReceiptDate,
                              UnitName = URN.UnitName ?? "-",
+                             URNcreatedBy = URN.CreatedBy,
                              supplierName = a.SupplierName,
                              supplierCode = a.SupplierCode,
                              shipmentNo = a.ShipmentNo,
                              shipmentType = a.ShipmentType,
                              createdBy = a.CreatedBy,
                              doCurrencyCode = a.DOCurrencyCode,
-                             isCustoms = a.IsCustoms,
+                             //isCustoms = a.IsCustoms,
+                             billNo = a.BillNo,
+                             paymentBill = a.PaymentBill,
                              price = j.PricePerDealUnit,
                              ePONo = i.EPONo,
                              productCode = j.ProductCode,
@@ -2122,7 +2126,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderFacade
             result.Columns.Add(new DataColumn() { ColumnName = "Jenis Supplier", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Pengiriman", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nomor BL", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Dikenakan", DataType = typeof(String) });
+            //result.Columns.Add(new DataColumn() { ColumnName = "Dikenakan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "BP Besar", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "BP Kecil", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nomor PO Eksternal", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nomor PR", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nomor RO", DataType = typeof(String) });
@@ -2140,10 +2146,11 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderFacade
             result.Columns.Add(new DataColumn() { ColumnName = "Nomor Bon Unit", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Bon Unit", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Unit Yang Membutuhkan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Input Bon", DataType = typeof(String) });
 
             if (Query.ToArray().Count() == 0)
                 // result.Rows.Add("", "", "", "", "", "", "", "", "", "", 0, 0, 0, ""); // to allow column name to be generated properly for empty data as template
-                result.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, 0, "", 0, "", "", "", "", "", "", "");
+                result.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, 0, "", 0, "", "", "", "", "", "", "", "");
             else
             {
                 int index = 0;
@@ -2157,7 +2164,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderFacade
                     string URNDate = item.URNDate == new DateTime(1970, 1, 1) ? "-" : item.URNDate.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
 
                     // result.Rows.Add(index, item.supplierCode, item.supplierName, item.no, supplierDoDate, date, item.ePONo, item.productCode, item.productName, item.productRemark, item.dealQuantity, item.dOQuantity, item.remainingQuantity, item.uomUnit);
-                    result.Rows.Add(index, item.no, supplierDoDate, date, item.supplierName, jenissupp, item.shipmentType, item.shipmentNo, dikenakan, item.ePONo, item.prNo, item.roNo, item.prRefNo, item.productCode, item.productName, item.dealQuantity, item.dOQuantity, item.uomUnit, item.price, item.doCurrencyCode, item.productRemark, item.createdBy, item.EPOcreatedBy, item.URNNo, URNDate, item.UnitName);
+                    result.Rows.Add(index, item.no, supplierDoDate, date, item.supplierName, jenissupp, item.shipmentType, item.shipmentNo, item.billNo, item.paymentBill,//dikenakan, 
+                    item.ePONo, item.prNo, item.roNo, item.prRefNo, item.productCode, item.productName, item.dealQuantity, item.dOQuantity, item.uomUnit, item.price, item.doCurrencyCode, item.productRemark, item.createdBy, item.EPOcreatedBy, item.URNNo, URNDate, item.UnitName, item.URNcreatedBy);
                 }
             }
 
