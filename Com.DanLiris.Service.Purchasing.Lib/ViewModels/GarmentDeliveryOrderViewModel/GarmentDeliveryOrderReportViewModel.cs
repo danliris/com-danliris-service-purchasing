@@ -31,9 +31,12 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentDeliveryOrderVie
         public string remark { get; set; }
         public string createdBy { get; set; }
         public bool isCustoms { get; set; }
+        public string billNo { get; set; }
+        public string paymentBill { get; set; }
         public string URNNo { get; set; }
         public DateTimeOffset URNDate { get; set; }
         public string UnitName { get; set; }
+        public string URNCreatedBy { get; set; }
         public string EPOcreatedBy { get; set; }
     }
 }
