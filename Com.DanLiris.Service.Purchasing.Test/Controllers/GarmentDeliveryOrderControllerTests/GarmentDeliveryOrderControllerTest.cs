@@ -967,5 +967,70 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentDeliveryOrderC
 
         }
         #endregion
+        [Fact]
+        public void Should_Success_Get_Book_Report()
+        {
+            var mockFacade = new Mock<IGarmentDeliveryOrderFacade>();
+            mockFacade.Setup(x => x.GetBookReport(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Returns(Tuple.Create(new List<GarmentPurchaseBookViewModel>(), 5));
+            var mockMapper = new Mock<IMapper>();
+            GarmentDeliveryOrderController controller = GetController(mockFacade, null, mockMapper);
+            var response = controller.GetReportBook(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
+            Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
+        }
+        [Fact]
+        public void Should_Success_Get_Book_Xls()
+        {
+            var mockFacade = new Mock<IGarmentDeliveryOrderFacade>();
+            mockFacade.Setup(x => x.GenerateExcelBookReport(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>()))
+                .Returns(new MemoryStream());
+
+            var mockMapper = new Mock<IMapper>();
+            //mockMapper.Setup(x => x.Map<List<GarmentDeliveryOrderReportViewModel>>(It.IsAny<List<GarmentDeliveryOrder>>()))
+            //    .Returns(new List<GarmentDeliveryOrderReportViewModel> { ViewModel });
+
+            var user = new Mock<ClaimsPrincipal>();
+            var claims = new Claim[]
+            {
+                new Claim("username", "unittestusername")
+            };
+            user.Setup(u => u.Claims).Returns(claims);
+            GarmentDeliveryOrderController controller = new GarmentDeliveryOrderController(GetServiceProvider().Object, mockMapper.Object, mockFacade.Object);
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext()
+                {
+                    User = user.Object
+                }
+            };
+
+            controller.ControllerContext.HttpContext.Request.Headers["x-timezone-offset"] = "0";
+            var response = controller.GetBookXls(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>());
+            Assert.Equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.GetType().GetProperty("ContentType").GetValue(response, null));
+        }
+        [Fact]
+        public void Should_Error_Get_Book_Report()
+        {
+            var mockFacade = new Mock<IGarmentDeliveryOrderFacade>();
+
+            var mockMapper = new Mock<IMapper>();
+
+
+            GarmentDeliveryOrderController controller = GetController(mockFacade, null, mockMapper);
+            var response = controller.GetReportBook(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
+            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
+        }
+        [Fact]
+        public void Should_Error_Get_Book_Xls()
+        {
+            var mockFacade = new Mock<IGarmentDeliveryOrderFacade>();
+
+            var mockMapper = new Mock<IMapper>();
+
+            GarmentDeliveryOrderController controller = new GarmentDeliveryOrderController(GetServiceProvider().Object, mockMapper.Object, mockFacade.Object);
+
+            var response = controller.GetBookXls(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>());
+            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
+        }
     }
 }

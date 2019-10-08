@@ -2171,6 +2171,257 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderFacade
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
+        public Tuple<List<GarmentPurchaseBookViewModel>, int> GetBookReport(int offset, bool? suppliertype, string suppliercode, string tipebarang, int page, int size, string Order, DateTime? dateFrom, DateTime? dateTo)
+        {
+            var Query = GetBookQuery(tipebarang, suppliertype, suppliercode, dateFrom, dateTo, offset);
+            Query = Query.OrderByDescending(x => x.SupplierName).ThenBy(x => x.Dono);
+            List<GarmentPurchaseBookViewModel> Data = Query.ToList<GarmentPurchaseBookViewModel>();
+            int TotalData = Data.Count();
+            return Tuple.Create(Data, TotalData);
+        }
+        public IQueryable<GarmentPurchaseBookViewModel> GetBookQuery(string ctg, bool? suppliertype, string suppliercode, DateTime? datefrom, DateTime? dateto, int offset)
+        {
+            //DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            DateTime DateFrom = datefrom == null ? new DateTime(1970, 1, 1) : (DateTime)datefrom;
+            DateTime DateTo = dateto == null ? DateTime.Now : (DateTime)dateto;
+
+            var Query1 = (from c in dbContext.GarmentDeliveryOrderDetails
+                          join b in dbContext.GarmentDeliveryOrderItems on c.GarmentDOItemId equals b.Id
+                          join a in dbContext.GarmentDeliveryOrders on b.GarmentDOId equals a.Id
+                          join h in dbContext.GarmentExternalPurchaseOrders on b.EPOId equals h.Id
+                          join d in dbContext.GarmentBeacukaiItems on a.Id equals d.GarmentDOId
+                          join e in dbContext.GarmentBeacukais on d.BeacukaiId equals e.Id
+                          join f in dbContext.GarmentInternNoteDetails on a.Id equals f.DOId into indet
+                          from t in indet.DefaultIfEmpty()
+                          join re in dbContext.GarmentInternNoteItems on t.GarmentItemINId equals re.Id into internitem
+                          from x in internitem.DefaultIfEmpty()
+                          join j in dbContext.GarmentInvoices on x.InvoiceId equals j.Id into invo
+                          from kp in invo.DefaultIfEmpty()
+                          join gh in dbContext.GarmentInvoiceItems on kp.Id equals gh.InvoiceId into invoitems
+                          from vb in invoitems.DefaultIfEmpty()
+                          where a.IsDeleted == false && b.IsDeleted == false && c.IsDeleted == false
+                          && c.CodeRequirment == (string.IsNullOrWhiteSpace(ctg) ? c.CodeRequirment : ctg)
+                          && a.SupplierCode == (string.IsNullOrWhiteSpace(suppliercode) ? a.SupplierCode : suppliercode)
+                          && (d.ArrivalDate != null ? d.ArrivalDate.AddHours(offset).Date >= DateFrom.Date : e.BeacukaiDate.AddHours(offset).Date >= DateFrom.Date)
+                          && (d.ArrivalDate != null ? d.ArrivalDate.AddHours(offset).Date <= DateTo.Date : e.BeacukaiDate.AddHours(offset).Date <= DateTo.Date)
+                          && h.SupplierImport == (suppliertype.HasValue ? suppliertype : h.SupplierImport)
+                          //&& a.BillNo == "BP190904171636000028"  
+                          && !e.BeacukaiNo.Contains("BCDL")
+                          select new
+                          {
+                              a.SupplierName,
+                              a.BillNo,
+                              a.IsInvoice,
+                              a.PaymentBill,
+                              a.DONo,
+                              InternNo = a.InternNo == null ? "" : a.InternNo,
+                              DoId = a.Id,
+                              e.BeacukaiDate,
+                              d.ArrivalDate,
+                              c.CodeRequirment,
+                              a.TotalAmount,
+                              a.UseVat,
+                              a.UseIncomeTax,
+                              a.IsCorrection,
+                              a.IncomeTaxRate,
+                              InvoiceNo = kp.InvoiceNo == null ? "" : kp.InvoiceNo,
+                              PaymentDueDate = t.PaymentDueDate == null ? new DateTime(1970, 1, 1) : t.PaymentDueDate,
+                              ppn = a.UseVat == true && kp.IsPayTax == true ? (kp.TotalAmount * 10) / 100 : 0,
+                              ppn2 = a.UseIncomeTax == true && kp.IsPayTax == true && a.IncomeTaxRate != 0 ? (kp.IncomeTaxRate * kp.TotalAmount) / 100 : 0,
+                              NPN = kp.NPN == null ? "" : kp.NPN,
+                              NPH = kp.NPH == null ? "" : kp.NPH,
+                              a.DOCurrencyCode,
+                              a.DOCurrencyRate
+                          }).ToList();
+
+
+
+            var Data = (from query in Query1
+                        group query by new { query.DONo } into groupdata
+                        select new
+                        {
+                            SupplierName = groupdata.First().SupplierName,
+                            BillNo = groupdata.First().BillNo,
+                            PaymentBill = groupdata.First().PaymentBill,
+                            Dono = groupdata.First().DONo,
+                            InvoiceNo = groupdata.First().InvoiceNo == "" ? "-" : groupdata.First().InvoiceNo,
+                            InternNo = groupdata.First().InternNo == "" ? "-" : groupdata.First().InternNo,
+                            Tipe = groupdata.First().CodeRequirment,
+                            internDate = groupdata.First().ArrivalDate != null ? groupdata.First().ArrivalDate : groupdata.First().BeacukaiDate,
+                            paymentduedate = groupdata.First().PaymentDueDate,
+                            priceTotal = groupdata.First().TotalAmount,
+                            ppn = groupdata.First().ppn,
+                            ppn2 = groupdata.First().ppn2,
+                            total = groupdata.First().TotalAmount,
+                            totalppn = groupdata.First().ppn,
+                            totalppn2 = groupdata.First().ppn2,
+                            npn = groupdata.First().NPN,
+                            nph = groupdata.First().NPH,
+                            vat = groupdata.First().UseVat,
+                            incomtax = groupdata.First().UseIncomeTax,
+                            correction = groupdata.First().IsCorrection,
+                            doid = groupdata.First().DoId,
+                            ArrivalDate = groupdata.First().ArrivalDate,
+                            BeacukaiDate = groupdata.First().BeacukaiDate,
+                            MataUang = groupdata.First().DOCurrencyCode,
+                            nilaiMataUang = groupdata.First().DOCurrencyRate
+                        }).ToList().OrderBy(a => a.SupplierName);
+
+            List<GarmentPurchaseBookViewModel> Datacoba = new List<GarmentPurchaseBookViewModel>();
+
+
+            foreach (var item in Data)
+            {
+                //BP
+                if (!string.IsNullOrEmpty(item.BillNo))
+                {
+                    Datacoba.Add(new
+                        GarmentPurchaseBookViewModel
+                    {
+                        SupplierName = item.SupplierName,
+                        BillNo = item.BillNo,
+                        PaymentBill = item.PaymentBill,
+                        Dono = item.Dono,
+                        InvoiceNo = item.InvoiceNo,
+                        InternNo = item.InternNo,
+                        Tipe = item.Tipe,
+                        internDate = item.ArrivalDate != null ? item.ArrivalDate : item.BeacukaiDate,
+                        paymentduedate = item.paymentduedate,
+                        priceTotal = item.priceTotal,
+                        dpp = item.total,
+                        ppn = 0,
+                        total = item.total * item.nilaiMataUang,
+                        totalppn = 0,
+                        CurrencyCode = item.MataUang,
+                        CurrencyRate = item.nilaiMataUang
+                    });
+                }
+                //NPN
+                if (!string.IsNullOrEmpty(item.npn))
+                {
+                    Datacoba.Add(new GarmentPurchaseBookViewModel
+                    {
+                        SupplierName = item.SupplierName,
+                        BillNo = item.npn,
+                        PaymentBill = item.PaymentBill,
+                        Dono = item.Dono,
+                        InvoiceNo = item.InvoiceNo,
+                        InternNo = item.InternNo,
+                        Tipe = item.Tipe,
+                        internDate = item.ArrivalDate != null ? item.ArrivalDate : item.BeacukaiDate,
+                        paymentduedate = item.paymentduedate,
+                        priceTotal = item.ppn,
+                        ppn = item.ppn,
+                        dpp = 0,
+                        total = item.totalppn * item.nilaiMataUang,
+                        totalppn = item.totalppn,
+                        CurrencyCode = item.MataUang,
+                        CurrencyRate = item.nilaiMataUang
+                    });
+                }
+                //nph
+                if (!string.IsNullOrEmpty(item.nph))
+                {
+                    Datacoba.Add(new
+                        GarmentPurchaseBookViewModel
+                    {
+                        SupplierName = item.SupplierName,
+                        BillNo = item.nph,
+                        PaymentBill = item.PaymentBill,
+                        Dono = item.Dono,
+                        InvoiceNo = item.InvoiceNo,
+                        InternNo = item.InternNo,
+                        Tipe = item.Tipe,
+                        internDate = item.ArrivalDate != null ? item.ArrivalDate : item.BeacukaiDate,
+                        paymentduedate = item.paymentduedate,
+                        priceTotal = item.priceTotal,
+                        ppn = item.ppn != 0 ? item.ppn : 0,
+                        totalppn = item.totalppn2,
+                        total = item.totalppn2 != 0 ? item.totalppn2 * item.nilaiMataUang : 0,
+                        dpp = 0,
+                        CurrencyCode = item.MataUang,
+                        CurrencyRate = item.nilaiMataUang
+                    });
+                }
+                if (item.correction == true /*&& item.ppn!= 0*/)
+                {
+                    var c = (from a in dbContext.GarmentCorrectionNotes
+                             where a.DOId == item.doid
+                             select a);
+                    var b = from a in c
+                            group a by new { a.DONo } into vb
+                            select new { /*nkpn = vb.First().NKPN,*/nk = vb.First().CorrectionNo, totalamo = vb.Sum(x => x.TotalCorrection) };
+                    foreach (var i in b)
+                    {
+
+                        Datacoba.Add(new
+                            GarmentPurchaseBookViewModel
+                        {
+                            SupplierName = item.SupplierName,
+                            BillNo = i.nk,
+                            PaymentBill = item.PaymentBill,
+                            Dono = item.Dono,
+                            InvoiceNo = item.InvoiceNo,
+                            InternNo = item.InternNo,
+                            Tipe = item.Tipe,
+                            internDate = item.ArrivalDate != null ? item.ArrivalDate : item.BeacukaiDate,
+                            paymentduedate = item.paymentduedate,
+                            priceTotal = item.priceTotal,
+                            ppn = 0,
+                            total = Convert.ToDouble(i.totalamo) * item.nilaiMataUang,
+                            totalppn = 0,
+                            dpp = Convert.ToDouble(i.totalamo),
+                            CurrencyCode = item.MataUang,
+                            CurrencyRate = item.nilaiMataUang
+                        });
+                        //}
+                    }
+
+
+                }
+
+            }
+
+            return Datacoba.AsQueryable();
+
+
+
+        }
+        public MemoryStream GenerateExcelBookReport(string ctg, bool? suppliertype, string suppliercode, DateTime? datefrom, DateTime? dateto, int offset)
+        {
+            var Query = GetBookQuery(ctg, suppliertype, suppliercode, datefrom, dateto, offset);
+            DataTable result = new DataTable();
+
+            result.Columns.Add(new DataColumn() { ColumnName = "Nomor", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Supplier", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nomor Nota", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nomor Bon Kecil", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nomor Surat Jalan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nomor Invoice", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nota Intern", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tipe", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Nota", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Jatuh Tempo", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "DPP", DataType = typeof(Decimal) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jenis Valas", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Rate", DataType = typeof(Double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "PPN", DataType = typeof(Decimal) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Total(IDR)", DataType = typeof(Decimal) });
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", "", "", "", "", "", "", 0, "", 0, 0, 0); // to allow column name to be generated properly for empty data as template
+            else
+            {
+                int index = 0;
+                foreach (var item in Query)
+                {
+                    index++;
+                    string date1 = item.internDate == null ? "-" : item.internDate.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    string date2 = item.paymentduedate == new DateTime(1970, 1, 1) ? "-" : item.paymentduedate.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    result.Rows.Add(index, item.SupplierName, item.BillNo, item.PaymentBill, item.Dono, item.InvoiceNo, item.InternNo, item.Tipe, date1, date2, (Decimal)Math.Round((item.dpp), 2), item.CurrencyCode, item.CurrencyRate, (Decimal)Math.Round(Convert.ToDecimal(item.totalppn), 2), (Decimal)Math.Round(Convert.ToDecimal(item.total), 2));
+                }
+            }
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
+        }
     }
 
     public class AccuracyOfArrivalReportDetail
