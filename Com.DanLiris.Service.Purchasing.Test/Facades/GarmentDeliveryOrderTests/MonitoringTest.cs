@@ -397,5 +397,22 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
             var Response = facade.GenerateExcelDO("", "", 0, null, null, 7);
             Assert.IsType(typeof(System.IO.MemoryStream), Response);
         }
+        [Fact]
+        public async Task Should_Success_Get_Book_Report()
+        {
+            GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            var model = await dataUtil(facade, GetCurrentMethod()).GetTestData();
+            //var g =  $"{nowTicksA}"
+            var Response = facade.GetBookReport(7, null, null, null, 0, 0, "{}", null, null);
+            Assert.NotNull(Response.Item1);
+        }
+        [Fact]
+        public async Task Should_Success_Get_Book_Report_Excel()
+        {
+            GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            var model = await dataUtil(facade, GetCurrentMethod()).GetTestData();
+            var Response = facade.GenerateExcelBookReport(null, null, null, null, null, 7);
+            Assert.IsType(typeof(System.IO.MemoryStream), Response);
+        }
     }
 }

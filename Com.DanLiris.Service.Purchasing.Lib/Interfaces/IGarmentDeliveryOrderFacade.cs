@@ -45,5 +45,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Interfaces
         AccuracyOfArrivalReportHeaderResult GetAccuracyOfArrivalHeader(string category, DateTime? dateFrom, DateTime? dateTo);
         List<AccuracyOfArrivalReportDetail> GetAccuracyOfArrivalDetail(string supplierCode, string category, DateTime? dateFrom, DateTime? dateTo);
         List<GarmentDeliveryOrder> ReadForInternNote(List<long> deliveryOrderIds);
+        Tuple<List<GarmentPurchaseBookViewModel>, int> GetBookReport(int offset, bool? suppliertype, string suppliercode, string tipebarang, int page, int size, string Order, DateTime? dateFrom, DateTime? dateTo);
+        MemoryStream GenerateExcelBookReport(string ctg, bool? suppliertype, string suppliercode, DateTime? datefrom, DateTime? dateto, int offset);
     }
 }
