@@ -26,7 +26,12 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentPurchaseRequestV
 		public string prProductRemark { get; set; }
 		public string poProductRemark { get; set; }
 		public double poDealQty { get; set; }
-		public string poDealUomUnit { get; set; }
+        public double poDefaultQty { get; set; }
+        public string paymentMethod { get; set; }
+        public string paymentType { get; set; }
+        public double paymentDueDays { get; set; }
+
+        public string poDealUomUnit { get; set; }
 		public double prBudgetPrice { get; set; }
 		public double poPricePerDealUnit { get; set; }
 		public string totalNominalPO { get; set; }
