@@ -15,7 +15,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.ViewModels.UnitReceiptNoteViewMode
         public string prNo { get; set; }
         public long prId { get; set; }
         public long prItemId { get; set; }
-
+        public long URNId { get; set; }
         public string categoryCode { get; set; }
         public string uom { get; set; }
         public string uomId { get; set; }
