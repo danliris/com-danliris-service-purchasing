@@ -352,6 +352,27 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.UnitReceiptNoteTests
             Assert.NotNull(response);
         }
 
+
+        [Fact]
+        public async Task Should_Success_GetSpbReport()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            UnitReceiptNoteFacade facade = new UnitReceiptNoteFacade(_ServiceProvider(GetCurrentMethod()).Object, dbContext);
+            var dataUtil = await _dataUtil(facade, dbContext, GetCurrentMethod()).GetTestData(USERNAME);
+            var response = facade.GetSpbReport(dataUtil.URNNo, "", null, null, null, 25, 1, "{}", 1);
+            Assert.NotEqual(response.Data.Count, 0);
+        }
+
+        [Fact]
+        public async Task Should_Success_GenerateExcel_Spb()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            UnitReceiptNoteFacade facade = new UnitReceiptNoteFacade(_ServiceProvider(GetCurrentMethod()).Object, dbContext);
+            var dataUtil = await _dataUtil(facade, dbContext, GetCurrentMethod()).GetTestData(USERNAME);
+            var response = facade.GenerateExcelSpb(dataUtil.URNNo, "", null, null, null, 1);
+            Assert.NotNull(response);
+        }
+
         [Fact]
         public async Task Should_Success_Get_By_No()
         {
@@ -401,6 +422,9 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.UnitReceiptNoteTests
             var response = await facade.GetUnitReceiptNoteForSubledger(new List<string>() { dataUtil.URNNo });
             Assert.NotEmpty(response);
         }
+
+
+       
 
         //[Fact]
         //public async Task Should_Success_Update_Data()
