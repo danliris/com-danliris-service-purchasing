@@ -1,6 +1,7 @@
 ﻿using Com.DanLiris.Service.Purchasing.Lib.Facades;
 using Com.DanLiris.Service.Purchasing.Lib.Models.UnitPaymentOrderModel;
 using Com.DanLiris.Service.Purchasing.Test.DataUtils.UnitReceiptNoteDataUtils;
+using Com.DanLiris.Service.Purchasing.Test.DataUtils.ExpeditionDataUtil;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,7 +11,10 @@ namespace Com.DanLiris.Service.Purchasing.Test.DataUtils.UnitPaymentOrderDataUti
     public class UnitPaymentOrderDataUtil
     {
         private UnitReceiptNoteDataUtil unitReceiptNoteDataUtil;
+        private PurchasingDocumentAcceptanceDataUtil pdaDataUtil;
         private readonly UnitPaymentOrderFacade facade;
+
+
 
         public UnitPaymentOrderDataUtil(UnitReceiptNoteDataUtil unitReceiptNoteDataUtil, UnitPaymentOrderFacade facade)
         {
@@ -18,6 +22,11 @@ namespace Com.DanLiris.Service.Purchasing.Test.DataUtils.UnitPaymentOrderDataUti
             this.facade = facade;
         }
 
+        public UnitPaymentOrderDataUtil(UnitPaymentOrderFacade facade, PurchasingDocumentAcceptanceDataUtil pdaDataUtil)
+        {
+            this.facade = facade;
+            this.pdaDataUtil = pdaDataUtil;
+        }
         public async Task<UnitPaymentOrder> GetNewData()
         {
             Lib.Models.UnitReceiptNoteModel.UnitReceiptNote unitReceiptNote = await Task.Run(() => this.unitReceiptNoteDataUtil.GetTestData("Unit Test"));
@@ -45,7 +54,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.DataUtils.UnitPaymentOrderDataUti
 
                     PricePerDealUnit = item.PricePerDealUnit,
                     PriceTotal = item.PricePerDealUnit * item.ReceiptQuantity,
-                    QuantityCorrection= item.ReceiptQuantity,
+                    QuantityCorrection = item.ReceiptQuantity,
 
                     ProductRemark = item.ProductRemark
                 });
