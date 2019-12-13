@@ -165,6 +165,34 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades
         }
 
         [Fact]
+        public async Task Should_Success_GetReport_SPB_Report()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            var unitPaymentOrderFacade = new UnitPaymentOrderFacade(GetServiceProvider(GetCurrentMethod()).Object, dbContext);
+            var modelLocalSupplier = await _dataUtil(unitPaymentOrderFacade, dbContext, GetCurrentMethod()).GetNewData();
+            var responseLocalSupplier = await unitPaymentOrderFacade.Create(modelLocalSupplier, USERNAME, false);
+
+            var purchasingDocumentExpeditionFacade = new PurchasingDocumentExpeditionFacade(GetServiceProvider(GetCurrentMethod()).Object, dbContext);
+            var sendToVerificationDataUtil = new SendToVerificationDataUtil(purchasingDocumentExpeditionFacade);
+            var purchasingDocumentExpedition = sendToVerificationDataUtil.GetNewData(modelLocalSupplier);
+            await sendToVerificationDataUtil.GetTestData(purchasingDocumentExpedition);
+
+            var facade = new UnitPaymentOrderPaidStatusReportFacade(dbContext);
+            var dateTo = DateTimeOffset.UtcNow.AddDays(1);
+            var dateFrom = dateTo.AddDays(-30);
+            var dateToDue = DateTimeOffset.UtcNow.AddDays(1);
+            var dateFromDue = dateTo.AddDays(-30);
+            var results = facade.GetReport(25, 1, "{}", modelLocalSupplier.UPONo, modelLocalSupplier.SupplierCode, modelLocalSupplier.DivisionCode, null, dateFromDue, dateToDue, dateFrom, dateTo, 1);
+            // var results = await facade.GetReport(25,1,"{}",modelLocalSupplier.UPONo, modelLocalSupplier.SupplierCode, modelLocalSupplier.DivisionCode, null, dateFromDue, dateToDue, dateFrom, dateTo, 1);
+
+
+
+            Assert.NotNull(results.Data);
+        }
+
+
+
+        [Fact]
         public void Should_Success_InstantiateReport()
         {
             var report = new UnitPaymentOrderExpeditionReportViewModel()

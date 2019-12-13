@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Facades\UnitPaymentOrderPaidStatusTests\**" />
+    <EmbeddedResource Remove="Facades\UnitPaymentOrderPaidStatusTests\**" />
+    <None Remove="Facades\UnitPaymentOrderPaidStatusTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
