@@ -1,5 +1,6 @@
 ﻿using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitDeliveryOrderFacades;
 using Com.DanLiris.Service.Purchasing.Lib.Models.GarmentUnitDeliveryOrderModel;
+using Com.DanLiris.Service.Purchasing.Lib.Models.GarmentUnitReceiptNoteModel;
 using Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentUnitDeliveryOrderViewModel;
 using Com.DanLiris.Service.Purchasing.Test.DataUtils.GarmentUnitReceiptNoteDataUtils;
 using System;
@@ -19,12 +20,12 @@ namespace Com.DanLiris.Service.Purchasing.Test.DataUtils.GarmentUnitDeliveryOrde
             this.UNDataUtil = UNDataUtil;
         }
 
-        public async Task<GarmentUnitDeliveryOrder> GetNewData()
+        public async Task<GarmentUnitDeliveryOrder> GetNewData(GarmentUnitReceiptNote garmentUnitReceiptNotes = null)
         {
             DateTimeOffset now = DateTimeOffset.Now;
             long nowTicks = now.Ticks;
 
-            var garmentUnitReceiptNote = await Task.Run(() => UNDataUtil.GetTestDataWithStorage(nowTicks));
+            var garmentUnitReceiptNote = garmentUnitReceiptNotes ?? await Task.Run(() => UNDataUtil.GetTestDataWithStorage(nowTicks));
 
             GarmentUnitDeliveryOrder garmentUnitDeliveryOrder = new GarmentUnitDeliveryOrder
             {
