@@ -45,6 +45,7 @@ using Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCentralBillExpenditu
 using Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCorrectionNoteReceptionFacades;
 using Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCorrectionNoteExpenditureFacades;
 using Com.DanLiris.Service.Purchasing.Lib.Utilities.Currencies;
+using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentCorrectionNoteFacades;
 
 namespace Com.DanLiris.Service.Purchasing.Test
 {
@@ -159,6 +160,8 @@ namespace Com.DanLiris.Service.Purchasing.Test
                 .AddTransient<IMonitoringCentralBillExpenditureFacade, MonitoringCentralBillExpenditureFacade>()
                 .AddTransient<IMonitoringCorrectionNoteReceptionFacade, MonitoringCorrectionNoteReceptionFacade>()
                 .AddTransient<IMonitoringCorrectionNoteExpenditureFacade, MonitoringCorrectionNoteExpenditureFacade>()
+                .AddTransient<IGarmentReceiptCorrectionReportFacade, GarmentReceiptCorrectionReportFacade>()
+                .AddTransient<GarmentReceiptCorrectionReportFacade>()
                 .AddTransient<UnitPaymentPriceCorrectionNoteDataUtils>()
                 .AddTransient<UnitPaymentCorrectionNoteDataUtil>()
 				.AddSingleton<IHttpClientService, HttpClientTestService>()
