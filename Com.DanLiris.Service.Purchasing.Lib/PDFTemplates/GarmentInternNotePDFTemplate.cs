@@ -203,7 +203,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.PDFTemplates
 
                     if (!koreksi.ContainsKey(detail.deliveryOrder.Id))
                     {
-                        totalcorrection += correctionNotes.Sum(s => s.TotalCorrection);
+                        totalcorrection += correctionNotes.Sum(s => s.Items.Sum(i => i.PricePerDealUnitAfter * i.Quantity));
                         koreksi.Add(detail.deliveryOrder.Id, correctionNotes.Sum(s => s.TotalCorrection));
                     }
 
