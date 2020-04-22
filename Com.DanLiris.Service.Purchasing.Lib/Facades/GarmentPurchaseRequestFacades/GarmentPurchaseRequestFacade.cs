@@ -1332,9 +1332,11 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
                          && (unit == null || (unit != null && unit != "" && a.UnitId == unit))
                          && (article == null || (article != null && article != "" && a.Article == article))
                          && (roNo == null || (roNo != null && roNo != "" && a.RONo == roNo))
-                          && ((d1 != new DateTime(1970, 1, 1)) ? (a.Date.Date >= d1 && a.Date.Date <= d2) : true)
+                         && (a.Date.Date >= d1 && a.Date.Date <= d2)
+                         && (epos.OrderDate.Date >= d3 && epos.OrderDate.Date <= d4)
+                          //&& ((d1 != new DateTime(1970, 1, 1)) ? (a.Date.Date >= d1 && a.Date.Date <= d2) : true)
 
-                          && ((d3 != new DateTime(1970, 1, 1)) ? (epos.OrderDate.Date >= d3 && epos.OrderDate.Date <= d4) : true)
+                          //&& ((d3 != new DateTime(1970, 1, 1)) ? (epos.OrderDate.Date >= d3 && epos.OrderDate.Date <= d4) : true)
 
                           && (poSerialNumber == null || (poSerialNumber != null && poSerialNumber != "" && b.PO_SerialNumber == poSerialNumber))
                           && b.IsUsed == (ipoStatus == "BELUM" ? false : ipoStatus == "SUDAH" ? true : b.IsUsed)
