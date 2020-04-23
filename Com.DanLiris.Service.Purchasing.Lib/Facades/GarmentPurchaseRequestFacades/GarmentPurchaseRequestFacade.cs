@@ -1149,7 +1149,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
 
             return Tuple.Create(Query, TotalCountReport);
         }
-        public MemoryStream GenerateExcelPurchase(string epono, string unit, string roNo, string article, string poSerialNumber, string username, string doNo, string ipoStatus, string supplier, string status, DateTime? dateFrom, DateTime? dateTo, DateTime? dateFromEx, DateTime? dateToEx, int page, int size, string Order, int offset)
+        public MemoryStream GenerateExcelPurchase(string epono, string unit, string roNo, string article, string poSerialNumber, string username, string doNo, string ipoStatus, string supplier, string status, DateTime? dateFrom, DateTime? dateTo, DateTimeOffset? dateFromEx, DateTimeOffset? dateToEx, int page, int size, string Order, int offset)
         {
             var Query = GetMonitoringPurchaseByUserReportQuery(epono, unit, roNo, article, poSerialNumber, username, doNo, ipoStatus, supplier, status, dateFrom, dateTo, dateFromEx, dateToEx, offset, 1, int.MaxValue);
             DataTable result = new DataTable();
@@ -1250,14 +1250,17 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
         #endregion
         #region monitoring purchase
         public int TotalCountReport { get; set; } = 0;
-        private List<MonitoringPurchaseAllUserViewModel> GetMonitoringPurchaseByUserReportQuery(string epono, string unit, string roNo, string article, string poSerialNumber, string username, string doNo, string ipoStatus, string supplier, string status, DateTime? dateFrom, DateTime? dateTo, DateTime? dateFromEx, DateTime? dateToEx, int offset, int page, int size)
+        private List<MonitoringPurchaseAllUserViewModel> GetMonitoringPurchaseByUserReportQuery(string epono, string unit, string roNo, string article, string poSerialNumber, string username, string doNo, string ipoStatus, string supplier, string status, DateTime? dateFrom, DateTime? dateTo, DateTimeOffset? dateFromEx, DateTimeOffset? dateToEx, int offset, int page, int size)
         {
 
 
             DateTime d1 = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime d2 = dateTo == null ? DateTime.Now : (DateTime)dateTo;
-            DateTime d3 = dateFromEx == null ? new DateTime(1970, 1, 1) : (DateTime)dateFromEx;
-            DateTime d4 = dateToEx == null ? DateTime.Now : (DateTime)dateToEx;
+            DateTimeOffset d3 = dateFromEx == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFromEx;
+            DateTimeOffset d4 = dateToEx == null ? DateTimeOffset.Now : (DateTimeOffset)dateToEx;
+
+            //DateTimeOffset d3 = DateTimeOffset.MinValue;
+            //DateTimeOffset d4 = DateTimeOffset.Now;
             offset = 7;
 
             List<MonitoringPurchaseAllUserViewModel> listEPO = new List<MonitoringPurchaseAllUserViewModel>();
@@ -1333,7 +1336,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
                          && (article == null || (article != null && article != "" && a.Article == article))
                          && (roNo == null || (roNo != null && roNo != "" && a.RONo == roNo))
                          && (a.Date.Date >= d1 && a.Date.Date <= d2)
-                         && (epos.OrderDate.Date >= d3 && epos.OrderDate.Date <= d4)
+                          && (epos.OrderDate >= d3 && epos.OrderDate <= d4)
                           //&& ((d1 != new DateTime(1970, 1, 1)) ? (a.Date.Date >= d1 && a.Date.Date <= d2) : true)
 
                           //&& ((d3 != new DateTime(1970, 1, 1)) ? (epos.OrderDate.Date >= d3 && epos.OrderDate.Date <= d4) : true)
@@ -1354,6 +1357,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
                          select new SelectedId
                          {
                              PRDate = a.Date,
+                             OrderDate = epos == null ? new DateTimeOffset() : epos.OrderDate,
                              PRId = a.Id,
                              PRItemId = b.Id,
                              POId = ipo == null ? 0 : ipo.Id,
@@ -1373,7 +1377,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
                              INId = internnote == null ? 0 : internnote.Id,
                              INItemId = intern == null ? 0 : intern.Id,
                              INDetailId = internotedetail == null ? 0 : internotedetail.Id
-                         });
+                         });//.Where( x => x.OrderDate >= d3 && x.OrderDate <= d4);
             #endregion
 
             TotalCountReport = Query.Distinct().OrderByDescending(o => o.PRDate).Count();
@@ -1623,7 +1627,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
             return Tuple.Create(Data, TotalCountReport);
         }
 
-        public MemoryStream GenerateExcelByUserPurchase(string epono, string unit, string roNo, string article, string poSerialNumber, string username, string doNo, string ipoStatus, string supplier, string status, DateTime? dateFrom, DateTime? dateTo, DateTime? dateFromEx, DateTime? dateToEx, int page, int size, string Order, int offset)
+        public MemoryStream GenerateExcelByUserPurchase(string epono, string unit, string roNo, string article, string poSerialNumber, string username, string doNo, string ipoStatus, string supplier, string status, DateTime? dateFrom, DateTime? dateTo, DateTimeOffset? dateFromEx, DateTimeOffset? dateToEx, int page, int size, string Order, int offset)
         {
             var Query = GetMonitoringPurchaseByUserReportQuery(epono, unit, roNo, article, poSerialNumber, username, doNo, ipoStatus, supplier, status, dateFrom, dateTo, dateFromEx, dateToEx, offset, 1, int.MaxValue);
             //Query = Query.OrderBy(b => b.PrDate);
@@ -1745,6 +1749,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
     public class SelectedId
     {
         public DateTimeOffset PRDate { get; set; }
+        public DateTimeOffset OrderDate { get; set; }
         public long PRId { get; set; }
         public long PRItemId { get; set; }
         public long POId { get; set; }

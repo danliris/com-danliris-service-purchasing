@@ -707,10 +707,16 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentPurchaseRequestTes
 			var data = await dataUtil(facade, GetCurrentMethod()).GetNewData();
 			await facade.Create(data, false, USERNAME);
 			var Facade = new GarmentPurchaseRequestFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
-			var Response = Facade.GenerateExcelPurchase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, 1,25,"{}", 7);
-			Assert.IsType<System.IO.MemoryStream>(Response);
+            var dateTo = DateTime.UtcNow.AddDays(2);
+            var dateFrom = dateTo.AddDays(-30);
+            var dateToEx = DateTimeOffset.UtcNow.AddDays(2);
+            var dateFromEx = DateTimeOffset.MinValue;
+            //var Response = Facade.GenerateExcelPurchase(null, null, null, null, null, null, null, null, null, null, null, null, null, null, 1, 25, "{}", 7);
+            var Response = Facade.GenerateExcelPurchase(null, null, null, null, null, null, null, null, null, null, dateFrom, dateTo,dateFromEx, dateToEx, 1,25,"{}", 7);
+            //Assert.IsType<System.IO.MemoryStream>(Response);
+            Assert.NotNull(Response);
 
-		}
+        }
 
 		[Fact]
 		public async Task Should_Success_Get_Data_By_Name()
@@ -754,7 +760,9 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentPurchaseRequestTes
 			var data = await dataUtil(facade, GetCurrentMethod()).GetNewData();
 			await facade.Create(data, false, USERNAME);
 			var Facade = new GarmentPurchaseRequestFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
-			var Response = Facade.GenerateExcelByUserPurchase("coba", null, null, null, null, null, null, null, null, null, null,null, null, null, 1, 25, "{}", 7);
+            
+
+			var Response = Facade.GenerateExcelByUserPurchase("coba", "333444", null, null, null, null, null, null, null, null, null,null, null, null, 1, 25, "{}", 7);
 			Assert.IsType<System.IO.MemoryStream>(Response);
 
 		}
