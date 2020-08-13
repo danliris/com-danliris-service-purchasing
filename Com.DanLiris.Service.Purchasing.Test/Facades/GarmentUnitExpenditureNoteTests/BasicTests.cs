@@ -755,6 +755,25 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitExpenditureNot
         }
 
         [Fact]
+        public async Task Should_Success_GetXLS_Flow_Detail_Expend()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            var Facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var modelLocalSupplier = await dataUtil(Facade, GetCurrentMethod()).GetNewData();
+            modelLocalSupplier.ExpenditureDate = DateTimeOffset.MinValue;
+            var responseLocalSupplier = await Facade.Create(modelLocalSupplier);
+
+            var reportService = new GarmentFlowDetailMaterialReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dateTo = DateTime.UtcNow.AddDays(1);
+            var dateFrom = dateTo.AddDays(-30);
+            var results = reportService.GenerateExcel("", "", "", dateFrom, dateTo, 0);
+
+
+
+            Assert.NotNull(results);
+        }
+
+        [Fact]
         public async Task Should_Success_GetXLS_Flow_Detail_NUll_Result()
         {
             var dbContext = _dbContext(GetCurrentMethod());
@@ -766,6 +785,82 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitExpenditureNot
             var dateTo = DateTime.UtcNow.AddDays(2);
             var dateFrom = dateTo.AddDays(1);
             var results = reportService.GenerateExcel("", "", "", dateFrom, dateTo, 0);
+
+
+
+            Assert.NotNull(results);
+        }
+        [Fact]
+        public async Task Should_Success_GetXLS_Flow_Detail_BP()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            var Facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var modelLocalSupplier = await dataUtil(Facade, GetCurrentMethod()).GetNewData();
+            modelLocalSupplier.ExpenditureDate = DateTimeOffset.MinValue;
+            modelLocalSupplier.UnitSenderCode = "C2A";
+            var responseLocalSupplier = await Facade.Create(modelLocalSupplier);
+
+            var reportService = new GarmentFlowDetailMaterialReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dateTo = DateTime.UtcNow.AddDays(2);
+            var dateFrom = dateTo.AddDays(1);
+            var results = reportService.GenerateExcel("BP", "C2A", "Central 2A", null, null, 0);
+
+
+
+            Assert.NotNull(results);
+        }
+        [Fact]
+        public async Task Should_Success_GetXLS_Flow_Detail_BB()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            var Facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var modelLocalSupplier = await dataUtil(Facade, GetCurrentMethod()).GetNewData();
+            modelLocalSupplier.ExpenditureDate = DateTimeOffset.MinValue;
+            modelLocalSupplier.UnitSenderCode = "C2A";
+            var responseLocalSupplier = await Facade.Create(modelLocalSupplier);
+
+            var reportService = new GarmentFlowDetailMaterialReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dateTo = DateTime.UtcNow.AddDays(2);
+            var dateFrom = dateTo.AddDays(1);
+            var results = reportService.GenerateExcel("BB", "C2A", "Central 2A", null, null, 0);
+
+
+
+            Assert.NotNull(results);
+        }
+        [Fact]
+        public async Task Should_Success_GetXLS_Flow_Detail_BE()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            var Facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var modelLocalSupplier = await dataUtil(Facade, GetCurrentMethod()).GetNewData();
+            modelLocalSupplier.ExpenditureDate = DateTimeOffset.MinValue;
+            modelLocalSupplier.UnitSenderCode = "C2A";
+            var responseLocalSupplier = await Facade.Create(modelLocalSupplier);
+
+            var reportService = new GarmentFlowDetailMaterialReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dateTo = DateTime.UtcNow.AddDays(2);
+            var dateFrom = dateTo.AddDays(1);
+            var results = reportService.GenerateExcel("BE", "C2A", "Central 2A", null, null, 0);
+
+
+
+            Assert.NotNull(results);
+        }
+        [Fact]
+        public async Task Should_Success_GetXLS_Flow_Detail_PRC()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            var Facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var modelLocalSupplier = await dataUtil(Facade, GetCurrentMethod()).GetNewData();
+            modelLocalSupplier.ExpenditureDate = DateTimeOffset.MinValue;
+            modelLocalSupplier.UnitSenderCode = "C2A";
+            var responseLocalSupplier = await Facade.Create(modelLocalSupplier);
+
+            var reportService = new GarmentFlowDetailMaterialReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dateTo = DateTime.UtcNow.AddDays(2);
+            var dateFrom = dateTo.AddDays(1);
+            var results = reportService.GenerateExcel("PRC", "C2A", "Central 2A", null, null, 0);
 
 
 

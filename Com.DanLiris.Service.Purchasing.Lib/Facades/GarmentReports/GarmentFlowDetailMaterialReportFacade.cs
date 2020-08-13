@@ -123,7 +123,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                 foreach (var item in Query)
                 {
                     index++;
-                    string tanggal= item.ExpenditureDate == null ? "-" : item.ExpenditureDate.Value.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    string tanggal= item.ExpenditureDate == DateTimeOffset.MinValue ? "-" : item.ExpenditureDate.Value.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
 
                     result.Rows.Add(index, item.ProductCode, item.ProductName, item.POSerialNumber, item.ProductRemark, item.RONo,
                         item.Article, item.BuyerCode, item.RONoDO, item.ArticleDO, item.UnitDOType, item.UENNo, tanggal, NumberFormat(item.Quantity),
