@@ -1566,6 +1566,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
         {
             var serviceProvider = GetServiceProvider();
             var dbContext = _dbContext(GetCurrentMethod());
+            GarmentDeliveryOrderFacade facadeDO = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dataDO = await dataUtilDO(facadeDO, GetCurrentMethod()).GetNewData();
             GarmentUnitReceiptNoteFacade facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
             var dataUtilUrn = dataUtil(facade, GetCurrentMethod());
             Lib.Facades.GarmentUnitDeliveryOrderFacades.GarmentUnitDeliveryOrderFacade facadeUDO = new Lib.Facades.GarmentUnitDeliveryOrderFacades.GarmentUnitDeliveryOrderFacade(dbContext, serviceProvider);
@@ -1575,9 +1577,18 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             GarmentReceiptCorrectionFacade facadeRC = new GarmentReceiptCorrectionFacade(dbContext, serviceProvider);
             var dataUtilRC = new GarmentReceiptCorrectionDataUtil(facadeRC, dataUtilUrn);
 
+
+            foreach (var a in dataDO.Items)
+            {
+                foreach (var b in a.Details)
+                {
+                    b.CodeRequirment = "BB";
+                }
+            }
+            await facadeDO.Create(dataDO, USERNAME);
             DateTimeOffset now = DateTimeOffset.Now;
             long nowTicks = now.Ticks;
-            var dataUrn1 = await dataUtilUrn.GetNewData2(nowTicks);
+            var dataUrn1 = await dataUtilUrn.GetNewData3(null, dataDO);
             dataUrn1.IsStorage = true;
             dataUrn1.StorageId = nowTicks;
             dataUrn1.StorageCode = string.Concat("StorageCode", nowTicks);
@@ -1615,7 +1626,9 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var dataRC = await dataUtilRC.GetNewData(dataUrn1);
             await facadeRC.Create(dataRC.GarmentReceiptCorrection, USERNAME);
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
-            var Response = stockreport.GetStockReport(7, dataUrn1.UnitCode, null, 1, 25, "{}", new DateTime(2019, 12, 26), new DateTime(2019, 12, 27));
+            //var Response = stockreport.GetStockReport(7, dataUrn1.UnitCode, null, 1, 25, "{}", new DateTime(2019, 12, 26), new DateTime(2019, 12, 27));
+            //var Response = stockreport.GetStockReport("BB", null, null, null, 7);
+            var Response = stockreport.GetStockReport(7, null, "BB", 1, 25, "{}", null, null);
             Assert.NotNull(Response.Item1);
         }
 
@@ -1624,6 +1637,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
         {
             var serviceProvider = GetServiceProvider();
             var dbContext = _dbContext(GetCurrentMethod());
+            GarmentDeliveryOrderFacade facadeDO = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dataDO = await dataUtilDO(facadeDO, GetCurrentMethod()).GetNewData();
             GarmentUnitReceiptNoteFacade facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
             var dataUtilUrn = dataUtil(facade, GetCurrentMethod());
             Lib.Facades.GarmentUnitDeliveryOrderFacades.GarmentUnitDeliveryOrderFacade facadeUDO = new Lib.Facades.GarmentUnitDeliveryOrderFacades.GarmentUnitDeliveryOrderFacade(dbContext, serviceProvider);
@@ -1633,9 +1648,17 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             GarmentReceiptCorrectionFacade facadeRC = new GarmentReceiptCorrectionFacade(dbContext, serviceProvider);
             var dataUtilRC = new GarmentReceiptCorrectionDataUtil(facadeRC, dataUtilUrn);
 
+
+            foreach (var a in dataDO.Items) {
+                foreach(var b in a.Details)
+                {
+                    b.CodeRequirment = "BB";
+                }
+            }
+            await facadeDO.Create(dataDO, USERNAME);
             DateTimeOffset now = DateTimeOffset.Now;
             long nowTicks = now.Ticks;
-            var dataUrn1 = await dataUtilUrn.GetNewData2(nowTicks);
+            var dataUrn1 = await dataUtilUrn.GetNewData3(null,dataDO);
             dataUrn1.IsStorage = true;
             dataUrn1.StorageId = nowTicks;
             dataUrn1.StorageCode = string.Concat("StorageCode", nowTicks);
@@ -1677,7 +1700,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             await facadeRC.Create(dataRC.GarmentReceiptCorrection, USERNAME);
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
             //var Response = stockreport.GenerateExcelAStockReport(null, dataUrn1.UnitCode, new DateTime(2019, 12, 26), new DateTime(2019, 12, 27), 7);
-            var Response = stockreport.GenerateExcelAStockReport(null, dataUrn1.UnitCode, null, null, 7);
+            var Response = stockreport.GenerateExcelAStockReport("BB", null, null, null, 7);
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
         [Fact]
