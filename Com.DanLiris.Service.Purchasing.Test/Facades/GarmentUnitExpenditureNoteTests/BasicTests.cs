@@ -728,7 +728,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitExpenditureNot
             var reportService = new GarmentFlowDetailMaterialReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
             var dateTo = DateTime.UtcNow.AddDays(1);
             var dateFrom = dateTo.AddDays(-30);
-            var results = reportService.GetReport("", dateFrom, dateTo, 0, "", 1, 25);
+            var results = reportService.GetReport("","", dateFrom, dateTo, 0, "", 1, 25);
 
 
 
@@ -747,7 +747,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitExpenditureNot
             var reportService = new GarmentFlowDetailMaterialReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
             var dateTo = DateTime.UtcNow.AddDays(1);
             var dateFrom = dateTo.AddDays(-30);
-            var results = reportService.GenerateExcel("", dateFrom, dateTo, 0);
+            var results = reportService.GenerateExcel("","","", dateFrom, dateTo, 0);
 
 
 

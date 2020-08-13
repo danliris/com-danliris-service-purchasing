@@ -5,9 +5,11 @@ using Com.DanLiris.Service.Purchasing.Lib.ViewModels.GarmentReports;
 using Com.Moonlay.NetCore.Lib;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -29,7 +31,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
         }
 
 
-        public IQueryable<GarmentFlowDetailMaterialViewModel> GetQuery(string category,  DateTimeOffset? DateFrom, DateTimeOffset? DateTo, int offset)
+        public IQueryable<GarmentFlowDetailMaterialViewModel> GetQuery(string category, string unit,  DateTimeOffset? DateFrom, DateTimeOffset? DateTo, int offset)
         {
             //DateTimeOffset dateFrom = DateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)DateFrom;
             //DateTimeOffset dateTo = DateTo == null ? new DateTime(2100, 1, 1) : (DateTimeOffset)DateTo;
@@ -43,6 +45,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                          join f in dbContext.GarmentDeliveryOrderDetails on e.DODetailId equals f.Id
                          where
                          f.CodeRequirment == (string.IsNullOrWhiteSpace(category) ? f.CodeRequirment : category)
+                         && b.UnitSenderCode == (string.IsNullOrWhiteSpace(unit) ? b.UnitSenderCode : unit)
                          && a.CreatedUtc.Date >= DateFrom
                          && a.CreatedUtc.Date <= DateTo
 
@@ -57,12 +60,13 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                              BuyerCode = a.BuyerCode,
                              RONoDO = d.RONo,
                              ArticleDO = d.Article,
-                             UnitDOType = d.UnitDOType,
+                             UnitDOType = b.UnitSenderCode == b.UnitRequestCode ? "PROSES" : b.UnitRequestName,
                              UENNo = b.UENNo,
                              ExpenditureDate = b.ExpenditureDate,
                              Quantity = a.Quantity,
                              UomUnit = a.UomUnit,
-                             Total = a.Quantity * a.PricePerDealUnit* a.DOCurrencyRate
+                             Total = a.Quantity * a.PricePerDealUnit * a.DOCurrencyRate
+
 
                          });
 
@@ -70,9 +74,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             return Query.AsQueryable();
         }
 
-        public Tuple<List<GarmentFlowDetailMaterialViewModel>, int> GetReport(string category, DateTimeOffset? DateFrom, DateTimeOffset? DateTo, int offset, string order, int page, int size)
+        public Tuple<List<GarmentFlowDetailMaterialViewModel>, int> GetReport(string category, string unit, DateTimeOffset? DateFrom, DateTimeOffset? DateTo, int offset, string order, int page, int size)
         {
-            var Query = GetQuery( category, DateFrom, DateTo, offset);
+            var Query = GetQuery( category, unit, DateFrom, DateTo, offset);
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
             //if (OrderDictionary.Count.Equals(0))
@@ -87,9 +91,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             return Tuple.Create(Data, TotalData);
         }
 
-        public MemoryStream GenerateExcel(string category, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int offset)
+        public MemoryStream GenerateExcel(string category, string unit, string unitname, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int offset)
         {
-            var Query = GetQuery(category, dateFrom, dateTo, offset);
+            var Query = GetQuery(category, unit, dateFrom, dateTo, offset);
             Query = Query.OrderByDescending(b => b.CreatedUtc);
             DataTable result = new DataTable();
             //No	Unit	Budget	Kategori	Tanggal PR	Nomor PR	Kode Barang	Nama Barang	Jumlah	Satuan	Tanggal Diminta Datang	Status	Tanggal Diminta Datang Eksternal
@@ -108,9 +112,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             result.Columns.Add(new DataColumn() { ColumnName = "Tujuan", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No.Bukti", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Quantity", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Quantity", DataType = typeof(Double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah", DataType = typeof(Double) });
             if (Query.ToArray().Count() == 0)
                 result.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", 0, "", 0); // to allow column name to be generated properly for empty data as template
             else
@@ -119,14 +123,46 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                 foreach (var item in Query)
                 {
                     index++;
+                    string tanggal= item.ExpenditureDate == null ? "-" : item.ExpenditureDate.Value.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
 
                     result.Rows.Add(index, item.ProductCode, item.ProductName, item.POSerialNumber, item.ProductRemark, item.RONo,
-                        item.Article, item.BuyerCode, item.RONoDO, item.ArticleDO, item.UnitDOType, item.UENNo, item.ExpenditureDate, NumberFormat(item.Quantity),
+                        item.Article, item.BuyerCode, item.RONoDO, item.ArticleDO, item.UnitDOType, item.UENNo, tanggal, NumberFormat(item.Quantity),
                         item.UomUnit, NumberFormat(item.Total));
                 }
             }
+            ExcelPackage package = new ExcelPackage();
+            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom.Value.DateTime;
+            DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo.Value.DateTime;
+            CultureInfo Id = new CultureInfo("id-ID");
+            string Month = Id.DateTimeFormat.GetMonthName(DateTo.Month);
+            var sheet = package.Workbook.Worksheets.Add("Report");
 
-            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
+            var col = (char)('A' + result.Columns.Count);
+            string tglawal = DateFrom.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+            string tglakhir = DateTo.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+            sheet.Cells[$"A1:{col}1"].Value = string.Format("LAPORAN REKAP PENGELUARAN {0}", category == "BB" ? "GUDANG BAHAN BAKU" : category == "BP" ? "GUDANG BAHAN PENDUKUNG" : category == "BE" ? "GUDANG BAHAN EMBALANCE" : category == "PRC" ? "PROSES" : "ALL");
+            sheet.Cells[$"A1:{col}1"].Merge = true;
+            sheet.Cells[$"A1:{col}1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+            sheet.Cells[$"A1:{col}1"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+            sheet.Cells[$"A1:{col}1"].Style.Font.Bold = true;
+            sheet.Cells[$"A2:{col}2"].Value = string.Format("Periode {0} - {1}", tglawal, tglakhir);
+            sheet.Cells[$"A2:{col}2"].Merge = true;
+            sheet.Cells[$"A2:{col}2"].Style.Font.Bold = true;
+            sheet.Cells[$"A2:{col}2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+            sheet.Cells[$"A2:{col}2"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+            sheet.Cells[$"A3:{col}3"].Value = string.Format("KONFEKSI : {0}", (string.IsNullOrWhiteSpace(unitname) ? "ALL" : unitname));
+            sheet.Cells[$"A3:{col}3"].Merge = true;
+            sheet.Cells[$"A3:{col}3"].Style.Font.Bold = true;
+            sheet.Cells[$"A3:{col}3"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+            sheet.Cells[$"A3:{col}3"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+
+            sheet.Cells["A5"].LoadFromDataTable(result, true, OfficeOpenXml.Table.TableStyles.Light16);
+
+            MemoryStream stream = new MemoryStream();
+            package.SaveAs(stream);
+            return stream;
+
+            //return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
 
         String NumberFormat(double? numb)
