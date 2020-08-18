@@ -99,6 +99,7 @@ namespace Com.DanLiris.Service.Purchasing.WebApi.Controllers.v1.UnitPaymentOrder
         {
             identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
 
+
             string filterUser = string.Concat("'CreatedBy':'", identityService.Username, "'");
             if (filter == null || !(filter.Trim().StartsWith("{") && filter.Trim().EndsWith("}")) || filter.Replace(" ", "").Equals("{}"))
             {
@@ -117,6 +118,7 @@ namespace Com.DanLiris.Service.Purchasing.WebApi.Controllers.v1.UnitPaymentOrder
         {
             try
             {
+
                 var indexAcceptPdf = Request.Headers["Accept"].ToList().IndexOf("application/pdf");
 
                 var model = facade.ReadById(id);
@@ -159,6 +161,7 @@ namespace Com.DanLiris.Service.Purchasing.WebApi.Controllers.v1.UnitPaymentOrder
         [HttpGet("EPO/{epo}")]
         public IActionResult GetEpo(string epo)
         {
+
             try
             {
                 var model = facade.ReadByEPONo(epo);
