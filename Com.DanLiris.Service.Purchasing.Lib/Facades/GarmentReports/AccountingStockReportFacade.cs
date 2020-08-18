@@ -304,50 +304,52 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             return Data.AsQueryable();
 
         }
-        public MemoryStream GenerateExcelAStockReport(string ctg, string unitcode, DateTime? datefrom, DateTime? dateto, int offset)
+        public MemoryStream GenerateExcelAStockReport(string ctg, string categoryname, string unitcode, string unitname, DateTime? datefrom, DateTime? dateto, int offset)
         {
+            
+            var Query = GetStockQuery(ctg, unitcode, datefrom, dateto, offset);
             #region Pemasukan
-            double SaldoAwalQtyTotal = 0;
-            double SaldoAwalPriceTotal = 0;
-            double KoreksiQtyTotal = 0;
-            double KoreksiPriceTotal = 0;
-            double PEMBELIANQtyTotal = 0;
-            double PEMBELIANPriceTotal = 0;
-            double PROSESQtyTotal = 0;
-            double PROSESPriceTotal = 0;
-            double Konfeksi2AQtyTotal = 0;
-            double Konfeksi2APriceTotal = 0;
-            double KONFEKSI2BQtyTotal = 0;
-            double KONFEKSI2BPriceTotal = 0;
-            double KONFEKSI2CQtyTotal = 0;
-            double KONFEKSI2CPriceTotal = 0;
-            double KONFEKSI2DQtyTotal = 0;
-            double KONFEKSI2DPriceTotal = 0;
-            double KONFEKSI1MNSQtyTotal = 0;
-            double KONFEKSI1MNSPriceTotal = 0;
+            double SaldoAwalQtyTotal = Query.Sum(x=>Convert.ToDouble(x.BeginningBalanceQty));
+            double SaldoAwalPriceTotal = Query.Sum(x => Convert.ToDouble(x.BeginningBalancePrice));
+            double KoreksiQtyTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptCorrectionQty));
+            double KoreksiPriceTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptCorrectionPrice));
+            double PEMBELIANQtyTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptPurchaseQty));
+            double PEMBELIANPriceTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptPurchasePrice));
+            double PROSESQtyTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptProcessQty));
+            double PROSESPriceTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptProcessPrice));
+            double Konfeksi2AQtyTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon2AQty));
+            double Konfeksi2APriceTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon2APrice));
+            double KONFEKSI2BQtyTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon2BQty));
+            double KONFEKSI2BPriceTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon2BPrice));
+            double KONFEKSI2CQtyTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon2CQty));
+            double KONFEKSI2CPriceTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon2CPrice));
+            double KONFEKSI2DQtyTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon2DQty));
+            double KONFEKSI2DPriceTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon2DPrice));
+            double KONFEKSI1MNSQtyTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon1MNSQty));
+            double KONFEKSI1MNSPriceTotal = Query.Sum(x => Convert.ToDouble(x.ReceiptKon1MNSPrice));
             #endregion
             #region Pemngeluaran
-            double? ReturQtyTotal = 0;
-            double? ReturJumlahTotal = 0;
-            double? SisaQtyTotal = 0;
-            double? SisaPriceTotal = 0;
-            double? ExpendPROSESQtyTotal = 0;
-            double? ExpendPROSESPriceTotal = 0;
-            double? SAMPLEQtyTotal = 0;
-            double? SAMPLEPriceTotal = 0;
-            double? ExpendKONFEKSI2AQtyTotal = 0;
-            double? ExpendKonfeksi2APriceTotal = 0;
-            double? ExpendKONFEKSI2BQtyTotal = 0;
-            double? ExpendKONFEKSI2BPriceTotal = 0;
-            double? ExpendKONFEKSI2CQtyTotal = 0;
-            double? ExpendKONFEKSI2CPriceTotal = 0;
-            double? ExpendKONFEKSI2DQtyTotal = 0;
-            double? ExpendKONFEKSI2DPriceTotal = 0;
-            double? ExpendKONFEKSI1MNSQtyTotal = 0;
-            double? ExpendKONFEKSI1MNSPriceTotal = 0;
+            double? ReturQtyTotal = Query.Sum(x => Convert.ToDouble(x.ExpendReturQty));
+            double? ReturJumlahTotal = Query.Sum(x => Convert.ToDouble(x.ExpendReturPrice));
+            double? SisaQtyTotal = Query.Sum(x => Convert.ToDouble(x.ExpendRestQty));
+            double? SisaPriceTotal = Query.Sum(x => Convert.ToDouble(x.ExpendRestPrice));
+            double? ExpendPROSESQtyTotal = Query.Sum(x => Convert.ToDouble(x.ExpendProcessQty));
+            double? ExpendPROSESPriceTotal = Query.Sum(x => Convert.ToDouble(x.ExpendProcessPrice));
+            double? SAMPLEQtyTotal = Query.Sum(x => Convert.ToDouble(x.ExpendSampleQty));
+            double? SAMPLEPriceTotal = Query.Sum(x => Convert.ToDouble(x.ExpendSamplePrice));
+            double? ExpendKONFEKSI2AQtyTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon2AQty));
+            double? ExpendKonfeksi2APriceTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon2APrice));
+            double? ExpendKONFEKSI2BQtyTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon2BQty));
+            double? ExpendKONFEKSI2BPriceTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon2BPrice));
+            double? ExpendKONFEKSI2CQtyTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon2CQty));
+            double? ExpendKONFEKSI2CPriceTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon2CPrice));
+            double? ExpendKONFEKSI2DQtyTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon2DQty));
+            double? ExpendKONFEKSI2DPriceTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon2DPrice));
+            double? ExpendKONFEKSI1MNSQtyTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon1MNSQty));
+            double? ExpendKONFEKSI1MNSPriceTotal = Query.Sum(x => Convert.ToDouble(x.ExpendKon1MNSPrice));
             #endregion
-            double? EndingQty = 0; double? EndingTotal = 0;
-            var Query = GetStockQuery(ctg, unitcode, datefrom, dateto, offset);
+            double? EndingQty = Query.Sum(x => Convert.ToDouble(x.EndingBalanceQty));
+            double? EndingTotal = Query.Sum(x => Convert.ToDouble(x.EndingBalancePrice));
             DataTable result = new DataTable();
             var headers = new string[] { "No", "Kode", "Nama Barang", "RO", "Buyer", "PlanPO", "No Artikel", "Saldo Awal", "Saldo Awal1", "Saldo Awal2", "P E M A S U K A N", "P E M B E L I A N1", "P E M B E L I A N2", "P E M B E L I A N3", "P E M B E L I A N4", "P E M B E L I A N5", "P E M B E L I A N6", "P E M B E L I A N7", "P E M B E L I A N8", "P E M B E L I A N9", "P E M B E L I A N10", "P E M B E L I A N11", "P E M B E L I A N12", "P E M B E L I A N13", "P E M B E L I A N14", "P E M B E L I A N15", "P E N G E L U A R A N", "P E N G E L U A R A N1", "P E N G E L U A R A N2", "P E N G E L U A R A N3", "P E N G E L U A R A N4", "P E N G E L U A R A N5", "P E N G E L U A R A N6", "P E N G E L U A R A N7", "P E N G E L U A R A N8", "P E N G E L U A R A N9", "P E N G E L U A R A N10", "P E N G E L U A R A N11", "P E N G E L U A R A N12", "P E N G E L U A R A N13", "P E N G E L U A R A N14", "P E N G E L U A R A N15", "P E N G E L U A R A N16", "P E N G E L U A R A N17", "Saldo Akhir", "Saldo Akhir 1" };
             var headers2 = new string[] { "Koreksi", "Pembelian", "Proses", "KONFEKSI 2A", "KONFEKSI 2B", "KONFEKSI 2C", "KONFEKSI 1 MNS", "KONFEKSI 2D", "Retur", "Sisa", "Proses", "Sample", "KONFEKSI 2A", "KONFEKSI 2B", "KONFEKSI 2C", "KONFEKSI 1 MNS", "KONFEKSI 2D" };
@@ -399,44 +401,44 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                     Convert.ToDouble(ReceiptKon2DQty), 
                     Convert.ToDouble(ReceiptKon2DPrice), 
                     Convert.ToDouble(item.ExpendReturQty), item.ExpendReturPrice, item.ExpendRestQty, item.ExpendRestPrice, item.ExpendProcessQty, item.ExpendProcessPrice, item.ExpendSampleQty, item.ExpendSamplePrice, item.ExpendKon2AQty, item.ExpendKon2APrice, item.ExpendKon2BQty, item.ExpendKon2BPrice, item.ExpendKon2CQty, item.ExpendKon2CPrice, item.ExpendKon1MNSQty, item.ExpendKon1MNSPrice, item.ExpendKon2DQty, item.ExpendKon2DPrice, Convert.ToDouble(item.EndingBalanceQty), Convert.ToDouble(item.EndingBalancePrice));
-                SaldoAwalQtyTotal += Convert.ToDouble(item.BeginningBalanceQty);
-                SaldoAwalPriceTotal += Convert.ToDouble(item.BeginningBalancePrice);
-                KoreksiQtyTotal += Convert.ToDouble(item.ReceiptCorrectionQty);
-                KoreksiPriceTotal += Convert.ToDouble(item.ReceiptCorrectionPrice);
-                PEMBELIANQtyTotal += Convert.ToDouble(ReceiptPurchaseQty);
-                PEMBELIANPriceTotal += Convert.ToDouble(ReceiptPurchasePrice);
-                PROSESQtyTotal += Convert.ToDouble(item.ReceiptProcessQty);
-                PROSESPriceTotal += Convert.ToDouble(item.ReceiptProcessPrice);
-                Konfeksi2AQtyTotal += Convert.ToDouble(ReceiptKon2AQty);
-                Konfeksi2APriceTotal+= Convert.ToDouble(ReceiptKon2APrice);
-                KONFEKSI2BQtyTotal += Convert.ToDouble(ReceiptKon2BQty);
-                KONFEKSI2BPriceTotal += Convert.ToDouble(ReceiptKon2BPrice);
-                KONFEKSI2CQtyTotal += Convert.ToDouble(ReceiptKon2CQty);
-                KONFEKSI2CPriceTotal += Convert.ToDouble(ReceiptKon2CPrice);
-                KONFEKSI2DQtyTotal += Convert.ToDouble(ReceiptKon2DQty);
-                KONFEKSI2DPriceTotal += Convert.ToDouble(ReceiptKon2DPrice);
-                KONFEKSI1MNSQtyTotal += Convert.ToDouble(ReceiptKon1MNSQty);
-                KONFEKSI1MNSPriceTotal += Convert.ToDouble(ReceiptKon1MNSPrice);
-                ReturQtyTotal += item.ExpendReturQty;
-                ReturJumlahTotal += item.ExpendReturPrice;
-                SisaQtyTotal += item.ExpendRestQty;
-                SisaPriceTotal += item.ExpendRestPrice;
-                ExpendPROSESQtyTotal += item.ExpendProcessQty;
-                ExpendPROSESPriceTotal += item.ExpendProcessPrice;
-                SAMPLEQtyTotal += item.ExpendSampleQty;
-                SAMPLEPriceTotal += item.ExpendSamplePrice;
-                ExpendKONFEKSI2AQtyTotal += item.ExpendKon2AQty;
-                ExpendKonfeksi2APriceTotal += item.ExpendKon2AQty;
-                ExpendKONFEKSI2BQtyTotal += item.ExpendKon2BQty;
-                ExpendKONFEKSI2BPriceTotal += item.ExpendKon2BQty;
-                ExpendKONFEKSI2CQtyTotal += item.ExpendKon2CQty;
-                ExpendKONFEKSI2CPriceTotal += item.ExpendKon2CQty;
-                ExpendKONFEKSI2DQtyTotal += item.ExpendKon2DQty;
-                ExpendKONFEKSI2DPriceTotal += item.ExpendKon2DQty;
-                ExpendKONFEKSI1MNSQtyTotal += item.ExpendKon1MNSQty;
-                ExpendKONFEKSI1MNSPriceTotal += item.ExpendKon1MNSQty;
-                EndingQty += Convert.ToDouble(item.EndingBalanceQty);
-                EndingTotal += Convert.ToDouble(item.EndingBalancePrice);
+                //SaldoAwalQtyTotal += Convert.ToDouble(item.BeginningBalanceQty);
+                //SaldoAwalPriceTotal += Convert.ToDouble(item.BeginningBalancePrice);
+                //KoreksiQtyTotal += Convert.ToDouble(item.ReceiptCorrectionQty);
+                //KoreksiPriceTotal += Convert.ToDouble(item.ReceiptCorrectionPrice);
+                //PEMBELIANQtyTotal += Convert.ToDouble(ReceiptPurchaseQty);
+                //PEMBELIANPriceTotal += Convert.ToDouble(ReceiptPurchasePrice);
+                //PROSESQtyTotal += Convert.ToDouble(item.ReceiptProcessQty);
+                //PROSESPriceTotal += Convert.ToDouble(item.ReceiptProcessPrice);
+                //Konfeksi2AQtyTotal += Convert.ToDouble(ReceiptKon2AQty);
+                //Konfeksi2APriceTotal+= Convert.ToDouble(ReceiptKon2APrice);
+                //KONFEKSI2BQtyTotal += Convert.ToDouble(ReceiptKon2BQty);
+                //KONFEKSI2BPriceTotal += Convert.ToDouble(ReceiptKon2BPrice);
+                //KONFEKSI2CQtyTotal += Convert.ToDouble(ReceiptKon2CQty);
+                //KONFEKSI2CPriceTotal += Convert.ToDouble(ReceiptKon2CPrice);
+                //KONFEKSI2DQtyTotal += Convert.ToDouble(ReceiptKon2DQty);
+                //KONFEKSI2DPriceTotal += Convert.ToDouble(ReceiptKon2DPrice);
+                //KONFEKSI1MNSQtyTotal += Convert.ToDouble(ReceiptKon1MNSQty);
+                //KONFEKSI1MNSPriceTotal += Convert.ToDouble(ReceiptKon1MNSPrice);
+                //ReturQtyTotal += item.ExpendReturQty;
+                //ReturJumlahTotal += item.ExpendReturPrice;
+                //SisaQtyTotal += item.ExpendRestQty;
+                //SisaPriceTotal += item.ExpendRestPrice;
+                //ExpendPROSESQtyTotal += item.ExpendProcessQty;
+                //ExpendPROSESPriceTotal += item.ExpendProcessPrice;
+                //SAMPLEQtyTotal += item.ExpendSampleQty;
+                //SAMPLEPriceTotal += item.ExpendSamplePrice;
+                //ExpendKONFEKSI2AQtyTotal += item.ExpendKon2AQty;
+                //ExpendKonfeksi2APriceTotal += item.ExpendKon2AQty;
+                //ExpendKONFEKSI2BQtyTotal += item.ExpendKon2BQty;
+                //ExpendKONFEKSI2BPriceTotal += item.ExpendKon2BQty;
+                //ExpendKONFEKSI2CQtyTotal += item.ExpendKon2CQty;
+                //ExpendKONFEKSI2CPriceTotal += item.ExpendKon2CQty;
+                //ExpendKONFEKSI2DQtyTotal += item.ExpendKon2DQty;
+                //ExpendKONFEKSI2DPriceTotal += item.ExpendKon2DQty;
+                //ExpendKONFEKSI1MNSQtyTotal += item.ExpendKon1MNSQty;
+                //ExpendKONFEKSI1MNSPriceTotal += item.ExpendKon1MNSQty;
+                //EndingQty += Convert.ToDouble(item.EndingBalanceQty);
+                //EndingTotal += Convert.ToDouble(item.EndingBalancePrice);
             }
             result.Rows.Add("", "", "", "", "", "", "",
                     SaldoAwalQtyTotal, "",
@@ -466,7 +468,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             string tglawal = DateFrom.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
             string tglakhir = DateTo.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
             //CultureInfo Id = new CultureInfo("id-ID");
-            sheet.Cells[$"A1:{col1}1"].Value = string.Format("LAPORAN FLOW {0}", ctg == "BB" ? "GUDANG BAHAN BAKU" : ctg == "BP" ? "GUDANG BAHAN PENDUKUNG" : ctg == "BE" ? "GUDANG BAHAN EMBALANCE" : "ALL");
+            sheet.Cells[$"A1:{col1}1"].Value = string.Format("LAPORAN FLOW {0}", categoryname);
             sheet.Cells[$"A1:{col1}1"].Merge = true;
             sheet.Cells[$"A1:{col1}1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
             sheet.Cells[$"A1:{col1}1"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
@@ -476,7 +478,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             sheet.Cells[$"A2:{col1}2"].Style.Font.Bold = true;
             sheet.Cells[$"A2:{col1}2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
             sheet.Cells[$"A2:{col1}2"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-            sheet.Cells[$"A3:{col1}3"].Value = string.Format("KONFEKSI : {0}", unitcode == "C2A" ? "KONFEKSI 2A" : unitcode == "C2B" ? "KONFEKSI 2B" : unitcode == "C2C" ? "KONFEKSI 2C" : unitcode == "C1A" ? "KONFEKSI 1A" : unitcode == "C1B" ? "KONFEKSI 1B" : "ALL");
+            sheet.Cells[$"A3:{col1}3"].Value = string.Format("KONFEKSI : {0}", unitname);
             sheet.Cells[$"A3:{col1}3"].Merge = true;
             sheet.Cells[$"A3:{col1}3"].Style.Font.Bold = true;
             sheet.Cells[$"A3:{col1}3"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;

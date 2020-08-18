@@ -91,7 +91,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             return Tuple.Create(Data, TotalData);
         }
 
-        public MemoryStream GenerateExcel(string category, string unit, string unitname, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int offset)
+        public MemoryStream GenerateExcel(string category, string categoryname, string unit, string unitname, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int offset)
         {
             var Query = GetQuery(category, unit, dateFrom, dateTo, offset);
             Query = Query.OrderByDescending(b => b.CreatedUtc);
@@ -140,7 +140,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             var col = (char)('A' + result.Columns.Count);
             string tglawal = DateFrom.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
             string tglakhir = DateTo.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-            sheet.Cells[$"A1:{col}1"].Value = string.Format("LAPORAN REKAP PENGELUARAN {0}", category == "BB" ? "GUDANG BAHAN BAKU" : category == "BP" ? "GUDANG BAHAN PENDUKUNG" : category == "BE" ? "GUDANG BAHAN EMBALANCE" : category == "PRC" ? "PROSES" : "ALL");
+            sheet.Cells[$"A1:{col}1"].Value = string.Format("LAPORAN REKAP PENGELUARAN {0}", categoryname);
             sheet.Cells[$"A1:{col}1"].Merge = true;
             sheet.Cells[$"A1:{col}1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
             sheet.Cells[$"A1:{col}1"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
@@ -150,7 +150,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             sheet.Cells[$"A2:{col}2"].Style.Font.Bold = true;
             sheet.Cells[$"A2:{col}2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
             sheet.Cells[$"A2:{col}2"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-            sheet.Cells[$"A3:{col}3"].Value = string.Format("KONFEKSI : {0}", (string.IsNullOrWhiteSpace(unitname) ? "ALL" : unitname));
+            sheet.Cells[$"A3:{col}3"].Value = string.Format("KONFEKSI : {0}", unitname);
             sheet.Cells[$"A3:{col}3"].Merge = true;
             sheet.Cells[$"A3:{col}3"].Style.Font.Bold = true;
             sheet.Cells[$"A3:{col}3"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
