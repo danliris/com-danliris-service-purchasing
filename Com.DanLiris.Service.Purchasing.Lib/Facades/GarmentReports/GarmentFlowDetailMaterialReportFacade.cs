@@ -131,15 +131,15 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                 }
             }
             ExcelPackage package = new ExcelPackage();
-            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom.Value.DateTime;
-            DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo.Value.DateTime;
+            //DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom.Value.DateTime;
+            //DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo.Value.DateTime;
             CultureInfo Id = new CultureInfo("id-ID");
-            string Month = Id.DateTimeFormat.GetMonthName(DateTo.Month);
+            
             var sheet = package.Workbook.Worksheets.Add("Report");
 
             var col = (char)('A' + result.Columns.Count);
-            string tglawal = DateFrom.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-            string tglakhir = DateTo.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+            string tglawal = dateFrom.Value.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+            string tglakhir = dateTo.Value.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
             sheet.Cells[$"A1:{col}1"].Value = string.Format("LAPORAN REKAP PENGELUARAN {0}", categoryname);
             sheet.Cells[$"A1:{col}1"].Merge = true;
             sheet.Cells[$"A1:{col}1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
