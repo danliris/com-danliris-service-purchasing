@@ -242,6 +242,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
                 .Returns(Model);
 
             var mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(x => x.Map<UnitPaymentOrderViewModel>(It.IsAny<UnitPaymentOrder>()))
+                .Returns(ViewModel);
 
             UnitPaymentOrderController controller = new UnitPaymentOrderController(GetServiceProvider().Object, mockMapper.Object, mockFacade.Object);
             controller.ControllerContext = new ControllerContext()
@@ -321,6 +323,39 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.UnitPaymentOrderContr
             UnitPaymentOrderController controller = new UnitPaymentOrderController(GetServiceProvider().Object, mockMapper.Object, mockFacade.Object);
             var response = controller.GetEpo(It.IsAny<string>());
             Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
+        }
+        [Fact]
+        public void Should_Success_Get_All_Data_By_User()
+        {
+            var mockFacade = new Mock<IUnitPaymentOrderFacade>();
+
+            mockFacade.Setup(x => x.Read(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), null, It.IsAny<string>()))
+                 .Returns(Tuple.Create(new List<UnitPaymentOrder>(), 0, new Dictionary<string, string>()));
+
+            var mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(x => x.Map<List<UnitPaymentOrderViewModel>>(It.IsAny<List<UnitPaymentOrder>>()))
+                .Returns(new List<UnitPaymentOrderViewModel> { ViewModel });
+
+            UnitPaymentOrderController controller = GetController(mockFacade, null, mockMapper);
+            var response = controller.GetByUser();
+            Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
+        }
+
+        [Fact]
+        public void Should_Success_Get_All_Data_By_User_With_Filter()
+        {
+            var mockFacade = new Mock<IUnitPaymentOrderFacade>();
+
+            mockFacade.Setup(x => x.Read(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), null, It.IsAny<string>()))
+                .Returns(Tuple.Create(new List<UnitPaymentOrder>(), 0, new Dictionary<string, string>()));
+
+            var mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(x => x.Map<List<UnitPaymentOrderViewModel>>(It.IsAny<List<UnitPaymentOrder>>()))
+                .Returns(new List<UnitPaymentOrderViewModel> { ViewModel });
+
+            UnitPaymentOrderController controller = GetController(mockFacade, null, mockMapper);
+            var response = controller.GetByUser(filter: "{ 'IsPaid': false }");
+            Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
         }
         [Fact]
         public void Should_Success_Get_PDF_Data_By_Id()

@@ -1331,7 +1331,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
         }
 
 
-        public MemoryStream GenerateExcelLow(DateTime? dateFrom, DateTime? dateTo, string unit, string category, int offset, string unitname)
+        public MemoryStream GenerateExcelLow(DateTime? dateFrom, DateTime? dateTo, string unit, string category, string categoryname, int offset, string unitname)
         {
             var Query = GetReportQueryFlow(dateFrom, dateTo, unit, category, offset);
 
@@ -1382,7 +1382,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
             var col = (char)('A' + result.Columns.Count);
             string tglawal = DateFrom.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
             string tglakhir = DateTo.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-            sheet.Cells[$"A1:{col}1"].Value = string.Format("LAPORAN REKAP PENERIMAAN {0}", category == "Bahan Baku" ? "GUDANG BAHAN BAKU" : category == "Bahan Pendukung" ? "GUDANG BAHAN PENDUKUNG" : category == "Bahan Embalase" ? "GUDANG BAHAN EMBALANCE" : "ALL");
+            sheet.Cells[$"A1:{col}1"].Value = string.Format("LAPORAN REKAP PENERIMAAN {0}", categoryname);
             sheet.Cells[$"A1:{col}1"].Merge = true;
             sheet.Cells[$"A1:{col}1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
             sheet.Cells[$"A1:{col}1"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
