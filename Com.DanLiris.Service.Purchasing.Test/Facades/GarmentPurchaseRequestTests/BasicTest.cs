@@ -890,7 +890,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentPurchaseRequestTes
             var dateFrom = DateTime.Now.AddDays(-30);
             var dateFromEx = DateTimeOffset.MinValue;
             var dateToEx = DateTimeOffset.Now;
-            var Response = Facade.GenerateExcelPurchase(null, null, null, null, null, null, null, null, null, null, dateFrom, dateTo, dateFromEx, dateToEx, 1, 25, "{}", 7);
+            var Response = Facade.GenerateExcelPurchase(null, null, null, null, null, null, null, null, "SupplierTest", null, dateFrom, dateTo, dateFromEx, dateToEx, 1, 25, "{}", 7);
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
 
@@ -910,7 +910,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentPurchaseRequestTes
 		{
 			GarmentCorrectionNoteQuantityFacade facade = new GarmentCorrectionNoteQuantityFacade(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
 		 
-			var datas = dataUtil(facade, GetCurrentMethod()).GetNewDoubleCorrectionData(USERNAME);
+			var datas = dataUtil(facade, GetCurrentMethod()).GetNewTripleCorrectionData(USERNAME);
 		
 			var Facade = new GarmentPurchaseRequestFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
 			var Response = Facade.GetMonitoringPurchaseByUserReport(null, null, null, null, null, null, null, null, null, null, null, null, null, null, 1, 25, "{}", 7);
