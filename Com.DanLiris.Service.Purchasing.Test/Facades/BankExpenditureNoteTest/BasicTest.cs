@@ -7,6 +7,7 @@ using Com.DanLiris.Service.Purchasing.Lib.Models.BankExpenditureNoteModel;
 using Com.DanLiris.Service.Purchasing.Lib.Models.Expedition;
 using Com.DanLiris.Service.Purchasing.Lib.Services;
 using Com.DanLiris.Service.Purchasing.Lib.ViewModels.BankExpenditureNote;
+using Com.DanLiris.Service.Purchasing.Lib.ViewModels.Expedition;
 using Com.DanLiris.Service.Purchasing.Test.DataUtils.BankExpenditureNoteDataUtils;
 using Com.DanLiris.Service.Purchasing.Test.DataUtils.ExpeditionDataUtil;
 using Com.DanLiris.Service.Purchasing.Test.Helpers;
@@ -94,6 +95,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.BankExpenditureNoteTest
             Assert.NotEmpty(Response.Data);
         }
 
+
         [Fact]
         public async Task Should_Success_Get_Unit_Payment_Order()
         {
@@ -111,7 +113,23 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.BankExpenditureNoteTest
             var Response = facade.GetAllByPosition(1, 25, "{}", model.UnitPaymentOrderNo, filterJson);
             Assert.NotEmpty(Response.Data);
         }
+        [Fact]
+        public async Task Should_Success_Get_Unit_Payment_Order_Verification()
+        {
+            var numberGeneratorMock = new Mock<IBankDocumentNumberGenerator>();
+            BankExpenditureNoteFacade facade = new BankExpenditureNoteFacade(_dbContext(GetCurrentMethod()), numberGeneratorMock.Object, GetServiceProviderMock().Object);
+            _dataUtil(facade, GetCurrentMethod());
+            PurchasingDocumentExpedition model = await pdaDataUtil.GetCashierTestData();
+            var verificationFilter = "";
+            var filter = new
+            {
+                verificationFilter
+            };
+            var filterJson = JsonConvert.SerializeObject(filter);
 
+            var Response = facade.GetAllByPosition(1, 25, "{}", model.UnitPaymentOrderNo, filterJson);
+            Assert.NotNull(Response.Data);
+        }
         [Fact]
         public async Task Should_Success_Get_Data_By_Id()
         {
@@ -137,6 +155,21 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.BankExpenditureNoteTest
             };
             var Response = await facade.Create(model, identityService);
             Assert.NotEqual(0, Response);
+        }
+        [Fact]
+        public async Task Should_Error_Create_Data()
+        {
+            var numberGeneratorMock = new Mock<IBankDocumentNumberGenerator>();
+            BankExpenditureNoteFacade facade = new BankExpenditureNoteFacade(_dbContext(GetCurrentMethod()), numberGeneratorMock.Object, GetServiceProviderMock().Object);
+            var model = await _dataUtil(facade, GetCurrentMethod()).GetNewData();
+            IdentityService identityService = new IdentityService()
+            {
+                Token = "Token",
+
+                Username = "Unit Test"
+            };
+            Exception e = await Assert.ThrowsAsync<Exception>(async () => await facade.Create(null, identityService));
+            Assert.NotNull(e.Message);
         }
         [Fact]
         public async Task Should_Success_Create_Data_Vat_null()
@@ -206,7 +239,21 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.BankExpenditureNoteTest
             int AffectedRows = await facade.Delete((int)Data.Id, identityService);
             Assert.True(AffectedRows > 0);
         }
+        [Fact]
+        public async Task Should_Success_Delete_Data_Zero_Id()
+        {
+            IdentityService identityService = new IdentityService()
+            {
+                Token = "Token",
 
+                Username = "Unit Test"
+            };
+            var numberGeneratorMock = new Mock<IBankDocumentNumberGenerator>();
+            BankExpenditureNoteFacade facade = new BankExpenditureNoteFacade(_dbContext(GetCurrentMethod()), numberGeneratorMock.Object, GetServiceProviderMock().Object);
+            BankExpenditureNoteModel Data = await _dataUtil(facade, GetCurrentMethod()).GetTestData();
+            int AffectedRows = await facade.Delete(20, identityService);
+            Assert.True(AffectedRows == 0);
+        }
         [Fact]
         public void Should_Success_Validate_Data()
         {

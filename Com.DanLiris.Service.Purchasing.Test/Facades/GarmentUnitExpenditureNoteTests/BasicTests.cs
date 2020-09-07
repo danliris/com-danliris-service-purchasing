@@ -450,7 +450,24 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitExpenditureNot
             var ResponseUpdate = await facade.Update((int)newData.Id, newData);
             Assert.NotEqual(0, ResponseUpdate);
         }
+        [Fact]
+        public async Task Should_Success_Update_Data_Items_True()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            var facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), dbContext);
+            var dataUtil = this.dataUtil(facade, GetCurrentMethod());
+            var data = await dataUtil.GetTestData();
 
+            var newData = dbContext.GarmentUnitExpenditureNotes
+                .AsNoTracking()
+                .Include(x => x.Items)
+                .Single(m => m.Id == data.Id);
+
+            newData.Items.First().IsSave = true;
+            //newData.Items.First().ProductId = 2222;
+            var ResponseUpdate = await facade.Update((int)newData.Id, newData);
+            Assert.NotEqual(0, ResponseUpdate);
+        }
         [Fact]
         public async Task Should_Success_Update_Data_Type_Transfer()
         {
@@ -465,6 +482,26 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitExpenditureNot
                 .Single(m => m.Id == dataTransfer.Id);
 
             newData.Items.First().IsSave = true;
+
+            var ResponseUpdateTypeTransfer = await facade.Update((int)newData.Id, newData);
+            Assert.NotEqual(0, ResponseUpdateTypeTransfer);
+        }
+
+        [Fact]
+        public async Task Should_Success_Update_Data_Type_Transfer_Inven_Null()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            var facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), dbContext);
+            var dataUtil = this.dataUtil(facade, GetCurrentMethod());
+            var dataTransfer = await dataUtil.GetTestDataAcc();
+
+            var newData = dbContext.GarmentUnitExpenditureNotes
+                .AsNoTracking()
+                .Include(x => x.Items)
+                .Single(m => m.Id == dataTransfer.Id);
+
+            newData.Items.First().IsSave = true;
+            newData.Items.First().ProductId = 2222;
             var ResponseUpdateTypeTransfer = await facade.Update((int)newData.Id, newData);
             Assert.NotEqual(0, ResponseUpdateTypeTransfer);
         }
@@ -517,6 +554,16 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitExpenditureNot
             var facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
             var data = await dataUtil(facade, GetCurrentMethod()).GetTestData();
 
+            var Response = await facade.Delete((int)data.Id);
+            Assert.NotEqual(0, Response);
+        }
+
+        [Fact]
+        public async Task Should_Success_Delete_Data_TypeTransfer()
+        {
+            var facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var data = await dataUtil(facade, GetCurrentMethod()).GetNewDataTypeTransfer();
+            var Response2 = await facade.Create(data);
             var Response = await facade.Delete((int)data.Id);
             Assert.NotEqual(0, Response);
         }
@@ -807,6 +854,16 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitExpenditureNot
             var facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
             var data = await dataUtil(facade, GetCurrentMethod()).GetTestDataWithStorage();
             var Response = facade.GenerateExcelMonOut(null, null, "", 7);
+            Assert.IsType<MemoryStream>(Response);
+        }
+        [Fact]
+        public async Task Should_Success_Get_Excel_Monitoring_Out_ZeroResponse()
+        {
+            var dbContext = _dbContext(GetCurrentMethod());
+            var facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var data = await dataUtil(facade, GetCurrentMethod()).GetTestDataWithStorage();
+            var dateto = new DateTime(12, 12, 12);
+            var Response = facade.GenerateExcelMonOut(null, dateto, "Test", 7);
             Assert.IsType<MemoryStream>(Response);
         }
 
