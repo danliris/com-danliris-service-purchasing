@@ -349,5 +349,64 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitDeliveryOrderT
             var Response = facade.ReadForUnitExpenditureNote();
             Assert.NotEmpty(Response.Data);
         }
+        [Fact]
+        public void Should_Success_Get_Data_For_ViewModel()
+        { 
+            var model = new GarmentUnitDeliveryOrderViewModel
+            {
+                UnitDOType = "test",
+                UnitDONo = "test",
+                UnitDODate = DateTimeOffset.Now,
+                UnitRequest = new Lib.ViewModels.NewIntegrationViewModel.UnitViewModel
+                {
+                    Code = "test",
+                    Division = new Lib.ViewModels.NewIntegrationViewModel.DivisionViewModel
+                    {
+                        Code = "test",
+                        Id = "1",
+                        Name = "test"
+                    },
+                    Id = "1",
+                    Name = "test"
+                },
+                UnitSender = new Lib.ViewModels.NewIntegrationViewModel.UnitViewModel
+                {
+                    Code = "test",
+                    Division = new Lib.ViewModels.NewIntegrationViewModel.DivisionViewModel
+                    {
+                        Code = "test",
+                        Id = "1",
+                        Name = "test"
+                    },
+                    Id = "1",
+                    Name = "test"
+                },
+                Article = "test",
+                Storage = new Lib.ViewModels.IntegrationViewModel.StorageViewModel
+                {
+                    code = "test",
+                    name = "test",
+                    _id = "1",
+                },
+                StorageRequest = new Lib.ViewModels.IntegrationViewModel.StorageViewModel
+                {
+                    code = "test",
+                    name = "test",
+                    _id = "1",
+                },
+                RONo = "test",
+                IsUsed = true,
+                DOId = 1,
+                DONo = "test",
+                CorrectionId = 1,
+                CorrectionNo = "test",
+                UENFromId = 1,
+                UENFromNo = "test",
+                UnitDOFromId = 1,
+                UnitDOFromNo = "test"
+
+            };
+            Assert.NotNull(model);
+        }
     }
 }
