@@ -41,9 +41,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.PurchaseRequestFacades
                          join b in DbContext.InternalPurchaseOrderItems on a.Id equals b.POId
                          join d in DbContext.PurchaseRequestItems on b.PRItemId equals d.Id
                          join c in DbContext.PurchaseRequests on d.PurchaseRequestId equals c.Id
-                         where a.IsDeleted == false && b.IsDeleted == false &&
-                               c.IsDeleted == false && d.IsDeleted == false &&
-                               c.IsPosted == true &&
+                         where c.IsPosted == true &&
                                c.Date.AddHours(offset).Date >= DateFrom.Date &&
                                c.Date.AddHours(offset).Date <= DateTo.Date                             
                          select new PurchaseRequestGenerateDataViewModel

@@ -37,8 +37,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             var Query = (from a in DbContext.UnitReceiptNotes
                          join b in DbContext.UnitReceiptNoteItems on a.Id equals b.URNId
-                         where a.IsDeleted == false && b.IsDeleted == false &&
-                               a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date &&
+                         where a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date &&
                                a.ReceiptDate.AddHours(offset).Date <= DateTo.Date                             
                          select new UnitReceiptNoteGenerateDataViewModel
                          {

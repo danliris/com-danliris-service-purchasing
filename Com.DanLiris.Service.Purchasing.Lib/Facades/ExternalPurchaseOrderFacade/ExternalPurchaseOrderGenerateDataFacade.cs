@@ -38,8 +38,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.ExternalPurchaseOrderFacad
             var Query = (from a in DbContext.ExternalPurchaseOrders
                          join b in DbContext.ExternalPurchaseOrderItems on a.Id equals b.EPOId
                          join c in DbContext.ExternalPurchaseOrderDetails on b.Id equals c.EPOItemId
-                         where a.IsDeleted == false && b.IsDeleted == false &&
-                               c.IsDeleted == false && a.IsPosted == true &&
+                         where a.IsPosted == true &&
                                a.OrderDate.AddHours(offset).Date >= DateFrom.Date &&
                                a.OrderDate.AddHours(offset).Date <= DateTo.Date                             
                          select new ExternalPurchaseOrderGenerateDataViewModel
