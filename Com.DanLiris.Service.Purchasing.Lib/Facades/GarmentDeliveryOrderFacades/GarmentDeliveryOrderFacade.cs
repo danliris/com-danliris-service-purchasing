@@ -52,7 +52,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderFacade
 
             List<string> searchAttributes = new List<string>()
             {
-                "DONo", "SupplierName", "Items.EPONo"
+                "DONo", "BillNo", "PaymentBill", "SupplierName", "Items.EPONo"
             };
 
             Query = QueryHelper<GarmentDeliveryOrder>.ConfigureSearch(Query, searchAttributes, Keyword);
