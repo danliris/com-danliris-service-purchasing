@@ -59,6 +59,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                         && a.INDate.AddHours(offset).Date <= DateNITo.Date
                         && c.PaymentDueDate.AddHours(offset).Date >= DueDateFrom.Date
                         && c.PaymentDueDate.AddHours(offset).Date <= DueDateTo.Date
+
                         select new GarmentInternNotePaymentStatusViewModel
                         {
                             INNo = a.INNo,
