@@ -42,7 +42,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             DateTime DateFrom = datefrom == null ? new DateTime(1970, 1, 1) : (DateTime)datefrom;
             DateTime DateTo = dateto == null ? DateTime.Now : (DateTime)dateto;
 
-            var lastdate = dbContext.BalanceStocks.OrderByDescending(x => x.CreateDate).Select(x => x.CreateDate).FirstOrDefault();
+            var lastdate = dbContext.BalanceStocks.OrderByDescending(x => x.CreateDate).Select(x => x.CreateDate).FirstOrDefault() ?? DateFrom;
 
             var BalaceStock = (from a in dbContext.BalanceStocks
                                where a.CreateDate == lastdate
@@ -230,7 +230,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                          from gg in EPO.DefaultIfEmpty()
                          where d.CodeRequirment == (String.IsNullOrWhiteSpace(ctg) ? d.CodeRequirment : ctg)
                          && a.IsDeleted == false && b.IsDeleted == false
-                         && a.CreatedUtc.AddHours(offset).Date > lastdate.Value.Date
+                         && a.CreatedUtc.AddHours(offset).Date > lastdate.Date
                          && a.CreatedUtc.AddHours(offset).Date < DateFrom.Date
                          && a.UnitCode == (string.IsNullOrWhiteSpace(unitcode) ? a.UnitCode : unitcode)
                          && SaldoAkhirIds.Contains(f.Id)

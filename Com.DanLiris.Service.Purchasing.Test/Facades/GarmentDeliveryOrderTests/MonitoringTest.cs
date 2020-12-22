@@ -1242,7 +1242,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
 
             var dataBC3 = await datautilBC.GetTestData(USERNAME, data3);
 
-            var result = reportFacade.GenerateExcelDebtReport(DateTime.Now.Month + 1, DateTime.Now.Year + 1, null, "");
+            var result = reportFacade.GenerateExcelDebtReport(DateTime.Now.Month, DateTime.Now.Year + 1, null, "");
             Assert.IsType<System.IO.MemoryStream>(result);
         }
         [Fact]
@@ -1470,7 +1470,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
 
             var dataBC3 = await datautilBC.GetTestData(USERNAME, data3);
 
-            var result = reportFacade.GenerateExcelDebtReport(DateTime.Now.Month + 1, DateTime.Now.Year + 1, null, "");
+            var result = reportFacade.GenerateExcelDebtReport(DateTime.Now.Month, DateTime.Now.Year + 1, null, "");
             Assert.IsType<System.IO.MemoryStream>(result);
         }
         [Fact]
