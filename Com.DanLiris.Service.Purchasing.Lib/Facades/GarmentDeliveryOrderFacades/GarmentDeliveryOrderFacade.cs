@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Com.DanLiris.Service.Purchasing.Lib.Enums;
 using Com.DanLiris.Service.Purchasing.Lib.Helpers;
 using Com.DanLiris.Service.Purchasing.Lib.Helpers.ReadResponse;
 using Com.DanLiris.Service.Purchasing.Lib.Interfaces;
@@ -83,6 +84,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderFacade
 
             Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
             Query = QueryHelper<GarmentDeliveryOrder>.ConfigureFilter(Query, FilterDictionary);
+
+            Query = Query.Where(m => m.Position.Equals(PurchasingGarmentExpeditionPosition.Invalid) || m.Position.Equals(PurchasingGarmentExpeditionPosition.Purchasing));
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             Query = QueryHelper<GarmentDeliveryOrder>.ConfigureOrder(Query, OrderDictionary);
@@ -663,7 +666,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderFacade
             Query = QueryHelper<GarmentDeliveryOrder>.ConfigureFilter(Query, FilterDictionary);
 
             Query = Query
-                .Where(m => m.CustomsId != 0 && m.Items.Any(i => i.Details.Any(d => d.ReceiptQuantity > 0)))
+                .Where(m => m.CustomsId != 0 && (m.Position.Equals(PurchasingGarmentExpeditionPosition.Invalid) || m.Position.Equals(PurchasingGarmentExpeditionPosition.Purchasing)) && m.Items.Any(i => i.Details.Any(d => d.ReceiptQuantity > 0)))
                 .Select(m => new GarmentDeliveryOrder
                 {
                     Id = m.Id,

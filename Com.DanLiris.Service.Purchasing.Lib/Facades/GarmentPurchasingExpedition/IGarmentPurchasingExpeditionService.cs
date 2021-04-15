@@ -14,5 +14,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchasingExpeditio
         void UpdateInternNotesIsPphPaid(List<GarmentInternNoteUpdateIsPphPaidDto> listModel);
         List<GarmentDispositionNoteDto> GetGarmentDispositionNotes(string keyword, PurchasingGarmentExpeditionPosition position);
         int UpdateDispositionNotePosition(UpdatePositionFormDto form);
+        int UpdateDeliveryOrderPosition(UpdatePositionDeliveryOrderFormDto form);
     }
 }

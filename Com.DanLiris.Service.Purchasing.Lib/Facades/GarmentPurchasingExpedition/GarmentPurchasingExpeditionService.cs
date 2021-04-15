@@ -426,5 +426,20 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchasingExpeditio
             }
             _dbContext.SaveChanges();
         }
+        public int UpdateDeliveryOrderPosition(UpdatePositionDeliveryOrderFormDto form)
+        {
+            var models = _dbContext.GarmentDeliveryOrders.Where(entity => form.InternalNoteNos.Contains(entity.InternNo)).ToList();
+
+            models = models.Select(model =>
+            {
+                model.Position = form.Position;
+                EntityExtension.FlagForUpdate(model, _identityService.Username, UserAgent);
+
+                return model;
+            }).ToList();
+
+            _dbContext.GarmentDeliveryOrders.UpdateRange(models);
+            return _dbContext.SaveChanges();
+        }
     }
 }

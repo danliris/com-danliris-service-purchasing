@@ -193,5 +193,21 @@ namespace Com.DanLiris.Service.Purchasing.WebApi.Controllers.v1
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, e.Message + " " + e.StackTrace);
             }
         }
+
+        [HttpPut("delivery-order/position")]
+        public IActionResult UpdateGarmentDeliveryOrderPosition([FromBody] UpdatePositionDeliveryOrderFormDto form)
+        {
+            try
+            {
+                VerifyUser();
+
+                var result = _service.UpdateDeliveryOrderPosition(form);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, e.Message + " " + e.StackTrace);
+            }
+        }
     }
 }
