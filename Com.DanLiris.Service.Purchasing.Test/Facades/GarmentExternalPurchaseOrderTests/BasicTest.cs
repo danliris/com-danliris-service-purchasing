@@ -193,9 +193,10 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentExternalPurchaseOr
         {
             var facade = new GarmentExternalPurchaseOrderFacade(ServiceProvider, _dbContext(GetCurrentMethod()));
             var data = await dataUtil(facade, GetCurrentMethod()).GetTestDataAcc();
-            var Response = facade.ReadItemByPOSerialNumberLoader(1,25,"{}", "PO","{}");
-            Assert.NotEmpty(Response.Item1);
+            var Response = facade.ReadItemByPOSerialNumberLoader("PO", "{'PO_SerialNumber' : 'ACC'}", 50);
+            Assert.NotEmpty(Response);
         }
+
 
         [Fact]
         public async Task Should_Success_Get_Data_By_Id()
