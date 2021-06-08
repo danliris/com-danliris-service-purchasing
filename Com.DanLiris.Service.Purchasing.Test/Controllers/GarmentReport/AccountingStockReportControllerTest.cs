@@ -124,8 +124,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentReport
         public async Task Should_Success_Get_ReportAsync()
         {
             var mockFacade = new Mock<IAccountingStockReportFacade>();
-            mockFacade.Setup(x => x.GetStockReportAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(Tuple.Create(new List<AccountingStockReportViewModel> { viewModel }, 25));
+            mockFacade.Setup(x => x.GetStockReport(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Returns(Tuple.Create(new List<AccountingStockReportViewModel> { viewModel }, 25));
 
             var mockMapper = new Mock<IMapper>();
             mockMapper.Setup(x => x.Map<List<AccountingStockReportViewModel>>(It.IsAny<List<AccountingStockReportViewModel>>()))
@@ -192,8 +192,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentReport
         public async Task Should_Error_Get_Report_DataAsync()
         {
             var mockFacade = new Mock<IAccountingStockReportFacade>();
-            mockFacade.Setup(x => x.GetStockReportAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(Tuple.Create(new List<AccountingStockReportViewModel> { viewModel }, 25));
+            mockFacade.Setup(x => x.GetStockReport(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Returns(Tuple.Create(new List<AccountingStockReportViewModel> { viewModel }, 25));
 
             var mockMapper = new Mock<IMapper>();
             mockMapper.Setup(x => x.Map<List<AccountingStockReportViewModel>>(It.IsAny<List<AccountingStockReportViewModel>>()))
@@ -221,8 +221,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Controllers.GarmentReport
         public async Task Should_Error_Get_Report_Xls_DataAsync()
         {
             var mockFacade = new Mock<IAccountingStockReportFacade>();
-            mockFacade.Setup(x => x.GetStockReportAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(Tuple.Create(new List<AccountingStockReportViewModel> { viewModel }, 25));
+            mockFacade.Setup(x => x.GetStockReport(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Returns(Tuple.Create(new List<AccountingStockReportViewModel> { viewModel }, 25));
 
             var mockMapper = new Mock<IMapper>();
             mockMapper.Setup(x => x.Map<List<AccountingStockReportViewModel>>(It.IsAny<List<AccountingStockReportViewModel>>()))
