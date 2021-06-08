@@ -50,6 +50,7 @@ using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitExpenditureNoteFaca
 using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReceiptCorrectionFacades;
 using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports;
 using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitDeliveryOrderFacades;
+using Com.DanLiris.Service.Purchasing.Lib.Services.GarmentDebtBalance;
 
 namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFacadeTests
 {
@@ -90,6 +91,10 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
                 .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("master/garmentProducts"))))
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(new GarmentProductDataUtil().GetMultipleResultFormatterOkString()) });
 
+            httpClientService
+                .Setup(x => x.PostAsync(It.Is<string>(s => s.Contains("garment-debt-balances/customs")), It.IsAny<HttpContent>()))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("1") });
+
 
             var mapper = new Mock<IMapper>();
             mapper
@@ -115,19 +120,32 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
                 .Setup(x => x.ReadById(It.IsAny<int>()))
                 .Returns(new GarmentDeliveryOrder());
 
+            var mockDebtBalance = new Mock<IGarmentDebtBalanceService>();
+            mockDebtBalance
+                .Setup(x => x.CreateFromCustoms(It.IsAny<CustomsFormDto>()))
+                .ReturnsAsync(200);
+
             var serviceProviderMock = new Mock<IServiceProvider>();
+
             serviceProviderMock
                 .Setup(x => x.GetService(typeof(IdentityService)))
                 .Returns(new IdentityService { Username = "Username" });
+
             serviceProviderMock
                 .Setup(x => x.GetService(typeof(IHttpClientService)))
                 .Returns(httpClientService.Object);
+
             serviceProviderMock
                 .Setup(x => x.GetService(typeof(IMapper)))
                 .Returns(mapper.Object);
+
             serviceProviderMock
                 .Setup(x => x.GetService(typeof(IGarmentDeliveryOrderFacade)))
                 .Returns(mockGarmentDeliveryOrderFacade.Object);
+
+            serviceProviderMock
+                .Setup(x => x.GetService(typeof(IGarmentDebtBalanceService)))
+                .Returns(mockDebtBalance.Object);
 
             serviceProviderMock
                 .Setup(x => x.GetService(typeof(IdentityService)))
@@ -183,6 +201,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
                 .Setup(x => x.ReadById(It.IsAny<int>()))
                 .Returns(new GarmentDeliveryOrder());
 
+            
+
             var serviceProviderMock = new Mock<IServiceProvider>();
             serviceProviderMock
                 .Setup(x => x.GetService(typeof(IdentityService)))
@@ -196,6 +216,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             serviceProviderMock
                 .Setup(x => x.GetService(typeof(IGarmentDeliveryOrderFacade)))
                 .Returns(mockGarmentDeliveryOrderFacade.Object);
+
+            
 
             serviceProviderMock
                 .Setup(x => x.GetService(typeof(IdentityService)))
@@ -1664,8 +1686,8 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
             //var Response = stockreport.GetStockReport(7, dataUrn1.UnitCode, null, 1, 25, "{}", new DateTime(2019, 12, 26), new DateTime(2019, 12, 27));
             //var Response = stockreport.GetStockReport("BB", null, null, null, 7);
-            var Response = await stockreport.GetStockReportAsync(7, null, "BB", 1, 25, "{}", null, null);
-            var Response2 = await stockreport.GetStockReportAsync(7, null, "BP", 1, 25, "{}", null, null);
+            var Response = stockreport.GetStockReport(7, null, "BB", 1, 25, "{}", null, null);
+            var Response2 = stockreport.GetStockReport(7, null, "BP", 1, 25, "{}", null, null);
             Assert.NotNull(Response.Item1);
             Assert.NotNull(Response2.Item1);
         }
@@ -1739,7 +1761,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
             //var Response = stockreport.GetStockReport(7, dataUrn1.UnitCode, null, 1, 25, "{}", new DateTime(2019, 12, 26), new DateTime(2019, 12, 27));
             //var Response = stockreport.GetStockReport("BB", null, null, null, 7);
-            var Response = await stockreport.GenerateExcelAStockReportAsync("BB", null, null, null, null, null, 7);
+            var Response = stockreport.GenerateExcelAStockReport("BB", null, null, null, null, null, 7);
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
         [Fact]
@@ -1809,7 +1831,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             await facadeRC.Create(dataRC.GarmentReceiptCorrection, USERNAME);
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
             //var Response = stockreport.GenerateExcelAStockReport(null, dataUrn1.UnitCode, new DateTime(2019, 12, 26), new DateTime(2019, 12, 27), 7);
-            var Response = await stockreport.GenerateExcelAStockReportAsync("BB", "BAHAN BAKU", "C2A", "KONFEKSI 2A", null, null, 7);
+            var Response = stockreport.GenerateExcelAStockReport("BB", "BAHAN BAKU", "C2A", "KONFEKSI 2A", null, null, 7);
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
         [Fact]
@@ -1879,7 +1901,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             await facadeRC.Create(dataRC.GarmentReceiptCorrection, USERNAME);
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
             //var Response = stockreport.GenerateExcelAStockReport(null, dataUrn1.UnitCode, new DateTime(2019, 12, 26), new DateTime(2019, 12, 27), 7);
-            var Response = await stockreport.GenerateExcelAStockReportAsync("BB", "BAHAN BAKU", "C2B", "KONFEKSI 2B", null, null, 7);
+            var Response = stockreport.GenerateExcelAStockReport("BB", "BAHAN BAKU", "C2B", "KONFEKSI 2B", null, null, 7);
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
         [Fact]
@@ -1949,7 +1971,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             await facadeRC.Create(dataRC.GarmentReceiptCorrection, USERNAME);
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
             //var Response = stockreport.GenerateExcelAStockReport(null, dataUrn1.UnitCode, new DateTime(2019, 12, 26), new DateTime(2019, 12, 27), 7);
-            var Response = await stockreport.GenerateExcelAStockReportAsync("BB", "BAHAN BAKU", "C2C", "KONFEKSI 2C", null, null, 7);
+            var Response = stockreport.GenerateExcelAStockReport("BB", "BAHAN BAKU", "C2C", "KONFEKSI 2C", null, null, 7);
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
         [Fact]
@@ -2019,7 +2041,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             await facadeRC.Create(dataRC.GarmentReceiptCorrection, USERNAME);
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
             //var Response = stockreport.GenerateExcelAStockReport(null, dataUrn1.UnitCode, new DateTime(2019, 12, 26), new DateTime(2019, 12, 27), 7);
-            var Response = await stockreport.GenerateExcelAStockReportAsync("BB", "BAHAN BAKU", "C1B", "KONFEKSI 1B", null, null, 7);
+            var Response = stockreport.GenerateExcelAStockReport("BB", "BAHAN BAKU", "C1B", "KONFEKSI 1B", null, null, 7);
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
         [Fact]
@@ -2089,7 +2111,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             await facadeRC.Create(dataRC.GarmentReceiptCorrection, USERNAME);
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
             //var Response = stockreport.GenerateExcelAStockReport(null, dataUrn1.UnitCode, new DateTime(2019, 12, 26), new DateTime(2019, 12, 27), 7);
-            var Response = await stockreport.GenerateExcelAStockReportAsync("BB", "BAHAN BAKU", "C1A", "KONFEKSI 1A", new DateTime(1970, 1, 1), DateTime.Now, 7);
+            var Response = stockreport.GenerateExcelAStockReport("BB", "BAHAN BAKU", "C1A", "KONFEKSI 1A", new DateTime(1970, 1, 1), DateTime.Now, 7);
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
         #endregion
@@ -2249,6 +2271,158 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             Assert.NotNull(Response.Item1);
             //var Response = facade.Read()
         }
+
+        //[Fact]
+        //public async Task Should_Success_Get_Beacukai_IN_Type_23()
+        //{
+        //    var facade = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var datauitlDO = dataUtilDO(facade, GetCurrentMethod());
+        //    GarmentDeliveryOrder data = await dataUtilDO(facade, GetCurrentMethod()).GetNewData();
+
+        //    await facade.Create(data, "Unit Test");
+
+        //    var facadeBC = new GarmentBeacukaiFacade(_dbContext(GetCurrentMethod()), GetServiceProvider());
+        //    var datautilBC = new GarmentBeacukaiDataUtil(datauitlDO, facadeBC);
+        //    var dataBC = await datautilBC.GetNewData(USERNAME, data);
+
+        //    dataBC.CustomsType = "BC 23";
+        //    dataBC.BeacukaiNo = "BeacukaiNo";
+
+        //    await facadeBC.Create(dataBC, USERNAME);
+
+        //    var garmentUnitReceiptNoteFacade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var garmentUnitReceiptNoteDatautil = new GarmentUnitReceiptNoteDataUtil(garmentUnitReceiptNoteFacade, datauitlDO);
+
+        //    var dataurn = await garmentUnitReceiptNoteDatautil.GetNewData(null, data);
+        //    await garmentUnitReceiptNoteFacade.Create(dataurn);
+
+        //    var response = facadeBC.GetBeacukaiIn("BC 2.3", DateTime.MinValue, null, 1, 25, "", 7);
+
+        //    Assert.NotNull(response.Item1);
+        //    //var Response = facade.Read()
+        //}
+
+        //[Fact]
+        //public async Task Should_Success_Get_Beacukai_IN_Type_40()
+        //{
+        //    var facade = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var datauitlDO = dataUtilDO(facade, GetCurrentMethod());
+        //    GarmentDeliveryOrder data = await dataUtilDO(facade, GetCurrentMethod()).GetNewData();
+
+        //    await facade.Create(data, "Unit Test");
+
+        //    var facadeBC = new GarmentBeacukaiFacade(_dbContext(GetCurrentMethod()), GetServiceProvider());
+        //    var datautilBC = new GarmentBeacukaiDataUtil(datauitlDO, facadeBC);
+        //    var dataBC = await datautilBC.GetNewData(USERNAME, data);
+
+        //    dataBC.CustomsType = "BC 40";
+        //    dataBC.BeacukaiNo = "BeacukaiNo";
+
+        //    await facadeBC.Create(dataBC, USERNAME);
+
+        //    var garmentUnitReceiptNoteFacade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var garmentUnitReceiptNoteDatautil = new GarmentUnitReceiptNoteDataUtil(garmentUnitReceiptNoteFacade, datauitlDO);
+
+        //    var dataurn = await garmentUnitReceiptNoteDatautil.GetNewData(null, data);
+        //    await garmentUnitReceiptNoteFacade.Create(dataurn);
+
+        //    var response = facadeBC.GetBeacukaiIn("BC 4.0", DateTime.MinValue, null, 1, 25, "", 7);
+
+        //    Assert.NotNull(response.Item1);
+        //    //var Response = facade.Read()
+        //}
+
+        //[Fact]
+        //public async Task Should_Success_Get_Beacukai_IN_Type_27()
+        //{
+        //    var facade = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var datauitlDO = dataUtilDO(facade, GetCurrentMethod());
+        //    GarmentDeliveryOrder data = await dataUtilDO(facade, GetCurrentMethod()).GetNewData();
+
+        //    await facade.Create(data, "Unit Test");
+
+        //    var facadeBC = new GarmentBeacukaiFacade(_dbContext(GetCurrentMethod()), GetServiceProvider());
+        //    var datautilBC = new GarmentBeacukaiDataUtil(datauitlDO, facadeBC);
+        //    var dataBC = await datautilBC.GetNewData(USERNAME, data);
+
+        //    dataBC.CustomsType = "BC 27";
+        //    dataBC.BeacukaiNo = "BeacukaiNo";
+
+        //    await facadeBC.Create(dataBC, USERNAME);
+
+        //    var garmentUnitReceiptNoteFacade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var garmentUnitReceiptNoteDatautil = new GarmentUnitReceiptNoteDataUtil(garmentUnitReceiptNoteFacade, datauitlDO);
+
+        //    var dataurn = await garmentUnitReceiptNoteDatautil.GetNewData(null, data);
+        //    await garmentUnitReceiptNoteFacade.Create(dataurn);
+
+        //    var response = facadeBC.GetBeacukaiIn("BC 2.7", DateTime.MinValue, null, 1, 25, "", 7);
+
+        //    Assert.NotNull(response.Item1);
+        //    //var Response = facade.Read()
+        //}
+
+        //[Fact]
+        //public async Task Should_Success_Get_Beacukai_IN_Type_262()
+        //{
+        //    var facade = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var datauitlDO = dataUtilDO(facade, GetCurrentMethod());
+        //    GarmentDeliveryOrder data = await dataUtilDO(facade, GetCurrentMethod()).GetNewData();
+
+        //    await facade.Create(data, "Unit Test");
+
+        //    var facadeBC = new GarmentBeacukaiFacade(_dbContext(GetCurrentMethod()), GetServiceProvider());
+        //    var datautilBC = new GarmentBeacukaiDataUtil(datauitlDO, facadeBC);
+        //    var dataBC = await datautilBC.GetNewData(USERNAME, data);
+
+        //    dataBC.CustomsType = "BC 262";
+        //    dataBC.BeacukaiNo = "BeacukaiNo";
+
+        //    await facadeBC.Create(dataBC, USERNAME);
+
+        //    var garmentUnitReceiptNoteFacade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var garmentUnitReceiptNoteDatautil = new GarmentUnitReceiptNoteDataUtil(garmentUnitReceiptNoteFacade, datauitlDO);
+
+        //    var dataurn = await garmentUnitReceiptNoteDatautil.GetNewData(null, data);
+        //    await garmentUnitReceiptNoteFacade.Create(dataurn);
+
+        //    var response = facadeBC.GetBeacukaiIn("BC 2.6.2", DateTime.MinValue, null, 1, 25, "", 7);
+
+        //    Assert.NotNull(response.Item1);
+        //    //var Response = facade.Read()
+        //}
+
+        //[Fact]
+        //public async Task Should_Success_Get_EXcel_Beacukai_IN_Type_23()
+        //{
+        //    var facade = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var datauitlDO = dataUtilDO(facade, GetCurrentMethod());
+        //    GarmentDeliveryOrder data = await dataUtilDO(facade, GetCurrentMethod()).GetNewData();
+
+        //    await facade.Create(data, "Unit Test");
+
+        //    var facadeBC = new GarmentBeacukaiFacade(_dbContext(GetCurrentMethod()), GetServiceProvider());
+        //    var datautilBC = new GarmentBeacukaiDataUtil(datauitlDO, facadeBC);
+        //    var dataBC = await datautilBC.GetNewData(USERNAME, data);
+
+        //    dataBC.CustomsType = "BC 23";
+        //    dataBC.BeacukaiNo = "BeacukaiNo";
+
+        //    await facadeBC.Create(dataBC, USERNAME);
+
+        //    var garmentUnitReceiptNoteFacade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var garmentUnitReceiptNoteDatautil = new GarmentUnitReceiptNoteDataUtil(garmentUnitReceiptNoteFacade, datauitlDO);
+
+        //    var dataurn = await garmentUnitReceiptNoteDatautil.GetNewData(null, data);
+        //    await garmentUnitReceiptNoteFacade.Create(dataurn);
+
+        //    var response = facadeBC.GenerateExcelIN("BC 2.3", DateTime.MinValue, null , 7);
+
+        //    Assert.IsType<MemoryStream>(response);
+        //    //var Response = facade.Read()
+        //}
+
+
     }
 
 
