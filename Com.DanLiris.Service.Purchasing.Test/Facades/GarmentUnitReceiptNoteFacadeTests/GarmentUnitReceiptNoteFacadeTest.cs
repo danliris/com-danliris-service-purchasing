@@ -92,6 +92,10 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(new GarmentProductDataUtil().GetMultipleResultFormatterOkString()) });
 
             httpClientService
+                .Setup(x => x.SendAsync(It.IsAny<HttpMethod>(),It.Is<string>(s => s.Contains("master/garmentProducts")),It.IsAny<HttpContent>()))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(new GarmentProductDataUtil().GetMultipleResultFormatterOkString()) });
+
+            httpClientService
                 .Setup(x => x.PostAsync(It.Is<string>(s => s.Contains("garment-debt-balances/customs")), It.IsAny<HttpContent>()))
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("1") });
 
@@ -1663,11 +1667,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
             }
             foreach (var i in dataUrn2.Items)
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTestBP123";
+                i.ProductName = "Name123BP";
             }
             //var dataUrn3 = await dataUtilUrn.GetNewData2(nowTicks + 1);
             //dataUrn3.UENNo = "BUK" + dataUrn3.UnitCode;
@@ -1738,11 +1744,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
             }
             foreach (var i in dataUrn2.Items)
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTestBP123";
+                i.ProductName = "Name123BP";
             }
             //var dataUrn3 = await dataUtilUrn.GetNewData2(nowTicks + 1);
             //dataUrn3.UENNo = "BUK" + dataUrn3.UnitCode;
@@ -1815,11 +1823,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
             }
             foreach (var i in dataUrn2.Items)
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTestBP123";
+                i.ProductName = "Name123BP";
             }
             await facade.Create(dataUrn1);
             await facade.Create(dataUrn2);
@@ -1885,11 +1895,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
             }
             foreach (var i in dataUrn2.Items)
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTestBP123";
+                i.ProductName = "Name123BP";
             }
             await facade.Create(dataUrn1);
             await facade.Create(dataUrn2);
@@ -1955,11 +1967,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
             }
             foreach (var i in dataUrn2.Items)
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTestBP123";
+                i.ProductName = "Name123BP";
             }
             await facade.Create(dataUrn1);
             await facade.Create(dataUrn2);
@@ -2025,11 +2039,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
             }
             foreach (var i in dataUrn2.Items)
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTestBP123";
+                i.ProductName = "Name123BP";
             }
             await facade.Create(dataUrn1);
             await facade.Create(dataUrn2);
@@ -2095,11 +2111,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
             }
             foreach (var i in dataUrn2.Items)
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTestBP123";
+                i.ProductName = "Name123BP";
             }
             await facade.Create(dataUrn1);
             await facade.Create(dataUrn2);
@@ -2170,11 +2188,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
             }
             foreach (var i in dataUrn2.Items)
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTestBP123";
+                i.ProductName = "Name123BP";
             }
             await facade.Create(dataUrn1);
             await facade.Create(dataUrn2);
@@ -2224,11 +2244,13 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
             }
             foreach (var i in dataUrn2.Items)
             {
                 i.UENItemId = 1;
                 i.ProductCode = "CodeTestBP123";
+                i.ProductName = "Name123BP";
             }
             //var dataUrn3 = await dataUtilUrn.GetNewData2(nowTicks + 1);
             //dataUrn3.UENNo = "BUK" + dataUrn3.UnitCode;
