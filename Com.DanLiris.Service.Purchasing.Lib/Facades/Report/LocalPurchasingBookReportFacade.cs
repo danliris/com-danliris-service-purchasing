@@ -1323,7 +1323,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.Report
                 case "Harga Total":
                     return (priceTotalBefore - priceTotalAfter) * -1;
                 case "Jumlah":
-                    return ((pricePerDealBefore - priceperDealAfter) * quantityCorrection) * -1;
+                    return (priceperDealAfter * (quantityCorrection - quantity)) * -1;
                 default:
                     return 0;
                     break;
@@ -1340,7 +1340,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.Report
                 case "Harga Total":
                     return quantity;
                 case "Jumlah":
-                    return quantityCorrection;
+                    return quantityCorrection - quantity;
                 default:
                     return 0;
                     break;
