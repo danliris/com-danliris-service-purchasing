@@ -1327,7 +1327,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.Report
                 default:
                     return 0;
                     break;
-
             }
         }
 
