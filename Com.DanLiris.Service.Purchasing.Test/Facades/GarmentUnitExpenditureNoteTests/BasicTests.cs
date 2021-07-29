@@ -1156,166 +1156,64 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitExpenditureNot
         [Fact]
         public async Task Should_Success_GetReport_Realization_CMT()
         {
-            var externalFacade = new GarmentExternalPurchaseOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
-            var datautilexternal = dataUtilExternal(externalFacade, GetCurrentMethod());
-            GarmentExternalPurchaseOrder data = await dataUtilExternal(externalFacade, GetCurrentMethod()).GetNewDataFabric();
+            var facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var datautIlUEN = dataUtil(facade, GetCurrentMethod());
+            GarmentUnitExpenditureNote data = await dataUtil(facade, GetCurrentMethod()).GetNewDataForPreparing();
 
-            foreach(var i in data.Items)
-            {
-                i.ProductName = "FABRIC";
-            }
+            await facade.Create(data);
 
-            data.PaymentMethod = "CMT";
-
-            await externalFacade.Create(data, "test");
-
-            var doFacade = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
-            var doDataUtil = new GarmentDeliveryOrderDataUtil(doFacade, datautilexternal);
-
-            var DO = await doDataUtil.GetNewData(data);
-
-            await doFacade.Create(DO, "test");
-
-            var garmentUnitReceiptNoteFacade = new GarmentUnitReceiptNoteFacade(GetServiceProviderUnitReceiptNote(), _dbContext(GetCurrentMethod()));
-            var garmentUnitReceiptNoteDatautil = new GarmentUnitReceiptNoteDataUtil(garmentUnitReceiptNoteFacade, doDataUtil);
-
-            var garmentUnitDeliveryOrderFacade = new GarmentUnitDeliveryOrderFacade(_dbContext(GetCurrentMethod()), GetServiceProvider());
-            var garmentUnitDeliveryOrderDatautil = new GarmentUnitDeliveryOrderDataUtil(garmentUnitDeliveryOrderFacade, garmentUnitReceiptNoteDatautil);
-
-            var garmentUnitExpenditureNoteFacade = new GarmentUnitExpenditureNoteFacade(GetServiceProviderUnitReceiptNote(), _dbContext(GetCurrentMethod()));
-            var garmentUnitExpenditureNoteDatautil = new GarmentUnitExpenditureNoteDataUtil(garmentUnitExpenditureNoteFacade, garmentUnitDeliveryOrderDatautil);
-
-            var dataurn = await garmentUnitReceiptNoteDatautil.GetNewData(null, DO);
-            await garmentUnitReceiptNoteFacade.Create(dataurn);
-
-            var dataunitDO = await garmentUnitDeliveryOrderDatautil.GetNewData(dataurn);
-            dataunitDO.RONo = "RONo123";
-            await garmentUnitDeliveryOrderFacade.Create(dataunitDO);
-
-            var datauen = await garmentUnitExpenditureNoteDatautil.GetNewData(dataunitDO);
-            foreach(var uen in datauen.Items)
-            {
-                uen.ProductRemark = "ProductRemark";
-            }
-            await garmentUnitExpenditureNoteFacade.Create(datauen);
+            var garmentExpenditureGoodDataUtil = new GarmentExpenditureGoodDataUtil();
+            var gegData = garmentExpenditureGoodDataUtil.GetNewData();
+            gegData.RONo = data.Items.First().RONo;
 
             var reportService = new GarmentRealizationCMTReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
 
-            var dateTo = DateTime.UtcNow.AddDays(1);
+            var dateTo = DateTime.Now.AddDays(1);
             var dateFrom = dateTo.AddDays(-30);
-
             var results = reportService.GetReport(dateFrom, dateTo, 0, 1, 25, "", 0);
 
             Assert.NotNull(results);
-            
         }
 
         [Fact]
         public async Task Should_Success_GetXls_Realization_CMT()
         {
-            var externalFacade = new GarmentExternalPurchaseOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
-            var datautilexternal = dataUtilExternal(externalFacade, GetCurrentMethod());
-            GarmentExternalPurchaseOrder data = await dataUtilExternal(externalFacade, GetCurrentMethod()).GetNewDataFabric();
+            var facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var datautIlUEN = dataUtil(facade, GetCurrentMethod());
+            GarmentUnitExpenditureNote data = await dataUtil(facade, GetCurrentMethod()).GetNewDataForPreparing();
 
-            foreach (var i in data.Items)
-            {
-                i.ProductName = "FABRIC";
-            }
+            await facade.Create(data);
 
-            data.PaymentMethod = "CMT";
-
-            await externalFacade.Create(data, "test");
-
-            var doFacade = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
-            var doDataUtil = new GarmentDeliveryOrderDataUtil(doFacade, datautilexternal);
-
-            var DO = await doDataUtil.GetNewData(data);
-
-            await doFacade.Create(DO, "test");
-
-            var garmentUnitReceiptNoteFacade = new GarmentUnitReceiptNoteFacade(GetServiceProviderUnitReceiptNote(), _dbContext(GetCurrentMethod()));
-            var garmentUnitReceiptNoteDatautil = new GarmentUnitReceiptNoteDataUtil(garmentUnitReceiptNoteFacade, doDataUtil);
-
-            var garmentUnitDeliveryOrderFacade = new GarmentUnitDeliveryOrderFacade(_dbContext(GetCurrentMethod()), GetServiceProvider());
-            var garmentUnitDeliveryOrderDatautil = new GarmentUnitDeliveryOrderDataUtil(garmentUnitDeliveryOrderFacade, garmentUnitReceiptNoteDatautil);
-
-            var garmentUnitExpenditureNoteFacade = new GarmentUnitExpenditureNoteFacade(GetServiceProviderUnitReceiptNote(), _dbContext(GetCurrentMethod()));
-            var garmentUnitExpenditureNoteDatautil = new GarmentUnitExpenditureNoteDataUtil(garmentUnitExpenditureNoteFacade, garmentUnitDeliveryOrderDatautil);
-
-            var dataurn = await garmentUnitReceiptNoteDatautil.GetNewData(null, DO);
-            await garmentUnitReceiptNoteFacade.Create(dataurn);
-
-            var dataunitDO = await garmentUnitDeliveryOrderDatautil.GetNewData(dataurn);
-            dataunitDO.RONo = "RONo123";
-            await garmentUnitDeliveryOrderFacade.Create(dataunitDO);
-
-            var datauen = await garmentUnitExpenditureNoteDatautil.GetNewData(dataunitDO);
-            foreach (var uen in datauen.Items)
-            {
-                uen.ProductRemark = "ProductRemark";
-            }
-            await garmentUnitExpenditureNoteFacade.Create(datauen);
+            var garmentExpenditureGoodDataUtil = new GarmentExpenditureGoodDataUtil();
+            var gegData = garmentExpenditureGoodDataUtil.GetNewData();
+            gegData.RONo = data.Items.First().RONo;
 
             var reportService = new GarmentRealizationCMTReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
 
-            var dateTo = DateTime.UtcNow.AddDays(1);
+            var dateTo = DateTime.Now.AddDays(1);
             var dateFrom = dateTo.AddDays(-30);
 
-            var results = reportService.GenerateExcel(dateFrom, dateTo, 0, 0, "");
+            var results = reportService.GenerateExcel(dateFrom, dateTo, 0, 0, null);
 
-            Assert.IsType<MemoryStream>(results);
+            Assert.NotNull(results);
         }
 
         [Fact]
         public async Task Should_Success_GetXls_Realization_CMT_Null_Result()
         {
-            var externalFacade = new GarmentExternalPurchaseOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
-            var datautilexternal = dataUtilExternal(externalFacade, GetCurrentMethod());
-            GarmentExternalPurchaseOrder data = await dataUtilExternal(externalFacade, GetCurrentMethod()).GetNewDataFabric();
+            var dbContext = _dbContext(GetCurrentMethod());
+            var Facade = new GarmentUnitExpenditureNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dtUnitExpenditureNote = await dataUtil(Facade, GetCurrentMethod()).GetNewDataForPreparing();
 
-
-            data.PaymentMethod = "CMT";
-
-            await externalFacade.Create(data, "test");
-
-            var doFacade = new GarmentDeliveryOrderFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
-            var doDataUtil = new GarmentDeliveryOrderDataUtil(doFacade, datautilexternal);
-
-            var DO = await doDataUtil.GetNewData(data);
-
-            await doFacade.Create(DO, "test");
-
-            var garmentUnitReceiptNoteFacade = new GarmentUnitReceiptNoteFacade(GetServiceProviderUnitReceiptNote(), _dbContext(GetCurrentMethod()));
-            var garmentUnitReceiptNoteDatautil = new GarmentUnitReceiptNoteDataUtil(garmentUnitReceiptNoteFacade, doDataUtil);
-
-            var garmentUnitDeliveryOrderFacade = new GarmentUnitDeliveryOrderFacade(_dbContext(GetCurrentMethod()), GetServiceProvider());
-            var garmentUnitDeliveryOrderDatautil = new GarmentUnitDeliveryOrderDataUtil(garmentUnitDeliveryOrderFacade, garmentUnitReceiptNoteDatautil);
-
-            var garmentUnitExpenditureNoteFacade = new GarmentUnitExpenditureNoteFacade(GetServiceProviderUnitReceiptNote(), _dbContext(GetCurrentMethod()));
-            var garmentUnitExpenditureNoteDatautil = new GarmentUnitExpenditureNoteDataUtil(garmentUnitExpenditureNoteFacade, garmentUnitDeliveryOrderDatautil);
-
-            var dataurn = await garmentUnitReceiptNoteDatautil.GetNewData(null, DO);
-            await garmentUnitReceiptNoteFacade.Create(dataurn);
-
-            var dataunitDO = await garmentUnitDeliveryOrderDatautil.GetNewData(dataurn);
-            dataunitDO.RONo = "RONo123";
-            await garmentUnitDeliveryOrderFacade.Create(dataunitDO);
-
-            var datauen = await garmentUnitExpenditureNoteDatautil.GetNewData(dataunitDO);
-            foreach (var uen in datauen.Items)
-            {
-                uen.ProductRemark = "ProductRemark";
-            }
-            await garmentUnitExpenditureNoteFacade.Create(datauen);
+            var garmentExpenditureGoodDataUtil = new GarmentExpenditureGoodDataUtil();
+            var gegData = garmentExpenditureGoodDataUtil.GetNewData();
+            gegData.RONo = dtUnitExpenditureNote.Items.First().RONo;
 
             var reportService = new GarmentRealizationCMTReportFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
 
-            var dateTo = DateTime.UtcNow.AddDays(1);
-            var dateFrom = dateTo.AddDays(-30);
-
             var results = reportService.GenerateExcel(null, null, 0, 0, null);
 
-            Assert.IsType<MemoryStream>(results);
+            Assert.NotNull(results);
         }
         #region traceable
         [Fact]

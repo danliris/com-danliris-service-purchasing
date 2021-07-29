@@ -61,25 +61,20 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                          join f in dbContext.GarmentDeliveryOrderDetails on i.DODetailId equals f.Id
                          join g in dbContext.GarmentDeliveryOrderItems on f.GarmentDOItemId equals g.Id
                          join h in dbContext.GarmentDeliveryOrders on g.GarmentDOId equals h.Id
-                         join j in dbContext.GarmentExternalPurchaseOrderItems.IgnoreQueryFilters() on e.EPOItemId equals j.Id
-                         join k in dbContext.GarmentExternalPurchaseOrders.IgnoreQueryFilters() on j.GarmentEPOId equals k.Id
-                         where 
-                         //a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
-                         //      && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-                               //&& 
-                               a.UnitSenderId == (unit == 0 ? a.UnitSenderId : unit)
+                         join j in dbContext.GarmentExternalPurchaseOrders on g.EPOId equals j.Id
+                         where a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
+                               && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                               && a.UnitSenderId == (unit == 0 ? a.UnitSenderId : unit)
                                && b.ProductName == "FABRIC"
-                               && a.ExpenditureType == "PROSES"
-                               && Ros.Contains(c.RONo)
-                               && (k.PaymentMethod == "FREE FROM BUYER" || k.PaymentMethod == "CMT")
-                         //&& k.PaymentMethod == paymentmethod
+                               && (j.PaymentMethod == "CMT" || j.PaymentMethod == "FREE FROM BUYER")
+
                          select new GarmentRealizationCMTReportViewModel
                          {
                              UENNo = a.UENNo,
                              ProductRemark = b.ProductRemark.Trim(),
                              Quantity = b.Quantity,
-                             EAmountVLS = (decimal)b.Quantity * (decimal)b.PricePerDealUnit,
-                             EAmountIDR = (decimal)b.Quantity * (decimal)b.PricePerDealUnit * (decimal)h.DOCurrencyRate,
+                             EAmountVLS = (decimal)b.Quantity * e.PricePerDealUnit,
+                             EAmountIDR = (decimal)b.Quantity * e.PricePerDealUnit * (decimal)h.DOCurrencyRate,
                              RONo = c.RONo,
                              URNNo = d.URNNo,
                              ProductRemark2 = e.ProductRemark.Trim(),
@@ -89,114 +84,35 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                              SupplierName = d.SupplierName == null ? "-" : d.SupplierName,
                              BillNo = h.BillNo,
                              PaymentBill = h.PaymentBill,
-                             DONo = h.DONo
-                         }).GroupBy(a => new { a.UENNo, a.RONo, a.URNNo, a.BillNo, a.PaymentBill, a.ProductRemark, a.ProductRemark2, a.SupplierName, a.DONo }, (key, group) => new GarmentRealizationCMTReportViewModel {
-                             UENNo = key.UENNo,
-                             ProductRemark = key.ProductRemark,
-                             Quantity = group.Sum(x=>x.Quantity),
-                             EAmountVLS = group.Sum(x => x.EAmountVLS),
-                             EAmountIDR = group.Sum(x => x.EAmountIDR),
-                             RONo = key.RONo,
-                             URNNo = key.URNNo,
-                             ProductRemark2 = key.ProductRemark2,
-                             ReceiptQuantity = group.Sum(x => x.ReceiptQuantity),
-                             UAmountVLS = group.Sum(x => x.UAmountVLS),
-                             UAmountIDR = group.Sum(x => x.UAmountIDR),
-                             SupplierName = key.SupplierName,
-                             BillNo = key.BillNo,
-                             PaymentBill = key.PaymentBill,
-                             DONo = key.DONo
+                             DONo = h.DONo,
+                             UENPrice = e.PricePerDealUnit,
+                             DORate = (decimal)h.DOCurrencyRate
+                         });
 
-                         }).ToList();
+            var QueryGroup = from a in Query
+                             group a by new { a.UENNo, a.RONo, a.URNNo, a.BillNo, a.PaymentBill } into groupdata
+                             select new GarmentRealizationCMTReportViewModel
+                             {
+                                 UENNo = groupdata.FirstOrDefault().UENNo,
+                                 ProductRemark = groupdata.FirstOrDefault().ProductRemark,
+                                 Quantity = groupdata.Sum(x => x.Quantity),
+                                 EAmountVLS = groupdata.Sum(x => x.EAmountVLS),
+                                 EAmountIDR = groupdata.Sum(x => x.EAmountIDR),
+                                 RONo = groupdata.FirstOrDefault().RONo,
+                                 URNNo = groupdata.FirstOrDefault().URNNo,
+                                 ProductRemark2 = groupdata.FirstOrDefault().ProductRemark2,
+                                 ReceiptQuantity = groupdata.Sum(x => x.ReceiptQuantity),
+                                 UAmountVLS = groupdata.Sum(x => x.UAmountVLS),
+                                 UAmountIDR = groupdata.Sum(x => x.UAmountIDR),
+                                 SupplierName = groupdata.FirstOrDefault().SupplierName,
+                                 BillNo = groupdata.FirstOrDefault().BillNo,
+                                 PaymentBill = groupdata.FirstOrDefault().PaymentBill,
+                                 DONo = groupdata.FirstOrDefault().DONo,
+                                 UENPrice = groupdata.FirstOrDefault().UENPrice,
+                                 DORate = groupdata.FirstOrDefault().DORate,
+                             };
 
-            //var Query = (from a in dbContext.GarmentUnitExpenditureNotes
-            //             join b in dbContext.GarmentUnitExpenditureNoteItems on a.Id equals b.UENId
-            //             join c in dbContext.GarmentUnitDeliveryOrders on a.UnitDONo equals c.UnitDONo
-            //             join i in dbContext.GarmentUnitDeliveryOrderItems on c.Id equals i.UnitDOId
-            //             join e in dbContext.GarmentUnitReceiptNoteItems on b.URNItemId equals e.Id
-            //             join d in dbContext.GarmentUnitReceiptNotes on e.URNId equals d.Id
-            //             join f in dbContext.GarmentDeliveryOrderDetails on i.DODetailId equals f.Id
-            //             join g in dbContext.GarmentDeliveryOrderItems on f.GarmentDOItemId equals g.Id
-            //             join h in dbContext.GarmentDeliveryOrders on g.GarmentDOId equals h.Id
-            //             join j in dbContext.GarmentExternalPurchaseOrderItems on e.EPOItemId equals j.Id
-            //             join k in dbContext.GarmentExternalPurchaseOrders on j.GarmentEPOId equals k.Id
-            //             where a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
-            //                   && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-            //                   && a.UnitSenderId == (unit == 0 ? a.UnitSenderId : unit)
-            //                   && b.ProductName == "FABRIC"
-            //                   && a.ExpenditureType == "PROSES"
-            //             //&& k.PaymentMethod == paymentmethod
-            //             select new GarmentRealizationCMTReportViewModel
-            //             {
-            //                 UENNo = a.UENNo,
-            //                 ProductRemark = b.ProductRemark.Trim(),
-            //                 Quantity = b.Quantity,
-            //                 EAmountVLS = (decimal)b.Quantity * (decimal)b.PricePerDealUnit,
-            //                 EAmountIDR = (decimal)b.Quantity * (decimal)b.PricePerDealUnit * (decimal)h.DOCurrencyRate,
-            //                 RONo = c.RONo,
-            //                 URNNo = d.URNNo,
-            //                 ProductRemark2 = e.ProductRemark.Trim(),
-            //                 ReceiptQuantity = e.ReceiptQuantity,
-            //                 UAmountVLS = e.ReceiptQuantity * e.PricePerDealUnit,
-            //                 UAmountIDR = e.ReceiptQuantity * e.PricePerDealUnit * (decimal)h.DOCurrencyRate,
-            //                 SupplierName = d.SupplierName == null ? "-" : d.SupplierName,
-            //                 BillNo = h.BillNo,
-            //                 PaymentBill = h.PaymentBill,
-            //                 DONo = h.DONo
-            //             }).GroupBy(a => new { a.UENNo, a.RONo, a.URNNo, a.BillNo, a.PaymentBill, a.ProductRemark, a.ProductRemark2, a.SupplierName, a.DONo }, (key, group) => new GarmentRealizationCMTReportViewModel {
-            //                 UENNo = key.UENNo,
-            //                 ProductRemark = key.ProductRemark,
-            //                 Quantity = group.Sum(x=>x.Quantity),
-            //                 EAmountVLS = group.Sum(x => x.EAmountVLS),
-            //                 EAmountIDR = group.Sum(x => x.EAmountIDR),
-            //                 RONo = key.RONo,
-            //                 URNNo = key.URNNo,
-            //                 ProductRemark2 = key.ProductRemark2,
-            //                 ReceiptQuantity = group.Sum(x => x.ReceiptQuantity),
-            //                 UAmountVLS = group.Sum(x => x.UAmountVLS),
-            //                 UAmountIDR = group.Sum(x => x.UAmountIDR),
-            //                 SupplierName = key.SupplierName,
-            //                 BillNo = key.BillNo,
-            //                 PaymentBill = key.PaymentBill,
-            //                 DONo = key.DONo
-
-            //             }).ToList();
-
-            //var ronos = string.Join(",", Query.Select(x => x.RONo).Distinct());
-
-            //var expendgood = GetExpenditureGood(ronos);
-
-            var realization = (from a in Query
-                              join expenditure in (from bb in expendRo where bb.ExpenditureType == "EXPORT" select bb) on a.RONo equals expenditure.RONo /*into expend*/
-                              //from expenditure in expend.DefaultIfEmpty()
-                              select new GarmentRealizationCMTReportViewModel
-                              {
-                                  UENNo = a.UENNo,
-                                  ProductRemark = a.ProductRemark,
-                                  Quantity = a.Quantity,
-                                  EAmountVLS = a.EAmountVLS,
-                                  EAmountIDR = a.EAmountIDR,
-                                  RONo = a.RONo,
-                                  URNNo = a.URNNo,
-                                  ProductRemark2 = a.ProductRemark2,
-                                  ReceiptQuantity = a.ReceiptQuantity,
-                                  UAmountVLS = a.UAmountVLS,
-                                  UAmountIDR = a.UAmountIDR,
-                                  SupplierName = a.SupplierName,
-                                  BillNo = a.BillNo,
-                                  PaymentBill = a.PaymentBill,
-                                  DONo = a.DONo,
-                                  InvoiceNo = expenditure == null ? "-" : expenditure.Invoice,
-                                  ExpenditureGoodNo = expenditure == null ? "-" : expenditure.ExpenditureGoodNo,
-                                  Article = expenditure == null ? "-" : expenditure.Article,
-                                  UnitQty = expenditure == null ? 0 : expenditure.TotalQuantity,
-                              });
-
-            realization = realization.OrderBy(x => x.InvoiceNo).ThenBy(x => x.ExpenditureGoodNo).ThenBy(x => x.RONo).ThenBy(x => x.Article).ThenBy(x => x.UnitQty).ThenBy(x => x.UENNo).ThenBy(x => x.ProductRemark)
-                .ThenBy(x => x.Quantity).ThenBy(x => x.EAmountVLS).ThenBy(x => x.EAmountIDR).ThenBy(x => x.URNNo).ThenBy(x => x.ProductRemark2).ThenBy(x => x.ReceiptQuantity).ThenBy(x => x.UAmountVLS).ThenBy(x => x.UAmountIDR).ThenBy(x => x.SupplierName).ThenBy(x => x.BillNo)
-                .ThenBy(x => x.PaymentBill).ThenBy(x => x.DONo);
-            
-            foreach (GarmentRealizationCMTReportViewModel i in realization.ToList())
+            foreach (GarmentRealizationCMTReportViewModel i in QueryGroup)
             {
                 //var data1 = GetExpenditureGood(i.RONo);
 
@@ -219,14 +135,21 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                     BillNo = i.BillNo,
                     PaymentBill = i.PaymentBill,
                     DONo = i.DONo,
-                    InvoiceNo = i.InvoiceNo,
-                    ExpenditureGoodNo = i.ExpenditureGoodNo,
-                    Article = i.Article,
-                    UnitQty = data1 != null ? data1.Quantity : 0,
-                    Count = i.Count
-                    
+                    InvoiceNo = data1 == null ? "-" : data1.FirstOrDefault().Invoice,
+                    ExpenditureGoodNo = data1 == null ? "-" : data1.FirstOrDefault().ExpenditureGoodNo,
+                    Article = data1 == null ? "-" : data1.FirstOrDefault().Article,
+                    UnitQty = data1 == null ? 0 : data1.FirstOrDefault().TotalQuantity,
+                    EGAmountIDR = data1 == null ? 0 : (decimal)data1.FirstOrDefault().TotalPrice,
                 });
             };
+
+            return realizationCMT.AsQueryable();
+
+        }
+
+        public Tuple<List<GarmentRealizationCMTReportViewModel>, int> GetReport(DateTime? dateFrom, DateTime? dateTo, long unit, int page, int size, string Order, int offset)
+        {
+            var Query = GetQuery(dateFrom, dateTo, unit, offset);
 
             var realizationViews = realizationCMT.ToArray();
             var index = 0;
@@ -244,37 +167,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                 a.Count = dup.Count;
             }
 
-            return realizationCMT.AsQueryable();
-
-        }
-
-        public Tuple<List<GarmentRealizationCMTReportViewModel>, int> GetReport(DateTime? dateFrom, DateTime? dateTo, long unit, int page, int size, string Order, int offset)
-        {
-            var Query = GetQuery(dateFrom, dateTo, unit, offset);
-
-            //Query = Query.OrderBy(x => x.InvoiceNo).ThenBy(x => x.ExpenditureGoodNo).ThenBy(x => x.RONo).ThenBy(x => x.Article).ThenBy(x => x.UnitQty).ThenBy(x => x.UENNo).ThenBy(x => x.ProductRemark)
-            //    .ThenBy(x => x.Quantity).ThenBy(x => x.EAmountVLS).ThenBy(x => x.EAmountIDR).ThenBy(x => x.URNNo).ThenBy(x => x.ProductRemark2).ThenBy(x => x.ReceiptQuantity).ThenBy(x => x.UAmountVLS).ThenBy(x => x.UAmountIDR).ThenBy(x => x.SupplierName).ThenBy(x => x.BillNo)
-            //    .ThenBy(x => x.PaymentBill).ThenBy(x => x.DONo);
-
-            //var b = Query.ToArray();
-            //var index = 0;
-
-            //foreach (GarmentRealizationCMTReportViewModel a in Query)
-            //{
-            //    GarmentRealizationCMTReportViewModel dup = Array.Find(b, o => o.InvoiceNo == a.InvoiceNo && o.ExpenditureGoodNo == a.ExpenditureGoodNo);
-            //    if (dup != null)
-            //    {
-            //        if (dup.Count == 0)
-            //        {
-            //            index++;
-            //            dup.Count = index;
-            //        }
-            //    }
-            //    a.Count = dup.Count;
-            //}
-
-            //Pageable<GarmentRealizationCMTReportViewModel> pageable = new Pageable<GarmentRealizationCMTReportViewModel>(Query.OrderBy(o => o.Count).ThenBy(o => o.InvoiceNo).ThenBy(o => o.ExpenditureGoodNo), page - 1, size);
-            Pageable<GarmentRealizationCMTReportViewModel> pageable = new Pageable<GarmentRealizationCMTReportViewModel>(Query, page - 1, size);
+            Pageable<GarmentRealizationCMTReportViewModel> pageable = new Pageable<GarmentRealizationCMTReportViewModel>(Query.OrderBy(o => o.InvoiceNo).ThenBy(o => o.ExpenditureGoodNo), page - 1, size);
             List<GarmentRealizationCMTReportViewModel> Data = pageable.Data.ToList<GarmentRealizationCMTReportViewModel>();
             int TotalData = pageable.TotalCount;
 
@@ -286,8 +179,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             var Query = GetQuery(dateFrom, dateTo, unit, offset);
-            var headers = new string[] { "No", "No Invoice", "No. BON", "RO", "Artikel", "Qty BJ" /*"Fabric Cost"*/ };
-            var subheaders = new string[] { "No. BON", "Keterangan", "Qty", "Amount Valas", "Amount IDR", "Asal", "No. BON", "Keterangan", "Qty", "Amount Valas", "Amount IDR", "Supplier", "No Nota", "No BON Kecil", "Surat Jalan" };
+            var headers = new string[] { "No", "No Invoice", "No. BON", "RO", "Artikel", "Qty BJ", "Fabric Cost" };
+            var subheaders = new string[] { "No. BON", "Keterangan", "Qty", "Amount Valas", "Amount IDR", "Asal", "No. BON", "Keterangan", "Qty", "Amount Valas", "Amount IDR", "Supplier", "No Nota", "No BON Kecil", "Surat Jalan", "No Kasbon" };
             DataTable result = new DataTable();
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No Invoice", DataType = typeof(String) });
@@ -311,11 +204,12 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             result.Columns.Add(new DataColumn() { ColumnName = "No Nota", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No BON Kecil", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Surat Jalan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Kasbon", DataType = typeof(String) });
 
             ExcelPackage package = new ExcelPackage();
             if (Query.ToArray().Count() == 0)
             {
-                result.Rows.Add("", "", "", "", "", 0, /*0,*/ "", "", 0, 0, 0, "", "", "", 0, 0, 0, "", "", "", "");
+                result.Rows.Add("", "", "", "", "", 0, 0, "", "", 0, 0, 0, "", "", "", 0, 0, 0, "", "", "", "", "");
                 var sheet = package.Workbook.Worksheets.Add("Data");
                 sheet.Cells["A7"].LoadFromDataTable(result, false, OfficeOpenXml.Table.TableStyles.Light1);// to allow column name to be generated properly for empty data as template
             }
@@ -326,7 +220,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                 var index = 0;
                 //foreach (GarmentRealizationCMTReportViewModel a in q)
                 //{
-                //    GarmentRealizationCMTReportViewModel dup = Array.Find(Qr, o => o.InvoiceNo == a.InvoiceNo /*&& o.ExpenditureGoodNo == a.ExpenditureGoodNo && o.Article == a.Article*/ && o.UnitQty == a.UnitQty);
+                //    GarmentRealizationCMTReportViewModel dup = Array.Find(Qr, o => o.InvoiceNo == a.InvoiceNo && o.ExpenditureGoodNo == a.ExpenditureGoodNo);
                 //    if (dup != null)
                 //    {
                 //        if (dup.Count == 0)
@@ -337,12 +231,13 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                 //    }
                 //    a.Count = dup.Count;
                 //}
-                //Query = q.AsQueryable();
-
+                Query = q.AsQueryable().OrderBy(o => o.InvoiceNo).ThenBy(o => o.ExpenditureGoodNo);
+                int indexz = 0;
                 foreach (var item in Query)
                 {
-                    result.Rows.Add(item.Count, item.InvoiceNo, item.ExpenditureGoodNo, item.RONo, item.Article, item.UnitQty,/* item.EGAmountIDR,*/ item.UENNo, item.ProductRemark, item.Quantity, item.EAmountVLS,
-                                    item.EAmountIDR, item.RONo, item.URNNo, item.ProductRemark2, item.ReceiptQuantity, item.UAmountVLS, item.UAmountIDR, item.SupplierName, item.BillNo, item.PaymentBill, item.DONo);
+                    indexz++;
+                    result.Rows.Add(indexz, item.InvoiceNo, item.ExpenditureGoodNo, item.RONo, item.Article, item.UnitQty, item.EGAmountIDR, item.UENNo, item.ProductRemark, item.Quantity, item.EAmountVLS,
+                                    item.EAmountIDR, item.RONo, item.URNNo, item.ProductRemark2, item.ReceiptQuantity, item.UAmountVLS, item.UAmountIDR, item.SupplierName, item.BillNo, item.PaymentBill, item.DONo, "");
                 }
 
                 // bool styling = true;
@@ -370,30 +265,30 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
 
 
                     sheet.Cells["A8"].LoadFromDataTable(item.Key, false, OfficeOpenXml.Table.TableStyles.Light16);
-                    sheet.Cells["G6"].Value = "BON PEMAKAIAN";
-                    sheet.Cells["G6:L6"].Merge = true;
-                    sheet.Cells["G6:L6"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                    sheet.Cells["H6"].Value = "BON PEMAKAIAN";
+                    sheet.Cells["H6:L6"].Merge = true;
+                    sheet.Cells["H6:L6"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
                     sheet.Cells["M6"].Value = "BON PENERIMAAN";
-                    sheet.Cells["M6:U6"].Merge = true;
-                    sheet.Cells["M6:U6"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                    sheet.Cells["M6:V6"].Merge = true;
+                    sheet.Cells["M6:V6"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
 
-                    foreach (var i in Enumerable.Range(0, 6))
+                    foreach (var i in Enumerable.Range(0, 7))
                     {
                         var col = (char)('A' + i);
                         sheet.Cells[$"{col}6"].Value = headers[i];
                         sheet.Cells[$"{col}6:{col}7"].Merge = true;
                         sheet.Cells[$"{col}6:{col}7"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
                     }
-                    foreach (var i in Enumerable.Range(0, 15))
+                    foreach (var i in Enumerable.Range(0, 16))
                     {
-                        var col = (char)('G' + i);
+                        var col = (char)('H' + i);
                         sheet.Cells[$"{col}7"].Value = subheaders[i];
                         sheet.Cells[$"{col}7"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
 
                     }
-                    sheet.Cells["A6:U7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    sheet.Cells["A6:U7"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    sheet.Cells["A6:U7"].Style.Font.Bold = true;
+                    sheet.Cells["A6:W7"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    sheet.Cells["A6:W7"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    sheet.Cells["A6:W7"].Style.Font.Bold = true;
                     //sheet.Cells["C1:D1"].Merge = true;
                     //sheet.Cells["C1:D1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                     //sheet.Cells["E1:F1"].Merge = true;
@@ -411,116 +306,37 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                     Dictionary<string, int> billspan = new Dictionary<string, int>();
                     Dictionary<string, int> rouenspan = new Dictionary<string, int>();
                     var docNo = Query.ToArray();
-                    int value;
-                    foreach (var a in Query)
-                    {
-                        //FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
-                        if (invoicespan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.RONo + a.Article + a.UnitQty.ToString(), out value))
-                        {
-                            invoicespan[a.InvoiceNo + a.ExpenditureGoodNo + a.RONo + a.Article + a.UnitQty.ToString()]++;
-                        }
-                        else
-                        {
-                            invoicespan[a.InvoiceNo + a.ExpenditureGoodNo + a.RONo + a.Article + a.UnitQty.ToString()] = 1;
-                        }
+                    //int value;
 
-                        if (invvoiceqtyspan.TryGetValue(a.InvoiceNo + a.UnitQty.ToString(), out value))
-                        {
-                            invvoiceqtyspan[a.InvoiceNo + a.UnitQty.ToString()]++;
-                        }
-                        else
-                        {
-                            invvoiceqtyspan[a.InvoiceNo + a.UnitQty.ToString()] = 1;
-                        }
+                    //foreach (var a in Query)
+                    //{
+                    //    //FactBeacukaiViewModel dup = Array.Find(docNo, o => o.BCType == a.BCType && o.BCNo == a.BCNo);
+                    //    if (counts.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo, out value))
+                    //    {
+                    //        counts[a.InvoiceNo + a.ExpenditureGoodNo]++;
+                    //    }
+                    //    else
+                    //    {
+                    //        counts[a.InvoiceNo + a.ExpenditureGoodNo] = 1;
+                    //    }
 
-                        //FactBeacukaiViewModel dup1 = Array.Find(docNo, o => o.BCType == a.BCType);
-                        if (uenspan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo, out value))
-                        {
-                            uenspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo]++;
-                        }
-                        else
-                        {
-                            uenspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo] = 1;
-                        }
 
-                        if (remarkuenspan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.ProductRemark, out value))
-                        {
-                            remarkuenspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.ProductRemark]++;
-                        }
-                        else
-                        {
-                            remarkuenspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.ProductRemark] = 1;
-                        }
-
-                        if (qtybukspan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.Quantity.ToString() + "qtybuk", out value))
-                        {
-                            qtybukspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.Quantity.ToString() + "qtybuk"]++;
-                        }
-                        else
-                        {
-                            qtybukspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.Quantity.ToString() + "qtybuk"] = 1;
-                        }
-
-                        if (urnspan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo, out value))
-                        {
-                            urnspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo]++;
-                        }
-                        else
-                        {
-                            urnspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo] = 1;
-                        }
-
-                        if (remarkurnspan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.ProductRemark2, out value))
-                        {
-                            remarkurnspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.ProductRemark2]++;
-                        }
-                        else
-                        {
-                            remarkurnspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.ProductRemark2] = 1;
-                        }
-
-                        if (qtyurnspan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.ReceiptQuantity.ToString() + "qtyurn", out value))
-                        {
-                            qtyurnspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.ReceiptQuantity.ToString() + "qtyurn"]++;
-                        }
-                        else
-                        {
-                            qtyurnspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.ReceiptQuantity.ToString() + "qtyurn"] = 1;
-                        }
-
-                        if (supplierspan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.SupplierName, out value))
-                        {
-                            supplierspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.SupplierName]++;
-                        }
-                        else
-                        {
-                            supplierspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.SupplierName] = 1;
-                        }
-
-                        if (billspan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.BillNo + a.PaymentBill + a.DONo, out value))
-                        {
-                            billspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.BillNo + a.PaymentBill + a.DONo]++;
-                        }
-                        else
-                        {
-                            billspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.URNNo + a.BillNo + a.PaymentBill + a.DONo] = 1;
-                        }
-
-                        if (rouenspan.TryGetValue(a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.RONo, out value))
-                        {
-                            rouenspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.RONo]++;
-                        }
-                        else
-                        {
-                            rouenspan[a.InvoiceNo + a.ExpenditureGoodNo + a.UENNo + a.RONo] = 1;
-                        }
-                    }
+                    //    //FactBeacukaiViewModel dup1 = Array.Find(docNo, o => o.BCType == a.BCType);
+                    //    if (countsType.TryGetValue(a.InvoiceNo, out value))
+                    //    {
+                    //        countsType[a.InvoiceNo]++;
+                    //    }
+                    //    else
+                    //    {
+                    //        countsType[a.InvoiceNo] = 1;
+                    //    }
+                    //}
 
                     index = 8;
                     foreach (KeyValuePair<string, int> b in invoicespan)
                     {
-                        sheet.Cells["C" + index + ":C" + (index + b.Value - 1)].Merge = true;
-                        sheet.Cells["C" + index + ":C" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                        sheet.Cells["A" + index + ":A" + (index + b.Value - 1)].Merge = true;
+                        sheet.Cells["A" + index + ":A" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
                         sheet.Cells["D" + index + ":D" + (index + b.Value - 1)].Merge = true;
                         sheet.Cells["D" + index + ":D" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
                         sheet.Cells["E" + index + ":E" + (index + b.Value - 1)].Merge = true;
@@ -540,6 +356,10 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                         sheet.Cells["B" + index + ":B" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
                         sheet.Cells["F" + index + ":F" + (index + b.Value - 1)].Merge = true;
                         sheet.Cells["F" + index + ":F" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                        sheet.Cells["G" + index + ":G" + (index + b.Value - 1)].Merge = true;
+                        sheet.Cells["G" + index + ":G" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                        sheet.Cells["W" + index + ":W" + (index + b.Value - 1)].Merge = true;
+                        sheet.Cells["W" + index + ":W" + (index + b.Value - 1)].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
 
                         index += b.Value;
                     }
@@ -623,14 +443,11 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                         index += c.Value;
                     }
                     sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
-
-
                 }
             }
             MemoryStream stream = new MemoryStream();
             package.SaveAs(stream);
             return stream;
-            //return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") }, true);
         }
 
         //        public List<GarmentExpenditureGoodViewModel> GetExpenditureGood(string RONo)
@@ -670,8 +487,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
 
         public List<GarmentExpenditureGoodViewModel> GetExpenditureGood(string invoices)
         {
-            var param = new StringContent(JsonConvert.SerializeObject(invoices), Encoding.UTF8, "application/json");
-            string expenditureUri = APIEndpoint.GarmentProduction + $"expenditure-goods/byInvoice";
+
+            string expenditureUri = "expenditure-goods/byRO";
 
             IHttpClientService httpClient = (IHttpClientService)serviceProvider.GetService(typeof(IHttpClientService));
 
@@ -688,8 +505,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                 }
                 else
                 {
-                    viewModel = JsonConvert.DeserializeObject<List<GarmentExpenditureGoodViewModel>>(result.GetValueOrDefault("data").ToString());
-
+                    var viewModels = JsonConvert.DeserializeObject<List<GarmentExpenditureGoodViewModel>>(result.GetValueOrDefault("data").ToString());
+                    viewModel = viewModels.Count() == 0 ? null : viewModels;
                 }
                 return viewModel;
             }
@@ -698,40 +515,5 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
                 return new List<GarmentExpenditureGoodViewModel>();
             }
         }
-
-        public List<GarmentInvoiceMonitoringViewModel> GetInvoiceFromPacking(DateTime datefrom, DateTime dateTo)
-        {
-            //var param = new StringContent(JsonConvert.SerializeObject(RONo), Encoding.UTF8, "application/json");
-            string expenditureUri = APIEndpoint.PackingInventory + $"garment-shipping/monitoring/garment-cmt-sales";
-            string queryUri = "?dateFrom=" + datefrom + "&dateTo=" + dateTo;
-
-            string uri = expenditureUri + queryUri;
-
-            IHttpClientService httpClient = (IHttpClientService)serviceProvider.GetService(typeof(IHttpClientService));
-            var httpResponse = httpClient.GetAsync(uri).Result;
-            if (httpResponse.IsSuccessStatusCode)
-            {
-                var content = httpResponse.Content.ReadAsStringAsync().Result;
-                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
-
-                List<GarmentInvoiceMonitoringViewModel> viewModel;
-                if (result.GetValueOrDefault("data") == null)
-                {
-                    viewModel = new List<GarmentInvoiceMonitoringViewModel>();
-                }
-                else
-                {
-                    viewModel = JsonConvert.DeserializeObject<List<GarmentInvoiceMonitoringViewModel>>(result.GetValueOrDefault("data").ToString());
-
-                }
-                return viewModel;
-            }
-            else
-            {
-                return new List<GarmentInvoiceMonitoringViewModel>();
-            }
-        }
-
-
-    }   
+    }
 }
