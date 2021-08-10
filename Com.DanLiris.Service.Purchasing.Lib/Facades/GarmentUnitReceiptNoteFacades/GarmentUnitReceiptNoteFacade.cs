@@ -227,7 +227,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
                     {
                         if(garmentUnitReceiptNote.URNType == "GUDANG SISA")
                         {
-                            var doDetail = dbSetGarmentDeliveryOrderDetail.OrderByDescending(a => a.DOQuantity).First(a => a.POSerialNumber == garmentUnitReceiptNoteItem.POSerialNumber);
+                            var doDetail = dbSetGarmentDeliveryOrderDetail.IgnoreQueryFilters().Where(i => (i.IsDeleted == true && i.DeletedAgent == "LUCIA") || (i.IsDeleted == false)).OrderByDescending(a => a.DOQuantity).First(a => a.POSerialNumber == garmentUnitReceiptNoteItem.POSerialNumber);
                             garmentUnitReceiptNoteItem.DODetailId = doDetail.Id;
                             garmentUnitReceiptNoteItem.EPOItemId = doDetail.EPOItemId;
 
@@ -883,7 +883,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
                         EntityExtension.FlagForDelete(garmentUnitReceiptNoteItem, identityService.Username, USER_AGENT);
 
                         //update per 10-06-21
-                        if (garmentUnitReceiptNote.URNType != "PROSES")
+                        if (garmentUnitReceiptNote.URNType != "PROSES" && garmentUnitReceiptNote.URNType!="GUDANG SISA")
                         {
                             var garmentDeliveryOrderDetail = dbSetGarmentDeliveryOrderDetail.First(d => d.Id == garmentUnitReceiptNoteItem.DODetailId);
                             EntityExtension.FlagForUpdate(garmentDeliveryOrderDetail, identityService.Username, USER_AGENT);
