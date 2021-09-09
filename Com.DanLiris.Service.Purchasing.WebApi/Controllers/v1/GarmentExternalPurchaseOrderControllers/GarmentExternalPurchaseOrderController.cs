@@ -484,14 +484,14 @@ namespace Com.DanLiris.Service.Purchasing.WebApi.Controllers.v1.GarmentExternalP
             }
         }
         [HttpGet("by-epo-no-str")]
-        public IActionResult ByEPONOCurrencyCode(string keyword = null, string Filter = "{}", int supplierId = 0, string currencyCode = null, string paymentType = null, int page = 1, int size = 10)
+        public IActionResult ByEPONOCurrencyCode(string keyword = null,int supplierId = 0, string currencyCode = null, string paymentType = null, int page = 1, int size = 10)
         {
 
             try
             {
                 identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
 
-                var Data = facade.ReadItemByEPONoSimply(keyword, Filter, supplierId, currencyCode, paymentType);
+                var Data = facade.ReadItemByEPONoSimply(keyword, supplierId, currencyCode, paymentType);
 
                 var viewModel = mapper.Map<List<GarmentExternalPurchaseOrderViewModel>>(Data.Item1);
 
