@@ -2138,13 +2138,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
         //    return Updated;
         //}
 
-        
-        public class Ex
-        {
-            public DateTime Dodate { get; set; }
-            public DateTime Rndate { get; set; }
-            public DateTime RNIdate { get; set; }
-        }
         public int UrnDateRevise(List<long> ids, string user, DateTime reviseDate)
         {
 
@@ -2157,22 +2150,22 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
                                      join b in dbContext.GarmentUnitReceiptNoteItems on a.URNItemId equals b.Id
                                      join c in dbContext.GarmentUnitReceiptNotes on b.URNId equals c.Id
                                      where ids.Contains(c.Id)
-                                     && c.URNType == "Pembelian"
-                                     select a).Distinct().ToList();
+                                     && c.URNType == "PEMBELIAN"
+                                    select a).Distinct().ToList();
 
                     var listData1 = (from a in dbContext.GarmentDOItems
                                      join b in dbContext.GarmentUnitReceiptNoteItems on a.URNItemId equals b.Id
                                      join c in dbContext.GarmentUnitReceiptNotes on b.URNId equals c.Id
                                      where ids.Contains(c.Id)
-                                     && c.URNType == "Pembelian"
+                                     && c.URNType == "PEMBELIAN"
                                      select b).Distinct().ToList();
 
                     var listData2 = (from a in dbContext.GarmentDOItems
                                     join b in dbContext.GarmentUnitReceiptNoteItems on a.URNItemId equals b.Id
                                     join c in dbContext.GarmentUnitReceiptNotes on b.URNId equals c.Id
                                     where ids.Contains(c.Id)
-                                    && c.URNType == "Pembelian"
-                                    select c).Distinct().ToList();
+                                    && c.URNType == "PEMBELIAN"
+                                     select c).Distinct().ToList();
 
 
                     listData.ForEach(a =>
