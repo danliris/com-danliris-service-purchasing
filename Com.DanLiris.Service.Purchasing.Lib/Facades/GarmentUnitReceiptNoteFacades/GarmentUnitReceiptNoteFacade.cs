@@ -44,6 +44,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
 
         private readonly PurchasingDbContext dbContext;
         private readonly DbSet<GarmentUnitReceiptNote> dbSet;
+        private readonly DbSet<GarmentUnitReceiptNoteItem> dbSetGarmentUnitReceiptNoteItem;
         private readonly DbSet<GarmentDeliveryOrderDetail> dbSetGarmentDeliveryOrderDetail;
         private readonly DbSet<GarmentExternalPurchaseOrderItem> dbSetGarmentExternalPurchaseOrderItems;
         private readonly DbSet<GarmentInternalPurchaseOrderItem> dbSetGarmentInternalPurchaseOrderItems;
@@ -2139,30 +2140,61 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
 
         public int UrnDateRevise(List<long> ids, string user, DateTime reviseDate)
         {
+
             int Updated = 0;
             using (var transaction = this.dbContext.Database.BeginTransaction())
             {
                 try
                 {
-                    //var Ids = ListEPO.Select(d => d.Id).ToList();
-                    var listData = this.dbSet
-                        .Where(m => ids.Contains(m.Id) && !m.IsDeleted)
-                        .Include(d => d.Items)
-                        .ToList();
-                    listData.ForEach(m =>
+                    var listData = (from a in dbContext.GarmentDOItems
+                                     join b in dbContext.GarmentUnitReceiptNoteItems on a.URNItemId equals b.Id
+                                     join c in dbContext.GarmentUnitReceiptNotes on b.URNId equals c.Id
+                                     where ids.Contains(c.Id)
+                                     && c.URNType == "PEMBELIAN"
+                                    select a).Distinct().ToList();
+
+                    var listData1 = (from a in dbContext.GarmentDOItems
+                                     join b in dbContext.GarmentUnitReceiptNoteItems on a.URNItemId equals b.Id
+                                     join c in dbContext.GarmentUnitReceiptNotes on b.URNId equals c.Id
+                                     where ids.Contains(c.Id)
+                                     && c.URNType == "PEMBELIAN"
+                                     select b).Distinct().ToList();
+
+                    var listData2 = (from a in dbContext.GarmentDOItems
+                                    join b in dbContext.GarmentUnitReceiptNoteItems on a.URNItemId equals b.Id
+                                    join c in dbContext.GarmentUnitReceiptNotes on b.URNId equals c.Id
+                                    where ids.Contains(c.Id)
+                                    && c.URNType == "PEMBELIAN"
+                                     select c).Distinct().ToList();
+
+
+                    listData.ForEach(a =>
                     {
-                        EntityExtension.FlagForUpdate(m, user, "Facade");
-                       
+                        EntityExtension.FlagForUpdate(a, user, "Facade");
+                        a.CreatedUtc = reviseDate;
+                    });
+
+                    listData1.ForEach(b =>
+                    {
+                        EntityExtension.FlagForUpdate(b, user, "Facade");
+                        b.CreatedUtc = reviseDate;
+                    });
+
+                    listData2.ForEach(c =>
+                    {
+
+                        EntityExtension.FlagForUpdate(c, user, "Facade");
+
 
                         GarmentUenUrnChangeDateHistory changeDateHistory = new GarmentUenUrnChangeDateHistory
                         {
-                            DateOld = m.CreatedUtc,
+                            DateOld = c.CreatedUtc,
                             DateNow = reviseDate,
-                            DocumentNo = m.URNNo,
+                            DocumentNo = c.URNNo,
 
                         };
 
-                        m.CreatedUtc = reviseDate;
+                        c.CreatedUtc = reviseDate;
 
                         EntityExtension.FlagForCreate(changeDateHistory, user, "Facade");
                         dbSetUenUrnChangeDate.Add(changeDateHistory);
@@ -2180,9 +2212,11 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
             }
 
             return Updated;
+
         }
 
-        
+
+
 
 
     }
