@@ -16,6 +16,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.DataUtils.NewIntegrationDataUtils
 
             var data = new GarmentDeliveryReturnViewModel
             {
+                //Id = "1",
                 UnitDOId = garmentUnitDeliveryOrder != null? garmentUnitDeliveryOrder.Id : 0,
                 DRNo = $"DRNO{nowTicks}",
                 RONo = $"RONO{nowTicks}",

@@ -348,6 +348,26 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             Assert.NotEqual(0, Response1);
         }
 
+
+        [Fact]
+        public async Task Should_Success_Create_Data_PRoses()
+        {
+            var facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var data = await dataUtil(facade, GetCurrentMethod()).GetNewDataWithStorage();
+            var Response = await facade.Create(data);
+            Assert.NotEqual(0, Response);
+
+            //var facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var data1 = await dataUtil(facade, GetCurrentMethod()).GetNewDataWithStorage();
+            data1.StorageId = data.StorageId;
+            data1.Items.First().UomId = data.Items.First().UomId;
+            data1.UnitId = data.UnitId;
+            data1.DRId = "1";
+            //data1.URNType = "PROSES";
+            var Response1 = await facade.Create(data1);
+            Assert.NotEqual(0, Response1);
+        }
+
         [Fact]
         public async Task Should_Error_Create_Data_Null_Items()
         {
@@ -429,6 +449,18 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var Response = await facade.Delete((int)data.Id, (string)data.DeletedReason);
             Assert.NotEqual(0, Response);
         }
+
+        //[Fact]
+        //public async Task Should_Success_Delete_Data3()
+        //{
+        //    var facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var data = await dataUtil(facade, GetCurrentMethod()).GetTestDataWithStorage2();
+        //    data.URNType = "PROSES";
+        //    //data.DRId = "1";
+
+        //    var Response = await facade.Delete((int)data.Id, (string)data.DeletedReason);
+        //    Assert.NotEqual(0, Response);
+        //}
 
         [Fact]
         public async Task Should_Error_Delete_Data_Invalid_Id()
@@ -626,8 +658,24 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
         //    Assert.NotEmpty(Response);
         //}
 
+        //[Fact]
+        //public async Task Should_Success_ReadURNItem()
+        //{
+        //    var facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+        //    var data = await dataUtil(facade, GetCurrentMethod()).GetTestDataWithStorage();
+        //    var filter = new
+        //    {
+        //        DONo = 0,
+        //        UnitCode = "",
+        //        StorageCode = ""
+
+        //    };
+        //    var Response = facade.ReadURNItem("", JsonConvert.SerializeObject(filter));
+        //    Assert.NotEmpty(Response);
+        //}
+
         [Fact]
-        public async Task Should_Success_ReadURNItem()
+        public async Task Should_Success_ReadURNItem_UDoID_Nulldata()
         {
             var facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
             var data = await dataUtil(facade, GetCurrentMethod()).GetTestDataWithStorage();
@@ -636,6 +684,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
                 DONo = data.DONo,
                 UnitCode = data.UnitCode,
                 StorageCode = data.StorageCode
+
 
             };
             var Response = facade.ReadURNItem("", JsonConvert.SerializeObject(filter));
@@ -1637,11 +1686,46 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
         }
 
         [Fact]
-        public async void Should_Success_Get_Generate_Excel_Flow_For_Unit()
+        public async void Should_Success_Get_Generate_Excel_Flow_For_Unit_null()
         {
             GarmentUnitReceiptNoteFacade facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
             var model = await dataUtil(facade, GetCurrentMethod()).GetTestData();
             var Response = facade.GenerateExcelFlowForUnit(DateTime.MinValue, DateTime.MaxValue, model.UnitCode, "", "", 7, model.UnitName);
+            Assert.IsType<System.IO.MemoryStream>(Response);
+        }
+
+        [Fact]
+        public async void Should_Success_Get_Generate_Excel_Flow_For_Unit()
+        {
+            var serviceProvider = GetServiceProvider();
+            var dbContext = _dbContext(GetCurrentMethod());
+            GarmentUnitReceiptNoteFacade facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dataUtilUrn = dataUtil(facade, GetCurrentMethod());
+            GarmentUnitDeliveryOrderFacade facadeUDO = new GarmentUnitDeliveryOrderFacade(dbContext, serviceProvider);
+            var dataUtilUDO = new GarmentUnitDeliveryOrderDataUtil(facadeUDO, dataUtilUrn);
+            GarmentUnitExpenditureNoteFacade facadeUEN = new GarmentUnitExpenditureNoteFacade(serviceProvider, dbContext);
+            var dataUtilUEN = new GarmentUnitExpenditureNoteDataUtil(facadeUEN, dataUtilUDO);
+            GarmentReceiptCorrectionFacade facadeRC = new GarmentReceiptCorrectionFacade(dbContext, serviceProvider);
+            var dataUtilRC = new GarmentReceiptCorrectionDataUtil(facadeRC, dataUtilUrn);
+
+            DateTimeOffset now = DateTimeOffset.Now;
+            long nowTicks = now.Ticks;
+            var dataUrn1 = await dataUtilUrn.GetNewData2(nowTicks);
+
+            foreach (var i in dataUrn1.Items)
+            {
+                //i.UENItemId = 1;
+                i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
+                i.ReceiptQuantity = 5;
+                i.Conversion = 1;
+            }
+
+            await facade.Create(dataUrn1);
+ 
+            var stockreport = new GarmentUnitReceiptNoteFacade(serviceProvider, dbContext);
+            var Response = stockreport.GenerateExcelFlowForUnit(new DateTime(1970, 1, 1), DateTime.Now, dataUrn1.UnitCode, "BB",dataUrn1.Category ,7,dataUrn1.UnitName);
+            //var Response2 = stockreport.GenerateExcelStockReport("BP", null, dataUrn2.UnitName, dataUrn2.UnitCode, new DateTime(1970, 1, 1), DateTime.Now, 7);
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
 
@@ -1662,6 +1746,41 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             var Response = facade.GenerateExcelLow(null, null, "0", "", "", 7, "");
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
+
+        [Fact]
+        public async void Should_Success_Get_Report_Data_Excel_Low()
+        {
+            var serviceProvider = GetServiceProvider();
+            var dbContext = _dbContext(GetCurrentMethod());
+            GarmentUnitReceiptNoteFacade facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var dataUtilUrn = dataUtil(facade, GetCurrentMethod());
+            GarmentUnitDeliveryOrderFacade facadeUDO = new GarmentUnitDeliveryOrderFacade(dbContext, serviceProvider);
+            var dataUtilUDO = new GarmentUnitDeliveryOrderDataUtil(facadeUDO, dataUtilUrn);
+            GarmentUnitExpenditureNoteFacade facadeUEN = new GarmentUnitExpenditureNoteFacade(serviceProvider, dbContext);
+            var dataUtilUEN = new GarmentUnitExpenditureNoteDataUtil(facadeUEN, dataUtilUDO);
+            GarmentReceiptCorrectionFacade facadeRC = new GarmentReceiptCorrectionFacade(dbContext, serviceProvider);
+            var dataUtilRC = new GarmentReceiptCorrectionDataUtil(facadeRC, dataUtilUrn);
+
+            DateTimeOffset now = DateTimeOffset.Now;
+            long nowTicks = now.Ticks;
+            var dataUrn1 = await dataUtilUrn.GetNewData2(nowTicks);
+            foreach (var i in dataUrn1.Items)
+            {
+                //i.UENItemId = 1;
+                i.ProductCode = "CodeTest123";
+                i.ProductName = "Name123";
+                i.ReceiptQuantity = 5;
+                i.Conversion = 1;
+            }
+            
+            await facade.Create(dataUrn1);
+
+            var stockreport = new GarmentUnitReceiptNoteFacade(serviceProvider, dbContext);
+            var Response = stockreport.GenerateExcelLow(new DateTime(1970, 1, 1), DateTime.Now, dataUrn1.UnitCode, "BB", dataUrn1.Category, 7, dataUrn1.UnitName);
+            //var Response2 = stockreport.GenerateExcelStockReport("BP", null, dataUrn2.UnitName, dataUrn2.UnitCode, new DateTime(1970, 1, 1), DateTime.Now, 7);
+            Assert.IsType<System.IO.MemoryStream>(Response);
+        }
+
 
         #endregion
         #region StockReport
@@ -1720,18 +1839,18 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
                 i.ProductCode = "CodeTestBP123";
                 i.ProductName = "Name123BP";
             }
-            //var dataUrn3 = await dataUtilUrn.GetNewData2(nowTicks + 1);
-            //dataUrn3.UENNo = "BUK" + dataUrn3.UnitCode;
-            //dataUrn3.IsStorage = true;
-            //dataUrn3.StorageId = nowTicks;
-            //dataUrn3.StorageCode = string.Concat("StorageCode", nowTicks);
-            //dataUrn3.StorageName = string.Concat("StorageName", nowTicks);
+            var dataUrn3 = await dataUtilUrn.GetNewData2(nowTicks + 1);
+            dataUrn3.UENNo = "BUK" + dataUrn3.UnitCode;
+            dataUrn3.IsStorage = true;
+            dataUrn3.StorageId = nowTicks;
+            dataUrn3.StorageCode = string.Concat("StorageCode", nowTicks);
+            dataUrn3.StorageName = string.Concat("StorageName", nowTicks);
             await facade.Create(dataUrn1);
             await facade.Create(dataUrn2);
-            //var dataUDO = await dataUtilUDO.GetNewDataMultipleItem(dataUrn1, dataUrn2);
-            //await facadeUDO.Create(dataUDO);
-            //var dataUEN = await dataUtilUEN.GetNewDataTypeTransfer(dataUDO);
-            //await facadeUEN.Create(dataUEN);
+            var dataUDO = await dataUtilUDO.GetNewDataMultipleItem(dataUrn1, dataUrn2);
+            await facadeUDO.Create(dataUDO);
+            var dataUEN = await dataUtilUEN.GetNewDataTypeTransfer(dataUDO);
+            await facadeUEN.Create(dataUEN);
             var dataRC = await dataUtilRC.GetNewData(dataUrn1);
             await facadeRC.Create(dataRC.GarmentReceiptCorrection, USERNAME);
             var stockreport = new AccountingStockReportFacade(serviceProvider, dbContext);
@@ -2640,7 +2759,7 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
 
             foreach (var i in dataUrn1.Items)
             {
-                i.UENItemId = 1;
+                //i.UENItemId = 1;
                 i.ProductCode = "CodeTest123";
                 i.ProductName = "Name123";
                 i.ReceiptQuantity = 5;
@@ -2654,18 +2773,18 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
                 i.ReceiptQuantity = 5;
                 i.Conversion = 1;
             }
-            //var dataUrn3 = await dataUtilUrn.GetNewData2(nowTicks + 1);
-            //dataUrn3.UENNo = "BUK" + dataUrn3.UnitCode;
-            //dataUrn3.IsStorage = true;
-            //dataUrn3.StorageId = nowTicks;
-            //dataUrn3.StorageCode = string.Concat("StorageCode", nowTicks);
-            //dataUrn3.StorageName = string.Concat("StorageName", nowTicks);
+            var dataUrn3 = await dataUtilUrn.GetNewData2(nowTicks + 1);
+            dataUrn3.UENNo = "BUK" + dataUrn3.UnitCode;
+            dataUrn3.IsStorage = true;
+            dataUrn3.StorageId = nowTicks;
+            dataUrn3.StorageCode = string.Concat("StorageCode", nowTicks);
+            dataUrn3.StorageName = string.Concat("StorageName", nowTicks);
             await facade.Create(dataUrn1);
             await facade.Create(dataUrn2);
-            //var dataUDO = await dataUtilUDO.GetNewDataMultipleItem(dataUrn1, dataUrn2);
-            //await facadeUDO.Create(dataUDO);
-            //var dataUEN = await dataUtilUEN.GetNewDataTypeTransfer(dataUDO);
-            //await facadeUEN.Create(dataUEN);
+            var dataUDO = await dataUtilUDO.GetNewDataMultipleItem(dataUrn1, dataUrn2);
+            await facadeUDO.Create(dataUDO);
+            var dataUEN = await dataUtilUEN.GetNewDataTypeTransfer(dataUDO);
+            await facadeUEN.Create(dataUEN);
             var dataRC = await dataUtilRC.GetNewData(dataUrn1);
             await facadeRC.Create(dataRC.GarmentReceiptCorrection, USERNAME);
             var stockreport = new GarmentStockReportFacade(serviceProvider, dbContext);
@@ -2928,6 +3047,22 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
             Assert.NotEqual(0, Response);
         }
 
+        [Fact]
+        public async Task Should_Error_Revise_Create_Date_Items()
+        {
+            var facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var data = await dataUtil(facade, GetCurrentMethod()).GetTestDataWithStorage();
+            List<long> garmentUnitReceipts = new List<long>();
+            garmentUnitReceipts.Add(data.Id);
+            data.URNNo = null;
+            //data.CreatedUtc = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+            //data.CreatedUtc = DateTimeOffset.MinValue.UtcDateTime;
+            data.CreatedUtc = DateTime.MinValue;
+            Exception e = Assert.Throws<Exception>(() => facade.UrnDateRevise(garmentUnitReceipts, "test", DateTime.Now));
+            Assert.NotNull(e.Message);
+        }
+
+
         //[Fact]
         //public async Task Should_Error_Revise_Create_Date_Items()
         //{
@@ -2935,8 +3070,9 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
         //    var data = await dataUtil(facade, GetCurrentMethod()).GetNewDataWithStorage();
         //    data.Id = 0;
         //    List<long> garmentUnitReceipts = new List<long>();
-        //    //Exception e = await Assert.ThrowsAsync<Exception>(async () => await facade.UrnDateRevise(garmentUnitReceipts, "test", DateTime.Now));
-        //    Exception e = Assert.Throws<Exception>(() => facade.UrnDateRevise(garmentUnitReceipts, "test", DateTime.Now));
+        //    //Exception e = await Assert.ThrowsAsync<Exception>(async () => await facade.UrnDateRevise(null, "test", DateTime.MinValue));
+        //    Exception e = Assert.Throws<Exception>(() => facade.UrnDateRevise(null, "test", DateTime.MinValue));
+
         //    Assert.NotNull(e.Message);
         //}
 
