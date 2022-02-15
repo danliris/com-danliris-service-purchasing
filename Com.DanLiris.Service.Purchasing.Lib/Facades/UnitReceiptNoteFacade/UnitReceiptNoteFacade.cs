@@ -44,6 +44,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.UnitReceiptNoteFacade
         private readonly IEnumerable<string> SpecialCategoryCode = new List<string>()
         {
             "BP","BB","EM","S","R","E","PL","MM","SP","U"
+            
+            
         };
 
         public UnitReceiptNoteFacade(IServiceProvider serviceProvider, PurchasingDbContext dbContext)
