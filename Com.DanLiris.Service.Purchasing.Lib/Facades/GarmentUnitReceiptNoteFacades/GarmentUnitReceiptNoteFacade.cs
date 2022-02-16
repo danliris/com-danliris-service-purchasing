@@ -712,7 +712,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitReceiptNoteFaca
             return Created;
         }
 
-        private async Task UpdateDR(string DRId, bool isUsed)
+        public async Task UpdateDR(string DRId, bool isUsed)
         {
             string drUri = "delivery-returns";
             IHttpClientService httpClient = (IHttpClientService)serviceProvider.GetService(typeof(IHttpClientService));

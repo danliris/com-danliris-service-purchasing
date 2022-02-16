@@ -2982,6 +2982,17 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentUnitReceiptNoteFac
         #endregion
 
         [Fact]
+        public async Task Should_Success_Update_DR()
+        {
+            var facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
+            var data = await dataUtil(facade, GetCurrentMethod()).GetTestDataWithStorage();
+            //List<long> garmentUnitReceipts = new List<long>();
+            //garmentUnitReceipts.Add(data.Id);
+            var Response = facade.UpdateDR("1", true);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
         public async Task Should_Success_Revise_Create_Date()
         {
             var facade = new GarmentUnitReceiptNoteFacade(GetServiceProvider(), _dbContext(GetCurrentMethod()));
