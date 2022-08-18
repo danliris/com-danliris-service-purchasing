@@ -130,7 +130,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
                 SectionName=s.SectionName,
                 ApprovalPR = s.ApprovalPR,
                 ApprovalKadiv = s.ApprovalKadiv,
-
             });
 
             Pageable<GarmentPurchaseRequest> pageable = new Pageable<GarmentPurchaseRequest>(Query, Page - 1, Size);
