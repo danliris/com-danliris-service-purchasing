@@ -267,7 +267,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCentralBillExpen
                 monitoringcentralbillexpenditureViewModel.DOQuantity = deliveryOrderDetail.DOQuantity;
                 monitoringcentralbillexpenditureViewModel.UOMUnit = deliveryOrderDetail.UomUnit;
                 monitoringcentralbillexpenditureViewModel.PricePerDealUnit = (double)deliveryOrder.DOCurrencyRate * deliveryOrderDetail.PricePerDealUnit;
-                monitoringcentralbillexpenditureViewModel.PriceTotal = (double)deliveryOrder.DOCurrencyRate * deliveryOrderDetail.PriceTotal;
+                monitoringcentralbillexpenditureViewModel.PriceTotal = Math.Round((double)deliveryOrder.DOCurrencyRate * deliveryOrderDetail.PricePerDealUnit * deliveryOrderDetail.DOQuantity, 2);
                 monitoringcentralbillexpenditureViewModel.Conversion = deliveryOrderDetail.Conversion;
                 monitoringcentralbillexpenditureViewModel.SmallQuantity = deliveryOrderDetail.SmallQuantity;
                 monitoringcentralbillexpenditureViewModel.SmallUOMUnit = deliveryOrderDetail.SmallUomUnit;
@@ -278,8 +278,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.MonitoringCentralBillExpen
                 monitoringcentralbillexpenditureViewModel.UnitName = unitReceiptNote == null ? "-" : unitReceiptNote.UnitName;
                 monitoringcentralbillexpenditureViewModel.ReceiptQuantity = unitReceiptNoteItem == null ? 0 : unitReceiptNoteItem.ReceiptQuantity;
                 monitoringcentralbillexpenditureViewModel.URNUOMUnit = unitReceiptNoteItem == null ? "-" : unitReceiptNoteItem.UomUnit;
-                monitoringcentralbillexpenditureViewModel.URNPricePerDealUnit = unitReceiptNoteItem == null ? 0 : (decimal)deliveryOrder.DOCurrencyRate * unitReceiptNoteItem.PricePerDealUnit;
-                monitoringcentralbillexpenditureViewModel.URNPriceTotal = unitReceiptNoteItem == null ? 0 : (decimal)deliveryOrder.DOCurrencyRate * unitReceiptNoteItem.PricePerDealUnit * unitReceiptNoteItem.ReceiptQuantity;
+                monitoringcentralbillexpenditureViewModel.URNPricePerDealUnit = unitReceiptNoteItem == null ? 0 : Math.Round((decimal)deliveryOrder.DOCurrencyRate * unitReceiptNoteItem.PricePerDealUnit, 2);
+                monitoringcentralbillexpenditureViewModel.URNPriceTotal = unitReceiptNoteItem == null ? 0 : Math.Round((decimal)deliveryOrder.DOCurrencyRate * unitReceiptNoteItem.PricePerDealUnit * unitReceiptNoteItem.ReceiptQuantity, 2);
                 monitoringcentralbillexpenditureViewModel.URNConversion = unitReceiptNoteItem == null ? 0 : unitReceiptNoteItem.Conversion;
                 monitoringcentralbillexpenditureViewModel.URNSmallQuantity = unitReceiptNoteItem == null ? 0 : unitReceiptNoteItem.SmallQuantity;
                 monitoringcentralbillexpenditureViewModel.URNSmallUOMUnit = unitReceiptNoteItem == null ? "-" : unitReceiptNoteItem.SmallUomUnit;
