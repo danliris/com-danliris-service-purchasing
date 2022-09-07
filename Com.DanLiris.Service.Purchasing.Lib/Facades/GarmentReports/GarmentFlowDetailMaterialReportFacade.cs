@@ -96,7 +96,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
 								 Quantity = a.Quantity,
 								 UomUnit = a.UomUnit,
                                  //Total = (a.BasicPrice / (a.Conversion == 0 ? 1 : a.Conversion)) * Convert.ToDecimal(a.Quantity),
-                                 Total = Convert.ToDecimal(a.PricePerDealUnit) * Convert.ToDecimal(a.Quantity),
+                                 //Total = Convert.ToDecimal(a.PricePerDealUnit) * Convert.ToDecimal(a.Quantity),
+                                 Total = Convert.ToDecimal(a.PricePerDealUnit * a.Quantity),
                                  UnitDestination = (b.ExpenditureType == "TRANSFER" || b.ExpenditureType == "GUDANG LAIN") ? b.UnitRequestName : b.ExpenditureType == "EXTERNAL" ? "RETUR" : b.ExpenditureType
 
 							 });
@@ -141,7 +142,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
 								 Quantity = a.Quantity,
 								 UomUnit = a.UomUnit,
 								 //Total = (a.BasicPrice / (a.Conversion == 0 ? 1 : a.Conversion)) * Convert.ToDecimal(a.Quantity),
-								 Total = Convert.ToDecimal(a.PricePerDealUnit) * Convert.ToDecimal(a.Quantity),
+								 //Total = Convert.ToDecimal(a.PricePerDealUnit) * Convert.ToDecimal(a.Quantity),
+                                 Total = Convert.ToDecimal(a.PricePerDealUnit * a.Quantity),
 								 UnitDestination = (b.ExpenditureType == "TRANSFER" || b.ExpenditureType == "GUDANG LAIN") ? b.UnitRequestName : b.ExpenditureType == "EXTERNAL" ? "RETUR" : b.ExpenditureType
 
 							 });
