@@ -325,43 +325,58 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
         //}
 
 
-        //[Fact]
-        //public void ShouldSuccess_GetAccuracyOfArrivalHeader()
-        //{
-        //    //Setup
-        //    Mock<IServiceProvider> serviceProviderMock = GetServiceProvider();
-        //    string testName = GetCurrentAsyncMethod();
-        //    PurchasingDbContext dbCOntext = _dbContext(testName);
+        [Fact]
+        public void ShouldSuccess_GetAccuracyOfArrivalHeader()
+        {
+            //Setup
+            Mock<IServiceProvider> serviceProviderMock = GetServiceProvider();
+            string testName = GetCurrentAsyncMethod();
+            PurchasingDbContext dbCOntext = _dbContext(testName);
 
-        //    GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(serviceProviderMock.Object, dbCOntext);
+            GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(serviceProviderMock.Object, dbCOntext);
 
-        //    //Act
-        //    var response = facade.GetAccuracyOfArrivalHeader(null, null, null);
+            //Act
+            var response = facade.GetAccuracyOfArrivalHeader(null, null, null, 0);
 
-        //    //Assert
-        //    Assert.NotNull(response);
-        //}
+            //Assert
+            Assert.NotNull(response);
+        }
+               
+        [Fact]
+        public async Task ShouldSuccess_GetAccuracyOfArrivalHeader_with_CategoryBB()
+        {
+            //Setup
+            Mock<IServiceProvider> serviceProviderMock = GetServiceProvider();
+            string testName = GetCurrentAsyncMethod();
+            PurchasingDbContext dbCOntext = _dbContext(testName);
 
+            GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(serviceProviderMock.Object, dbCOntext);
+            var data = await dataUtil(facade, testName).GetTestData();
 
+            //Act
+            var response = facade.GetAccuracyOfArrivalHeader("Bahan Baku", null, null, 0);
 
-        //[Fact]
-        //public async Task ShouldSuccess_GetAccuracyOfArrivalHeader_with_CategoryBB()
-        //{
-        //    //Setup
-        //    Mock<IServiceProvider> serviceProviderMock = GetServiceProvider();
-        //    string testName = GetCurrentAsyncMethod();
-        //    PurchasingDbContext dbCOntext = _dbContext(testName);
+            //Assert
+            Assert.NotNull(response);
+        }
 
-        //    GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(serviceProviderMock.Object, dbCOntext);
-        //    var data = await dataUtil(facade, testName).GetTestData();
+        [Fact]
+        public async Task ShouldSuccess_GetAccuracyOfArrivalHeader_with_CategoryBP()
+        {
+            //Setup
+            Mock<IServiceProvider> serviceProviderMock = GetServiceProvider();
+            string testName = GetCurrentAsyncMethod();
+            PurchasingDbContext dbCOntext = _dbContext(testName);
 
-        //    //Act
-        //    var response = facade.GetAccuracyOfArrivalHeader("Bahan Baku", null, null);
+            GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(serviceProviderMock.Object, dbCOntext);
+            var data = await dataUtil(facade, testName).GetTestData();
 
-        //    //Assert
-        //    Assert.NotNull(response);
-        //}
+            //Act
+            var response = facade.GetAccuracyOfArrivalHeader("Bahan Pendukung", null, null, 0);
 
+            //Assert
+            Assert.NotNull(response);
+        }
         //[Fact]
         //public async Task ShouldSuccess_GetAccuracyOfArrivalHeader_with_CategoryBP()
         //{
@@ -583,14 +598,14 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
             Assert.NotEqual(-1, Response.Item2);
         }
 
-        //[Fact]
-        //public async Task Should_Success_Get_Report_Data_Null_Parameter()
-        //{
-        //    GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-        //    var model = await dataUtil(facade, GetCurrentMethod()).GetTestData();
-        //    var Response = facade.GetReportDO("", "", 0, null, null, 1, 25, "{}", 7);
-        //    Assert.NotEmpty(Response.Item1);
-        //}
+        [Fact]
+        public async Task Should_Success_Get_Report_Data_Null_Parameter()
+        {
+            GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            var model = await dataUtil(facade, GetCurrentMethod()).GetTestData();
+            var Response = facade.GetReportDO("", "", 0, null, null, null, null, 1, 25, "{}", 7);
+            Assert.NotEmpty(Response.Item1);
+        }
 
         [Fact]
         public async Task Should_Success_Get_Report_Data_Excel()
@@ -601,14 +616,14 @@ namespace Com.DanLiris.Service.Purchasing.Test.Facades.GarmentDeliveryOrderTests
             Assert.IsType<System.IO.MemoryStream>(Response);
         }
 
-        //[Fact]
-        //public async Task Should_Success_Get_Report_Data_Excel_Null_parameter()
-        //{
-        //    GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-        //    var model = await dataUtil(facade, GetCurrentMethod()).GetTestData();
-        //    var Response = facade.GenerateExcelDO("", "", 0, null, null, 7);
-        //    Assert.IsType<System.IO.MemoryStream>(Response);
-        //}
+        [Fact]
+        public async Task Should_Success_Get_Report_Data_Excel_Null_parameter()
+        {
+            GarmentDeliveryOrderFacade facade = new GarmentDeliveryOrderFacade(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            var model = await dataUtil(facade, GetCurrentMethod()).GetTestData();
+            var Response = facade.GenerateExcelDO("99999", null, 0, null, null, null, null, 0);
+            Assert.IsType<System.IO.MemoryStream>(Response);
+        }
         // Buku Harian Pembelian
         //[Fact]
         //public async Task Should_Success_Get_Buku_Sub_Beli_Data()

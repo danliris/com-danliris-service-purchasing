@@ -31,6 +31,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.VBRequestPOExternal
                 UseIncomeTax = elementInvoice.UseIncomeTax;
                 IncomeTax = new IncomeTaxDto(elementInvoice.IncomeTaxId, elementInvoice.IncomeTaxName, elementInvoice.IncomeTaxRate);
                 IncomeTaxBy = elementInvoice.IsPayTax ? "Dan Liris" : "Supplier";
+                VatTax = new VatTaxDto(Convert.ToString(elementInvoice.VatId), elementInvoice.VatRate);
+                IsPayVat = elementInvoice.IsPayVat;
+                IsPayTax = elementInvoice.IsPayTax;
             }
         }
 
@@ -46,6 +49,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.VBRequestPOExternal
             UseIncomeTax = element.UseIncomeTax;
             IncomeTax = new IncomeTaxDto(element.IncomeTaxId, element.IncomeTaxName, element.IncomeTaxRate);
             IncomeTaxBy = element.IncomeTaxBy;
+            VatTax = new VatTaxDto(element.VatId, element.VatRate);
+            IsPayVat = element.UseVat;
+            IsPayTax = element.UseIncomeTax;
 
             UnitCosts = new List<UnitCostDto>();
         }
@@ -61,9 +67,14 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.VBRequestPOExternal
             Division = new DivisionDto(element.DivisionCode, element.DivisionId, element.DivisionName);
 
             UseVat = element.UseVat;
+            VatTax = new VatTaxDto(element.VatId, element.VatRate);
             UseIncomeTax = element.UseIncomeTax;
             IncomeTax = new IncomeTaxDto(element.IncomeTaxId, element.IncomeTaxName, element.IncomeTaxRate);
             IncomeTaxBy = element.IncomeTaxBy;
+            IsPayVat = element.UseVat;
+            IsPayTax = element.UseIncomeTax;
+
+
 
             //var selectedSPBDetails = spbDetails.Where(detail =)
             var selectedSPBItems = spbItems.Where(item => item.UPOId == element.Id).ToList();
@@ -124,6 +135,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.VBRequestPOExternal
                 UseIncomeTax = elementInvoice.UseIncomeTax;
                 IncomeTax = new IncomeTaxDto(elementInvoice.IncomeTaxId, elementInvoice.IncomeTaxName, elementInvoice.IncomeTaxRate);
                 //IncomeTaxBy = elementInvoice.IsPayTax ? "Dan Liris" : "Supplier";
+                IsPayVat = elementInvoice.IsPayVat;
+                IsPayTax = elementInvoice.IsPayTax;
+                VatTax = new VatTaxDto(Convert.ToString(elementInvoice.VatId), elementInvoice.VatRate);
                 IncomeTaxBy = "Supplier";
             }
 
@@ -159,9 +173,12 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.VBRequestPOExternal
                 return total;
             });
             Amount += correctionAmount;
+            
             var invoiceIds = selectedInternalNoteItems.Select(item => item.InvoiceId).ToList();
             var elementInvoice = invoices.FirstOrDefault(entity => invoiceIds.Contains(entity.Id));
+            VatTax = new VatTaxDto( Convert.ToString(elementInvoice.VatId), elementInvoice.VatRate);
             UnitCosts = selectedInternalNoteDetails.Select(detail => new UnitCostDto(detail, selectedInternalNoteItems, internNote, elementInvoice)).ToList();
+
         }
 
         public long Id { get; private set; }
@@ -172,9 +189,12 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.VBRequestPOExternal
         public SupplierDto Supplier { get; private set; }
         public DivisionDto Division { get; private set; }
         public bool UseVat { get; private set; }
+        public VatTaxDto VatTax { get; private set; }
         public bool UseIncomeTax { get; private set; }
         public IncomeTaxDto IncomeTax { get; private set; }
         public string IncomeTaxBy { get; private set; }
+        public bool IsPayVat { get; private set; }
+        public bool IsPayTax { get; private set; }
         public List<UnitCostDto> UnitCosts { get; private set; }
     }
 }

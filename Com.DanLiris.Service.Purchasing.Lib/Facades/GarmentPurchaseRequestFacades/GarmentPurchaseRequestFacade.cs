@@ -49,7 +49,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
 
             List<string> searchAttributes = new List<string>()
             {
-                "PRType", "SCNo", "PRNo", "RONo", "BuyerCode", "BuyerName", "UnitName", "Article","SectionName"
+                "PRType", "SCNo", "PRNo", "RONo", "BuyerCode", "BuyerName", "UnitName", "Article", "SectionName", "ApprovalPR"
             };
 
             Query = QueryHelper<GarmentPurchaseRequest>.ConfigureSearch(Query, searchAttributes, Keyword);
@@ -127,7 +127,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
                 ValidatedMD1Date = s.ValidatedMD1Date,
                 ValidatedMD2Date = s.ValidatedMD2Date,
                 ValidatedPurchasingDate = s.ValidatedPurchasingDate,
-                SectionName=s.SectionName
+                SectionName=s.SectionName,
+                ApprovalPR = s.ApprovalPR,
+                ApprovalKadiv = s.ApprovalKadiv,
 
             });
 
@@ -381,6 +383,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
                                 oldItem.PriceUomId = newItem.PriceUomId;
                                 oldItem.PriceUomUnit = newItem.PriceUomUnit;
                                 oldItem.PriceConversion = newItem.PriceConversion;
+								oldItem.UomId = newItem.UomId;
+								oldItem.UomUnit = newItem.UomUnit;
                             }
                         }
 
@@ -1233,7 +1237,9 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
                 {
                     index++;
 
-                    result.Rows.Add(index, item.prNo, item.prDate, item.unitName, item.poSerialNumber, item.useInternalPO, item.ro, item.article, item.buyerCode, item.buyerName, item.shipmentDate, item.poextNo, item.poExtDate, item.deliveryDate, item.useVat, item.useIncomeTax, item.incomeTaxRate, item.paymentMethod, item.paymentType, item.paymentDueDays, item.supplierCode, item.supplierName, item.SupplierImport, item.status, item.productCode, item.productName,item.consts,item.yarn,item.width,item.composition, item.prProductRemark, item.poProductRemark, item.poDefaultQty, item.poDealQty,
+                    result.Rows.Add(index, item.prNo, item.prDate, item.unitName, item.poSerialNumber, item.useInternalPO, item.ro, item.article, item.buyerCode, item.buyerName, item.shipmentDate, item.poextNo, item.poExtDate, item.deliveryDate, item.useVat, item.useIncomeTax, item.incomeTaxRate, 
+                        item.paymentMethod, item.paymentType, 
+                        item.paymentDueDays, item.supplierCode, item.supplierName, item.SupplierImport, item.status, item.productCode, item.productName,item.consts,item.yarn,item.width,item.composition, item.prProductRemark, item.poProductRemark, item.poDefaultQty, item.poDealQty,
                         item.poDealUomUnit, item.prBudgetPrice, item.poPricePerDealUnit, item.TotalNominalPO,item.prBudgetPrice * item.poDefaultQty, item.poCurrencyCode, item.poCurrencyRate, item.TotalNominalRp, item.ipoDate, item.doNo,
                         item.doDate, item.arrivalDate, item.doQty, item.doUomUnit, item.Bon, item.BonSmall, item.bcNo, item.bcDate, item.receiptNo, item.receiptDate, item.ReceiptQty, item.receiptUomUnit,
                         item.invoiceNo, item.invoiceDate, item.vatNo, item.vatDate, item.vatValue, item.incomeTaxType, item.incomeTaxtRate, item.incomeTaxNo, item.incomeTaxDate, item.incomeTaxtValue,
@@ -1433,7 +1439,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
             var unitReceiptNoteItems = dbContext.GarmentUnitReceiptNoteItems.Where(w => unitReceiptNoteItemIds.Contains(w.Id)).Select(s => new { s.Id, s.ReceiptQuantity, s.UomUnit }).ToList();
 
             var invoiceIds = queryResult.Select(s => s.INVId).Distinct().ToList();
-            var invoices = dbContext.GarmentInvoices.Where(w => invoiceIds.Contains(w.Id)).Select(s => new { s.Id, s.InvoiceNo, s.InvoiceDate, s.IncomeTaxDate, s.IncomeTaxNo, s.IncomeTaxName, s.IncomeTaxRate, s.IsPayTax, s.VatDate, s.VatNo }).ToList();
+            var invoices = dbContext.GarmentInvoices.Where(w => invoiceIds.Contains(w.Id)).Select(s => new { s.Id, s.InvoiceNo, s.InvoiceDate, s.IncomeTaxDate, s.IncomeTaxNo, s.IncomeTaxName, s.IncomeTaxRate, s.IsPayTax, s.VatDate, s.VatNo, s.VatRate }).ToList();
             //var invoiceItemIds = queryResult.Select(s => s.INVItemId).Distinct().ToList();
             //var invoiceItems = dbContext.GarmentInvoiceItems.Where(w => invoiceItemIds.Contains(w.Id)).Select(s => new { s.Id}).ToList();
             //var invoiceDetailIds = queryResult.Select(s => s.INVDetailId).Distinct().ToList();
@@ -1595,7 +1601,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentPurchaseRequestFaca
 						incomeTaxtValue = invoice != null && invoice.IsPayTax ? string.Format("{0:N2}", deliveryOrderDetail.DOQuantity * deliveryOrderDetail.PricePerDealUnit * invoice.IncomeTaxRate / 100) : "",
 						vatNo = invoice == null ? "" : invoice.VatNo,
 						vatDate = invoice == null ? "" : invoice.VatDate.AddHours(offset).ToString("dd MMMM yyyy", CultureInfo.InvariantCulture),
-						vatValue = invoice != null && invoice.IsPayTax ? string.Format("{0:N2}", deliveryOrderDetail.DOQuantity * deliveryOrderDetail.PricePerDealUnit * 0.1) : "",
+						vatValue = invoice != null && invoice.IsPayTax ? string.Format("{0:N2}", deliveryOrderDetail.DOQuantity * deliveryOrderDetail.PricePerDealUnit * (invoice.VatRate / 100)) : "",
 						internNo = internNote == null ? "" : internNote.INNo,
 						internDate = internNote == null ? "" : internNote.INDate.AddHours(offset).ToString("dd MMMM yyyy", CultureInfo.InvariantCulture),
 						internTotal = internNoteDetail == null ? "" : string.Format("{0:N2}", internNoteDetail.Quantity * internNoteDetail.PricePerDealUnit),

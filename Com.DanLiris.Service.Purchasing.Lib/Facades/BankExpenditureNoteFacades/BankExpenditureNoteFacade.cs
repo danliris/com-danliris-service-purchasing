@@ -397,7 +397,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
 
                         EntityExtension.FlagForCreate(detail, username, USER_AGENT);
 
-                        var pdeSPB = dbContext.PurchasingDocumentExpeditions.FirstOrDefault(entity => entity.UnitPaymentOrderNo == detail.UnitPaymentOrderNo);
+                        var pdeSPB = dbContext.PurchasingDocumentExpeditions.Include(item => item.Items).LastOrDefault(entity => entity.UnitPaymentOrderNo == detail.UnitPaymentOrderNo);
                         
                         if (pdeSPB != null && string.IsNullOrWhiteSpace(pdeSPB.BankExpenditureNoteNo))
                         {
@@ -415,6 +415,12 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                         else
                         {
                             // copy pdeSPB -> seusaikan dengan pembayaran bank baru
+
+                            pdeSPB.IsPaid = true;
+
+                            EntityExtension.FlagForUpdate(pdeSPB, username, USER_AGENT);
+
+                            dbContext.PurchasingDocumentExpeditions.Update(pdeSPB);
 
                             PurchasingDocumentExpedition pde = new PurchasingDocumentExpedition
                             {
@@ -448,7 +454,6 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                                 IsDeleted = pdeSPB.IsDeleted,
                                 IsPaid = paidFlag,
                                 IsPaidPPH = pdeSPB.IsPaidPPH,
-                                Items = pdeSPB.Items,
                                 NotVerifiedReason = pdeSPB.NotVerifiedReason,
                                 PaymentMethod = pdeSPB.PaymentMethod,
                                 Position = pdeSPB.Position,
@@ -472,9 +477,47 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                                 VerifyDate = pdeSPB.VerifyDate
                             };
 
+                            List<PurchasingDocumentExpeditionItem> pdeItems = new List<PurchasingDocumentExpeditionItem>();
+
+                            foreach (var item in pdeSPB.Items)
+                            {
+                                PurchasingDocumentExpeditionItem expeditionItem = new PurchasingDocumentExpeditionItem
+                                {
+                                    Active = item.Active,
+                                    CreatedAgent = item.CreatedAgent,
+                                    CreatedBy = item.CreatedBy,
+                                    CreatedUtc = item.CreatedUtc,
+                                    DeletedAgent = item.DeletedAgent,
+                                    DeletedBy = item.DeletedBy,
+                                    DeletedUtc = item.DeletedUtc,
+                                    IsDeleted = item.IsDeleted,
+                                    LastModifiedAgent = item.LastModifiedAgent,
+                                    LastModifiedBy = item.LastModifiedBy,
+                                    LastModifiedUtc = item.LastModifiedUtc,
+                                    Price = item.Price,
+                                    ProductCode = item.ProductCode,
+                                    ProductId = item.ProductId,
+                                    ProductName = item.ProductName,
+                                    PurchasingDocumentExpedition = pde,
+                                    Quantity = item.Quantity,
+                                    UnitCode = item.UnitCode,
+                                    UnitId = item.UnitId,
+                                    UnitName = item.UnitName,
+                                    Uom = item.Uom,
+                                    URNId = item.URNId,
+                                    URNNo = item.URNNo
+                                };
+
+                                pdeItems.Add(expeditionItem);
+                            }
+
+                            pde.Items = pdeItems;
+
                             EntityExtension.FlagForCreate(pde, username, USER_AGENT);
 
                             dbContext.PurchasingDocumentExpeditions.Add(pde);
+
+
                         }
 
                         //PurchasingDocumentExpedition pde = new PurchasingDocumentExpedition
@@ -523,7 +566,11 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
         {
             var upoNos = model.Details.Select(detail => detail.UnitPaymentOrderNo).ToList();
             var unitPaymentOrders = dbContext.UnitPaymentOrders.Where(unitPaymentOrder => upoNos.Contains(unitPaymentOrder.UPONo)).ToList();
-            double currencyRate = 0;
+            var currency = await _currencyProvider.GetCurrencyByCurrencyCodeDate(model.CurrencyCode, model.Date);
+            if (currency == null)
+            {
+                currency = new Currency() { Rate = model.CurrencyRate };
+            }
             double totalPayment = 0;
             //var currency = await GetBICurrency(model.CurrencyCode, model.Date);
 
@@ -536,7 +583,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
             foreach (var detail in model.Details)
             {
                 var unitPaymentOrder = unitPaymentOrders.FirstOrDefault(element => element.UPONo == detail.UnitPaymentOrderNo);
-                currencyRate = unitPaymentOrder.CurrencyRate;
+                var currencyRate = currency.Rate;
                 if (unitPaymentOrder == null)
                     unitPaymentOrder = new UnitPaymentOrder();
                 var unitSummaries = detail.Items.GroupBy(g => new { g.URNNo, g.UnitCode }).Select(s => new
@@ -590,7 +637,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                             if (model.CurrencyCode != "IDR")
                             {
                                 //debit = (dpp + vatAmount - incomeTaxAmount) * model.CurrencyRate
-                                debit = (dpp) * currencyRate;
+                                debit = (dpp) * currencyRate.GetValueOrDefault();
                             }
                             nominal = decimal.Add(nominal, Convert.ToDecimal(debit));
 
@@ -623,7 +670,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                         if (model.CurrencyCode != "IDR")
                         {
                             //debit = (dpp + vatAmount - incomeTaxAmount) * model.CurrencyRate;
-                            debit = (dpp) * currencyRate;
+                            debit = (dpp) * currencyRate.GetValueOrDefault();
                         }
                         nominal = decimal.Add(nominal, Convert.ToDecimal(debit));
 
@@ -650,10 +697,12 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
             //}).ToList();
 
             var credit = totalPayment * model.CurrencyRate;
+            var creditRound = Math.Round(Convert.ToDecimal(credit), 2);
+            var debitRound = Math.Round(items.Sum(s => s.Debit.GetValueOrDefault()), 2);
 
-            if (Convert.ToDecimal(credit) != items.Sum(s => s.Debit.GetValueOrDefault()))
+            if (creditRound != debitRound)
             {
-                if (Convert.ToDecimal(credit) > items.Sum(s => s.Debit.GetValueOrDefault()))
+                if (creditRound > debitRound)
                 {
                     var differenceRate = (decimal)credit - items.Sum(s => s.Debit.GetValueOrDefault());
 
@@ -678,7 +727,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                         {
                             Code = "7131.00.0.00",
                         },
-                        Debit = differenceRate,
+                        Credit = differenceRate,
                         Remark = "Pelunasan Hutang"
                     };
                     items.Add(differentJournalItem);
@@ -690,7 +739,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                     {
                         Code = model.BankAccountCOA
                     },
-                    Credit = (decimal)credit
+                    Credit = (decimal)credit,
+                    Remark = "Bayar Hutang " + model.SupplierName
                 };
                 items.Add(bankJournalItem);
             }
@@ -703,7 +753,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                         Code = model.BankAccountCOA
                     },
                     //Credit = items.Sum(s => Math.Round(s.Debit.GetValueOrDefault(), 4))
-                    Credit = items.Sum(s => s.Debit.GetValueOrDefault())
+                    Credit = items.Sum(s => s.Debit.GetValueOrDefault()),
+                    Remark = "Bayar Hutang " + model.SupplierName
                 };
                 items.Add(bankJournalItem);
             }
@@ -713,6 +764,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                 Date = model.Date,
                 Description = "Bukti Pengeluaran Bank",
                 ReferenceNo = model.DocumentNo,
+                Remark = "",
                 Items = items
             };
 
@@ -896,8 +948,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                 s.PaymentMethod,
                 s.URNId,
                 s.URNNo,
-                AmountPaid = (detailDbSet.Where(x => x.UnitPaymentOrderId == s.Id).ToList().Count == 0 ? 0 : detailDbSet.Where(x => x.UnitPaymentOrderId == s.Id).Sum(x => x.SupplierPayment)),
-                IsPosted = (detailDbSet.Where(x => x.UnitPaymentOrderId == s.Id).ToList().Count == 0 ? true : dbSet.Where(p => p.Id == (detailDbSet.Where(x => x.UnitPaymentOrderId == s.Id).LastOrDefault().BankExpenditureNoteId)).LastOrDefault().IsPosted),
+                AmountPaid = (detailDbSet.Where(x => x.UnitPaymentOrderNo == s.UnitPaymentOrderNo).ToList().Count == 0 ? 0 : detailDbSet.Where(x => x.UnitPaymentOrderNo == s.UnitPaymentOrderNo).Sum(x => x.SupplierPayment)),
+                IsPosted = dbSet.Where(p => p.DocumentNo == s.BankExpenditureNoteNo).LastOrDefault() != null ? dbSet.Where(p => p.DocumentNo == s.BankExpenditureNoteNo).LastOrDefault().IsPosted : true,
                 Items = s.Items.Select(sl => new
                 {
                     UnitPaymentOrderItemId = sl.Id,
@@ -954,12 +1006,12 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                          BankName = string.Concat(a.BankAccountName, " - ", a.BankName, " - ", a.BankAccountNumber, " - ", a.BankCurrencyCode),
                          DPP = b.TotalPaid - b.Vat,
                          VAT = b.Vat,
-                         TotalPaid = (b.AmountPaid + b.SupplierPayment),
+                         TotalPaid = b.SupplierPayment,
                          InvoiceNumber = b.InvoiceNo,
                          DivisionCode = b.DivisionCode,
                          TotalDPP = b.TotalPaid - b.Vat,
                          TotalPPN = b.Vat,
-                         DifferenceNominal = (b.TotalPaid - b.Vat) - (b.AmountPaid + b.SupplierPayment)
+                         DifferenceNominal = (b.TotalPaid) - (b.AmountPaid + b.SupplierPayment)
                      });
 
             //if (DateFrom == null || DateTo == null)
@@ -1152,30 +1204,30 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
         //    response.EnsureSuccessStatusCode();
         //}
 
-        private void CreateCreditorAccount(BankExpenditureNoteModel model, IdentityService identityService)
-        {
-            List<CreditorAccountViewModel> postedData = new List<CreditorAccountViewModel>();
-            foreach (var item in model.Details)
-            {
-                CreditorAccountViewModel viewModel = new CreditorAccountViewModel()
-                {
-                    Code = model.DocumentNo,
-                    Date = model.Date,
-                    Id = (int)model.Id,
-                    InvoiceNo = item.InvoiceNo,
-                    Mutation = model.CurrencyCode != "IDR" ? item.SupplierPayment * model.CurrencyRate : item.SupplierPayment,
-                    SupplierCode = model.SupplierCode,
-                    SupplierName = model.SupplierName,
-                    MemoNo = item.UnitPaymentOrderNo
-                };
-                postedData.Add(viewModel);
-            }
+        //private void CreateCreditorAccount(BankExpenditureNoteModel model, IdentityService identityService)
+        //{
+        //    List<CreditorAccountViewModel> postedData = new List<CreditorAccountViewModel>();
+        //    foreach (var item in model.Details)
+        //    {
+        //        CreditorAccountViewModel viewModel = new CreditorAccountViewModel()
+        //        {
+        //            Code = model.DocumentNo,
+        //            Date = model.Date,
+        //            Id = (int)model.Id,
+        //            InvoiceNo = item.InvoiceNo,
+        //            Mutation = model.CurrencyCode != "IDR" ? item.SupplierPayment * model.CurrencyRate : item.SupplierPayment,
+        //            SupplierCode = model.SupplierCode,
+        //            SupplierName = model.SupplierName,
+        //            MemoNo = item.UnitPaymentOrderNo
+        //        };
+        //        postedData.Add(viewModel);
+        //    }
 
 
-            var httpClient = (IHttpClientService)this.serviceProvider.GetService(typeof(IHttpClientService));
-            var response = httpClient.PostAsync($"{APIEndpoint.Finance}{CREDITOR_ACCOUNT_URI}", new StringContent(JsonConvert.SerializeObject(postedData).ToString(), Encoding.UTF8, General.JsonMediaType)).Result;
-            response.EnsureSuccessStatusCode();
-        }
+        //    var httpClient = (IHttpClientService)this.serviceProvider.GetService(typeof(IHttpClientService));
+        //    var response = httpClient.PostAsync($"{APIEndpoint.Finance}{CREDITOR_ACCOUNT_URI}", new StringContent(JsonConvert.SerializeObject(postedData).ToString(), Encoding.UTF8, General.JsonMediaType)).Result;
+        //    response.EnsureSuccessStatusCode();
+        //}
 
         private async Task CreateCreditorAccountv2(BankExpenditureNoteModel model, IdentityService identityService)
         {
@@ -1519,6 +1571,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
 
             int index = 1;
             double total = 0;
+            bool sameCurrency = true;
             if (model.BankCurrencyCode != "IDR" || model.CurrencyCode == "IDR")
             {
                 #region BodyNonIdr
@@ -1588,11 +1641,25 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                             var incomeTaxAmount = unitPaymentOrder.UseIncomeTax && unitPaymentOrder.IncomeTaxBy.ToUpper() == "SUPPLIER" ? item.Price * unitPaymentOrder.IncomeTaxRate / 100 : 0;
                             var dpp = item.Price + vatAmount - incomeTaxAmount;
 
-                            if ((remaining <= 0) || (previousPayment >= dpp))
+                            if (remaining <= 0)
                             {
-                                previousPayment -= dpp;
-
                                 continue;
+                            }
+
+                            if (previousPayment > 0)
+                            {
+                                if (previousPayment >= dpp)
+                                {
+                                    previousPayment -= dpp;
+
+                                    continue;
+                                }
+                                else
+                                {
+                                    dpp -= previousPayment;
+
+                                    previousPayment -= dpp;
+                                }
                             }
 
                             bodyCell.HorizontalAlignment = Element.ALIGN_CENTER;
@@ -1735,6 +1802,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
             }
             else
             {
+                sameCurrency = false;
                 #region BodyIdr
                 PdfPTable bodyTable = new PdfPTable(9);
                 PdfPCell bodyCell = new PdfPCell();
@@ -1804,11 +1872,25 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                             var incomeTaxAmount = unitPaymentOrder.UseIncomeTax && unitPaymentOrder.IncomeTaxBy.ToUpper() == "SUPPLIER" ? item.Price * unitPaymentOrder.IncomeTaxRate / 100 : 0;
                             var dpp = item.Price + vatAmount - incomeTaxAmount;
 
-                            if ((remaining <= 0) || (previousPayment >= dpp))
+                            if (remaining <= 0)
                             {
-                                previousPayment -= dpp;
-
                                 continue;
+                            }
+
+                            if (previousPayment > 0)
+                            {
+                                if (previousPayment >= dpp)
+                                {
+                                    previousPayment -= dpp;
+
+                                    continue;
+                                }
+                                else
+                                {
+                                    dpp -= previousPayment;
+
+                                    previousPayment -= dpp;
+                                }
                             }
 
                             bodyCell.HorizontalAlignment = Element.ALIGN_CENTER;
@@ -1833,23 +1915,23 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                             bodyCell.Phrase = new Phrase(detail.Currency, normal_font);
                             bodyTable.AddCell(bodyCell);
 
-                            bodyCell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                            bodyCell.Phrase = new Phrase(string.Format("{0:n4}", remaining), normal_font);
-                            bodyTable.AddCell(bodyCell);
-
                             if (remaining >= dpp)
                             {
                                 bodyCell.HorizontalAlignment = Element.ALIGN_RIGHT;
                                 bodyCell.Phrase = new Phrase(string.Format("{0:n4}", dpp), normal_font);
                                 bodyTable.AddCell(bodyCell);
 
+                                bodyCell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                                bodyCell.Phrase = new Phrase(string.Format("{0:n4}", dpp * model.CurrencyRate), normal_font);
+                                bodyTable.AddCell(bodyCell);
+
                                 if (units.ContainsKey(item.UnitCode))
                                 {
-                                    units[item.UnitCode] += dpp;
+                                    units[item.UnitCode] += dpp * model.CurrencyRate;
                                 }
                                 else
                                 {
-                                    units.Add(item.UnitCode, dpp);
+                                    units.Add(item.UnitCode, dpp * model.CurrencyRate);
                                 }
 
                                 total += dpp;
@@ -1862,13 +1944,17 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
                                 bodyCell.Phrase = new Phrase(string.Format("{0:n4}", remaining), normal_font);
                                 bodyTable.AddCell(bodyCell);
 
+                                bodyCell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                                bodyCell.Phrase = new Phrase(string.Format("{0:n4}", remaining * model.CurrencyRate), normal_font);
+                                bodyTable.AddCell(bodyCell);
+
                                 if (units.ContainsKey(item.UnitCode))
                                 {
-                                    units[item.UnitCode] += remaining;
+                                    units[item.UnitCode] += remaining * model.CurrencyRate;
                                 }
                                 else
                                 {
-                                    units.Add(item.UnitCode, remaining);
+                                    units.Add(item.UnitCode, remaining * model.CurrencyRate);
                                 }
 
                                 total += remaining;
@@ -1984,7 +2070,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.BankExpenditureNoteFacades
             bodyFooterCell.HorizontalAlignment = Element.ALIGN_RIGHT;
             bodyFooterCell.Phrase = new Phrase("");
             bodyFooterTable.AddCell(bodyFooterCell);
-            total = model.CurrencyId > 0 ? total * model.CurrencyRate : total;
+            total = model.CurrencyId > 0 && sameCurrency == false ? total * model.CurrencyRate : total;
             foreach (var unit in units)
             {
                 bodyFooterCell.Colspan = 1;
