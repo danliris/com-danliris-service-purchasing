@@ -1594,12 +1594,21 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             }
             else
             {
-                sheet.Cells["AA4"].Value = headers[26];
-                sheet.Cells["AA4:AT4"].Merge = true;
-                sheet.Cells["AA4:AT4"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                sheet.Cells["AU4"].Value = headers[44];
-                sheet.Cells["AU4:AV5"].Merge = true;
-                sheet.Cells["AU4:AV5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+
+                //sheet.Cells["AA4"].Value = headers[28];
+                //sheet.Cells["AA4:AT4"].Merge = true;
+                //sheet.Cells["AA4:AT4"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                //sheet.Cells["AU4"].Value = headers[48];
+                //sheet.Cells["AU4:AV5"].Merge = true;
+                //sheet.Cells["AU4:AV5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+
+                sheet.Cells["AC4"].Value = headers[28];
+                sheet.Cells["AC4:AV4"].Merge = true;
+                sheet.Cells["AC4:AV4"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                sheet.Cells["AW4"].Value = headers[48];
+                sheet.Cells["AW4:AX5"].Merge = true;
+                sheet.Cells["AW4:AX5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+
             }
 
             sheet.Cells["K5"].Value = headers2[0];
@@ -1660,30 +1669,59 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             }
             else
             {
-                sheet.Cells["AE5"].Value = headers2[11];
+                //sheet.Cells["AE5"].Value = headers2[11];
+                //sheet.Cells["AE5:AF5"].Merge = true;
+                //sheet.Cells["AE5:AF5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                //sheet.Cells["AG5"].Value = "Subcon";
+                //sheet.Cells["AG5:AH5"].Merge = true;
+                //sheet.Cells["AG5:AH5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                //sheet.Cells["AI5"].Value = "Lain-lain";
+                //sheet.Cells["AI5:AJ5"].Merge = true;
+                //sheet.Cells["AI5:AJ5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                //sheet.Cells["AK5"].Value = headers2[12];
+                //sheet.Cells["AK5:AL5"].Merge = true;
+                //sheet.Cells["AK5:AL5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                //sheet.Cells["AM5"].Value = headers2[13];
+                //sheet.Cells["AM5:AN5"].Merge = true;
+                //sheet.Cells["AM5:AN5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                //sheet.Cells["AO5"].Value = headers2[14];
+                //sheet.Cells["AO5:AP5"].Merge = true;
+                //sheet.Cells["AO5:AP5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                //sheet.Cells["AQ5"].Value = headers2[15];
+                //sheet.Cells["AQ5:AR5"].Merge = true;
+                //sheet.Cells["AQ5:AR5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                //sheet.Cells["AS5"].Value = headers2[16];
+                //sheet.Cells["AS5:AT5"].Merge = true;
+                //sheet.Cells["AS5:AT5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+
+
+                sheet.Cells["AE5"].Value = headers2[10];
                 sheet.Cells["AE5:AF5"].Merge = true;
                 sheet.Cells["AE5:AF5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                sheet.Cells["AG5"].Value = "Subcon";
+                sheet.Cells["AG5"].Value = headers2[12];
                 sheet.Cells["AG5:AH5"].Merge = true;
                 sheet.Cells["AG5:AH5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                sheet.Cells["AI5"].Value = "Lain-lain";
+                sheet.Cells["AI5"].Value = headers2[13];
                 sheet.Cells["AI5:AJ5"].Merge = true;
                 sheet.Cells["AI5:AJ5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                sheet.Cells["AK5"].Value = headers2[12];
+                sheet.Cells["AK5"].Value = "Lain - Lain";
                 sheet.Cells["AK5:AL5"].Merge = true;
                 sheet.Cells["AK5:AL5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                sheet.Cells["AM5"].Value = headers2[13];
+                sheet.Cells["AM5"].Value = headers2[14];
                 sheet.Cells["AM5:AN5"].Merge = true;
                 sheet.Cells["AM5:AN5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                sheet.Cells["AO5"].Value = headers2[14];
+                sheet.Cells["AO5"].Value = headers2[15];
                 sheet.Cells["AO5:AP5"].Merge = true;
                 sheet.Cells["AO5:AP5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                sheet.Cells["AQ5"].Value = headers2[15];
+                sheet.Cells["AQ5"].Value = headers2[16];
                 sheet.Cells["AQ5:AR5"].Merge = true;
                 sheet.Cells["AQ5:AR5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
-                sheet.Cells["AS5"].Value = headers2[16];
+                sheet.Cells["AS5"].Value = headers2[17];
                 sheet.Cells["AS5:AT5"].Merge = true;
                 sheet.Cells["AS5:AT5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+                sheet.Cells["AU5"].Value = headers2[18];
+                sheet.Cells["AU5:AV5"].Merge = true;
+                sheet.Cells["AU5:AV5"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
             }
 
             foreach (var i in Enumerable.Range(0, 7))
@@ -1702,8 +1740,15 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
 
             }
 
-            
-            for (var i = 19; unitcode!="SMP1" ? i < 39 : i < 41; i++)
+            //for (var i = 19; unitcode!="SMP1" ? i < 43 : i < 48; i++)
+            //{
+            //    var col = (char)('A' + i - 19);
+            //    sheet.Cells[$"A{col}6"].Value = subheaders[i];
+            //    sheet.Cells[$"A{col}6"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Medium);
+
+            //}
+
+            for (var i = 19;  i < 43 ; i++)
             {
                 var col = (char)('A' + i - 19);
                 sheet.Cells[$"A{col}6"].Value = subheaders[i];
@@ -1805,43 +1850,84 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentReports
             }
             else
             {
-                sheet.Cells[$"AE{7 + result.Rows.Count}"].Value = SAMPLEQtyTotal;
-                sheet.Cells[$"AE{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AF{7 + result.Rows.Count}"].Value = SAMPLEPriceTotal;
-                sheet.Cells[$"AF{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AG{7 + result.Rows.Count}"].Value = ExpendSUBCONQtyTotal;
+                //sheet.Cells[$"AE{7 + result.Rows.Count}"].Value = SAMPLEQtyTotal;
+                //sheet.Cells[$"AE{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AF{7 + result.Rows.Count}"].Value = SAMPLEPriceTotal;
+                //sheet.Cells[$"AF{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AG{7 + result.Rows.Count}"].Value = ExpendSUBCONQtyTotal;
+                //sheet.Cells[$"AG{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AH{7 + result.Rows.Count}"].Value = ExpendSUBCONPriceTotal;
+                //sheet.Cells[$"AH{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AI{7 + result.Rows.Count}"].Value = ExpendOTHERQtyTotal;
+                //sheet.Cells[$"AI{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AJ{7 + result.Rows.Count}"].Value = ExpendOTHERPriceTotal;
+                //sheet.Cells[$"AJ{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+
+                //sheet.Cells[$"AK{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2AQtyTotal;
+                //sheet.Cells[$"AK{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AL{7 + result.Rows.Count}"].Value = ExpendKonfeksi2APriceTotal;
+                //sheet.Cells[$"AL{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AM{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2BQtyTotal;
+                //sheet.Cells[$"AM{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AN{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2BPriceTotal;
+                //sheet.Cells[$"AN{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AO{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2CQtyTotal;
+                //sheet.Cells[$"AO{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AP{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2CPriceTotal;
+                //sheet.Cells[$"AP{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AQ{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1AQtyTotal;
+                //sheet.Cells[$"AQ{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AR{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1APriceTotal;
+                //sheet.Cells[$"AR{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AS{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1BQtyTotal;
+                //sheet.Cells[$"AS{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AT{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1BPriceTotal;
+                //sheet.Cells[$"AT{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AU{7 + result.Rows.Count}"].Value = EndingQty;
+                //sheet.Cells[$"AU{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                //sheet.Cells[$"AV{7 + result.Rows.Count}"].Value = EndingTotal;
+                //sheet.Cells[$"AV{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+
+                sheet.Cells[$"AG{7 + result.Rows.Count}"].Value = SAMPLEQtyTotal;
                 sheet.Cells[$"AG{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AH{7 + result.Rows.Count}"].Value = ExpendSUBCONPriceTotal;
+                sheet.Cells[$"AH{7 + result.Rows.Count}"].Value = SAMPLEPriceTotal;
                 sheet.Cells[$"AH{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AI{7 + result.Rows.Count}"].Value = ExpendOTHERQtyTotal;
+                sheet.Cells[$"AI{7 + result.Rows.Count}"].Value = ExpendSUBCONQtyTotal;
                 sheet.Cells[$"AI{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AJ{7 + result.Rows.Count}"].Value = ExpendOTHERPriceTotal;
+                sheet.Cells[$"AJ{7 + result.Rows.Count}"].Value = ExpendSUBCONPriceTotal;
                 sheet.Cells[$"AJ{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
 
-                sheet.Cells[$"AK{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2AQtyTotal;
+                sheet.Cells[$"AK{7 + result.Rows.Count}"].Value = ExpendOTHERQtyTotal;
                 sheet.Cells[$"AK{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AL{7 + result.Rows.Count}"].Value = ExpendKonfeksi2APriceTotal;
+                sheet.Cells[$"AL{7 + result.Rows.Count}"].Value = ExpendOTHERPriceTotal;
                 sheet.Cells[$"AL{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AM{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2BQtyTotal;
+
+                sheet.Cells[$"AM{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2AQtyTotal;
                 sheet.Cells[$"AM{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AN{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2BPriceTotal;
+                sheet.Cells[$"AN{7 + result.Rows.Count}"].Value = ExpendKonfeksi2APriceTotal;
                 sheet.Cells[$"AN{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AO{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2CQtyTotal;
+                sheet.Cells[$"AO{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2BQtyTotal;
                 sheet.Cells[$"AO{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AP{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2CPriceTotal;
+                sheet.Cells[$"AP{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2BPriceTotal;
                 sheet.Cells[$"AP{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AQ{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1AQtyTotal;
+                sheet.Cells[$"AQ{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2CQtyTotal;
                 sheet.Cells[$"AQ{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AR{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1APriceTotal;
+                sheet.Cells[$"AR{7 + result.Rows.Count}"].Value = ExpendKONFEKSI2CPriceTotal;
                 sheet.Cells[$"AR{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AS{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1BQtyTotal;
+                sheet.Cells[$"AS{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1AQtyTotal;
                 sheet.Cells[$"AS{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AT{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1BPriceTotal;
+                sheet.Cells[$"AT{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1APriceTotal;
                 sheet.Cells[$"AT{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AU{7 + result.Rows.Count}"].Value = EndingQty;
+                sheet.Cells[$"AU{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1BQtyTotal;
                 sheet.Cells[$"AU{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
-                sheet.Cells[$"AV{7 + result.Rows.Count}"].Value = EndingTotal;
+                sheet.Cells[$"AV{7 + result.Rows.Count}"].Value = ExpendKONFEKSI1BPriceTotal;
                 sheet.Cells[$"AV{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                sheet.Cells[$"AW{7 + result.Rows.Count}"].Value = EndingQty;
+                sheet.Cells[$"AW{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                sheet.Cells[$"AX{7 + result.Rows.Count}"].Value = EndingTotal;
+                sheet.Cells[$"AX{7 + result.Rows.Count}"].Style.Border.BorderAround(ExcelBorderStyle.Medium);
+
+
             }
 
 
