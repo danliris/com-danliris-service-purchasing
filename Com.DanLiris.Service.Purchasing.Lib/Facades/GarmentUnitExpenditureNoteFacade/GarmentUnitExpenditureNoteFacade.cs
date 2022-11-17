@@ -461,7 +461,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitExpenditureNote
 
                     }
 
-                    if (garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" || garmentUnitExpenditureNote.ExpenditureType == "SUBCON" || (garmentUnitExpenditureNote.ExpenditureType == "SAMPLE" && garmentUnitExpenditureNote.UnitSenderCode != "SMP1"))
+                    if (garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" || garmentUnitExpenditureNote.ExpenditureType == "TRANSFER SUBCON" || (garmentUnitExpenditureNote.ExpenditureType == "SAMPLE" && garmentUnitExpenditureNote.UnitSenderCode != "SMP1"))
                     {
                         GarmentUnitReceiptNoteFacade garmentUnitReceiptNoteFacade = new GarmentUnitReceiptNoteFacade(this.serviceProvider, dbContext);
                         GarmentUnitDeliveryOrderFacade garmentUnitDeliveryOrderFacade = new GarmentUnitDeliveryOrderFacade(dbContext, this.serviceProvider);
@@ -608,7 +608,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitExpenditureNote
 
                         GarmentUnitDeliveryOrder garmentUnitDO = new GarmentUnitDeliveryOrder
                         {
-                            UnitDOType = garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" ? "PROSES" : (garmentUnitExpenditureNote.ExpenditureType == "SUBCON" ? "SUBCON" : "SAMPLE"),
+                            UnitDOType = garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" ? "PROSES" : (garmentUnitExpenditureNote.ExpenditureType == "TRANSFER SUBCON" ? "TRANSFER SUBCON" : "SAMPLE"),
                             UnitDODate = garmentUnitExpenditureNote.ExpenditureDate,
                             UnitRequestId = garmentUnitExpenditureNote.UnitRequestId,
                             UnitRequestCode = garmentUnitExpenditureNote.UnitRequestCode,
@@ -680,8 +680,8 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitExpenditureNote
                         GarmentUnitExpenditureNote uen = new GarmentUnitExpenditureNote
                         {
                             ExpenditureDate = garmentUnitExpenditureNote.ExpenditureDate,
-                            ExpenditureType = garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" ? "PROSES" : (garmentUnitExpenditureNote.ExpenditureType == "SUBCON" ? "SUBCON" : "SAMPLE"),
-                            ExpenditureTo = garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" ? "PROSES" : (garmentUnitExpenditureNote.ExpenditureType == "SUBCON" ? "SUBCON" : "SAMPLE"),
+                            ExpenditureType = garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" ? "PROSES" : (garmentUnitExpenditureNote.ExpenditureType == "TRANSFER SUBCON" ? "TRANSFER SUBCON" : "SAMPLE"),
+                            ExpenditureTo = garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" ? "PROSES" : (garmentUnitExpenditureNote.ExpenditureType == "TRANSFER SUBCON" ? "TRANSFER SUBCON" : "SAMPLE"),
                             UnitDOId = garmentUnitDO.Id,
                             UnitDONo = garmentUnitDO.UnitDONo,
                             UnitSenderId = garmentUnitDO.UnitSenderId,
@@ -1221,6 +1221,40 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitExpenditureNote
             return new ReadResponse<object>(ListData, TotalData, OrderDictionary);
         }
 
+        public List<object> ReadLoaderProductByROJob(string Keyword = null, string Filter = "{}", int size = 50)
+        {
+            Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
+            bool hasRONoFilter = FilterDictionary.ContainsKey("RONo");
+            string RONo = hasRONoFilter ? (FilterDictionary["RONo"] ?? "").Trim() : "";
+            
+            Keyword = (Keyword ?? "").Trim();
+
+            IQueryable<GarmentUnitExpenditureNoteItem> Query = (from uenItem in dbContext.GarmentUnitExpenditureNoteItems
+                                                                join uen in dbSet on uenItem.UENId equals uen.Id
+                                                                join b in dbContext.GarmentUnitDeliveryOrders
+                                                                on uen.UnitDOId equals b.Id
+                                                                where b.RONo == RONo 
+                                                                && uenItem.IsDeleted == false
+                                                                && uenItem.ProductCode.Contains(Keyword)
+                                                                && uen.ExpenditureType=="SUBCON"
+                                                                && uenItem.ProductName=="FABRIC"
+                                                                select uenItem).AsQueryable();
+
+            var Data = from a in Query
+                       join b in dbContext.GarmentUnitReceiptNoteItems on a.URNItemId equals b.Id
+                       select new
+                       {
+                           a.ProductCode,
+                           a.ProductName,
+                           a.ProductId,
+                           b.DesignColor
+                       };
+            
+            List<object> ListData = new List<object>();
+            ListData.AddRange(Data.Distinct());
+            return ListData;
+        }
+
         public GarmentUnitExpenditureNoteViewModel ReadById(int id)
         {
             var model = dbSet.Where(m => m.Id == id)
@@ -1571,7 +1605,7 @@ namespace Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentUnitExpenditureNote
             if (garmentUnitExpenditureNote.ExpenditureType == "PROSES" || garmentUnitExpenditureNote.ExpenditureType == "SAMPLE" || garmentUnitExpenditureNote.ExpenditureType == "SISA" || garmentUnitExpenditureNote.ExpenditureType == "SUBCON")// || garmentUnitExpenditureNote.ExpenditureType == "EXTERNAL")
             {
                 no = string.Concat("BUK", garmentUnitExpenditureNote.UnitRequestCode, Year, Month, Day);
-            }else if (garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" || garmentUnitExpenditureNote.ExpenditureType == "EXTERNAL" || garmentUnitExpenditureNote.ExpenditureType == "TRANSFER SAMPLE" || garmentUnitExpenditureNote.ExpenditureType == "LAIN-LAIN")
+            }else if (garmentUnitExpenditureNote.ExpenditureType == "TRANSFER" || garmentUnitExpenditureNote.ExpenditureType == "TRANSFER SUBCON" || garmentUnitExpenditureNote.ExpenditureType == "EXTERNAL" || garmentUnitExpenditureNote.ExpenditureType == "TRANSFER SAMPLE" || garmentUnitExpenditureNote.ExpenditureType == "LAIN-LAIN")
             {
                 no = string.Concat("BUK", garmentUnitExpenditureNote.UnitSenderCode, Year, Month, Day);
 
