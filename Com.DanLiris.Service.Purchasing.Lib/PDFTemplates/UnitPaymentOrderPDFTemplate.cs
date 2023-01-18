@@ -409,7 +409,32 @@ namespace Com.DanLiris.Service.Purchasing.Lib.PDFTemplates
 
             PdfPCell cellMark = new PdfPCell(tableConfirm);
             tableConfirm.ExtendLastRow = false;
-            tableConfirm.SpacingAfter = 30f;
+            tableConfirm.SpacingAfter = 50f;
+
+
+            var totalDays = (getDate - getUrnDate).TotalDays;
+
+            //if (model.PaymentMethod == "CASH")
+            //{
+            //    if (getDate > getUrnDate)
+            //    {
+            //        if (totalDays >= 14)
+            //        {
+            //            document.Add(tableConfirm);
+            //        }
+            //    }
+            //}
+
+            if (model.PaymentMethod == "CASH")
+            {
+                if ((getDate > getUrnDate && totalDays >= 14) || getDate > model.DueDate)
+                {
+                    
+                        document.Add(tableConfirm);
+                    
+                }
+            }
+
 
             if (model.PaymentMethod == "KREDIT")
             {
@@ -419,13 +444,14 @@ namespace Com.DanLiris.Service.Purchasing.Lib.PDFTemplates
                 }
             }
 
-            if (model.PaymentMethod == "CASH")
-            {
-                if (getDate > model.DueDate)
-                {
-                    document.Add(tableConfirm);
-                }
-            }
+
+            //if (model.PaymentMethod == "CASH")
+            //{
+            //    if (getDate > model.DueDate)
+            //    {
+            //        document.Add(tableConfirm);
+            //    }
+            //}
 
             PdfPTable tableSignature = new PdfPTable(4);
 
