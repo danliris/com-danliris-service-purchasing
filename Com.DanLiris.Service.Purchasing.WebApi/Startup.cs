@@ -80,6 +80,11 @@ using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDispositionPaymentRepor
 using Microsoft.ApplicationInsights.AspNetCore;
 using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentClosingDateFacades;
 using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentDeliveryOrderNonPOFacades;
+using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentSubconDeliveryOrderFacades;
+using Com.DanLiris.Service.Purchasing.Lib.Interfaces.GarmentSubcon;
+using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentSubcon.GarmentSubconUnitReceiptNoteFacades;
+using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentSubcon.GarmentSubconUnitDeliveryOrderFacades;
+using Com.DanLiris.Service.Purchasing.Lib.Facades.GarmentSubcon.GarmentSubconUnitExpenditureNoteFacade;
 
 namespace Com.DanLiris.Service.Purchasing.WebApi
 {
@@ -227,6 +232,10 @@ namespace Com.DanLiris.Service.Purchasing.WebApi
                 .AddTransient<IGarmentDeliveryOrderNonPOFacade, GarmentDeliveryOrderNonPOFacades>()
                 .AddTransient<IGarmentImportPurchasingJournalReportFacade, GarmentImportPurchasingJournalReportFacade>()
                 .AddTransient<IGarmentLocalPurchasingJournalReportFacade, GarmentLocalPurchasingJournalReportFacade>();
+                .AddTransient<IGarmentSubconDeliveryOrderFacades, GarmentSubconDeliveryOrderFacade>()
+                .AddTransient<IGarmentSubconUnitReceiptNoteFacade, GarmentSubconUnitReceiptNoteFacade>()
+                .AddTransient<IGarmentSubconUnitDeliveryOrderFacade, GarmentSubconUnitDeliveryOrderFacades>()
+                .AddTransient<IGarmentSubconUnitExpenditureNoteFacade, GarmentSubconUnitExpenditureNoteFacade>();
         }
 
         private void RegisterServices(IServiceCollection services, bool isTest)
