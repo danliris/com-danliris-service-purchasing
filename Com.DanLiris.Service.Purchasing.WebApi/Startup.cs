@@ -302,11 +302,12 @@ namespace Com.DanLiris.Service.Purchasing.WebApi
 
             var keyVaultEnpoint = new Uri(Configuration["VaultKey"]);
             var secretClient = new SecretClient(keyVaultEnpoint, new DefaultAzureCredential());
-
-            KeyVaultSecret kvs = secretClient.GetSecret(Configuration["VaultKeySecret"]);
+            
+            KeyVaultSecret kvsDB = secretClient.GetSecret(Configuration["VaultKeyDbSecret"]);
+            KeyVaultSecret kvsServer = secretClient.GetSecret(Configuration["VaultKeyServerSecret"]);
 
             services
-                .AddDbContext<PurchasingDbContext>(option => option.UseSqlServer(kvs.Value));
+                .AddDbContext<PurchasingDbContext>(option => option.UseSqlServer(string.Concat(kvsDB.Value, kvsServer.Value)));
             //.AddDbContext<PurchasingDbContext>(options => options.UseSqlServer(connectionString, sqlServerOptions => sqlServerOptions.CommandTimeout(1000 * 60 * 20)));
 
             services.AddTransient<ILocalDbCashFlowDbContext>(s => new LocalDbCashFlowDbContext(connectionStringLocalCashFlow));
